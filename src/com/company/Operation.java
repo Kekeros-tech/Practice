@@ -1,24 +1,49 @@
 package com.company;
 
 public class Operation {
-    //private recources_in_use: *Group(Ссылка на группу)
-    private Series[] serial_affiliation;
-    private Operation[] previous_operations;
-    private Operation[] following_operations;
-    private int duration_of_execution;
-    private boolean operating_mode;
+    private Group recourcesInUse;
+    private Series[] serialAffiliation;
+    private Operation[] previousOperations;
+    private Operation[] followingOperations;
+    private int durationOfExecution;
+    private boolean operatingMode;
 
-    public Operation(Series[] _serial_affiliation, Operation[] _previous_operations, Operation[] _following_operations,
-                     int _duration_of_execution, boolean _operating_mode) {
-        serial_affiliation = _serial_affiliation;
-        previous_operations = _previous_operations;
-        following_operations = _following_operations;
-        duration_of_execution = _duration_of_execution;
-        operating_mode = _operating_mode;
+    public Operation(Group recourcesInUse,Series[] serialAffiliation, Operation[] previousOperations, Operation[] followingOperations,
+                     int durationOfExecution, boolean operatingMode) {
+        this.recourcesInUse = recourcesInUse;
+        this.serialAffiliation = serialAffiliation;
+        this.previousOperations = previousOperations;
+        this.followingOperations = followingOperations;
+        this.durationOfExecution = durationOfExecution;
+        this.operatingMode = operatingMode;
     }
 
-    public Operation(Series[] i_serial_affiliation, Operation[] i_previous_operations,
-                     Operation[] i_following_operations, int i_duration_of_execution) {
-        this(i_serial_affiliation, i_previous_operations, i_following_operations, i_duration_of_execution, false);
+    public Operation(Group recourcesInUse,Series[] serialAffiliation, Operation[] previousOperations,
+                     Operation[] followingOperations, int durationOfExecution) {
+        this(recourcesInUse, serialAffiliation, previousOperations, followingOperations, durationOfExecution,false);
     }
+
+    public Group getRecourcesInUse() { return recourcesInUse; }
+
+    public Series[] getSerialAffiliation() { return serialAffiliation; }
+
+    public Operation[] getPreviousOperations() { return previousOperations; }
+
+    public Operation[] getFollowingOperations() { return followingOperations; }
+
+    public int getDurationOfExecution() { return durationOfExecution; }
+
+    public boolean getOperatingMode() { return operatingMode; }
+
+    public void setRecourcesInUse(Group recourcesInUse) { this.recourcesInUse = recourcesInUse; }
+
+    public void setSerialAffiliation(Series[] serialAffiliation) { this.serialAffiliation = serialAffiliation; }
+
+    public void setPreviousOperations(Operation[] previousOperations) { this.previousOperations = previousOperations; }
+
+    public void setFollowingOperations(Operation[] followingOperations) { this.followingOperations = followingOperations; }
+
+    public void setDurationOfExecution(int durationOfExecution) { this.durationOfExecution = durationOfExecution; }
+
+    public  void setOperatingMode(boolean operatingMode) { this.operatingMode = operatingMode; }
 }

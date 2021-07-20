@@ -4,23 +4,24 @@ public class Recourse {
     private int schedule; // здесь надо ещё подумать, ведь у каждой машины не просто время входа в систему, а четкий график работы
     private boolean nowInWork;
 
-    public Recourse(){}
-    public Recourse(int iSchedule, boolean bNowInWork)
+    public Recourse() {}
+
+    public Recourse(int schedule, boolean nowInWork)
     {
-        schedule = iSchedule;
-        nowInWork = bNowInWork;
+        this.schedule = schedule;
+        this.nowInWork = nowInWork;
     }
 
-    public Recourse(int iSchedule)
+    public Recourse(int schedule)
     {
-        this(iSchedule, false);
+        this(schedule, false);
     }
 
-    public int getSchedule(){ return schedule; }
+    public int getSchedule() { return this.schedule; }
 
-    public boolean getNowInWork(){ return nowInWork; }
+    public boolean getNowInWork() { return this.nowInWork; }
 
-    public void setSchedule(int iSchedule) { schedule = iSchedule; }
+    public void setSchedule(int schedule) { this.schedule = schedule; }
 
-    public void setNowInWork(boolean bNowInWork) { nowInWork = bNowInWork; }
+    public void setNowInWork(boolean nowInWork) { this.nowInWork = nowInWork; }
 }

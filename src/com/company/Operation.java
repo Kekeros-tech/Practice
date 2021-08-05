@@ -1,31 +1,44 @@
 package com.company;
 
+enum OperatingMode {
+    canBeInterrupted,
+    canNotBeInterrupted;
+}
+
 public class Operation {
     private Group recourcesInUse;
-    private Series[] serialAffiliation;
+    private Series serialAffiliation; // к одной партии
     private Operation[] previousOperations;
     private Operation[] followingOperations;
     private int durationOfExecution;
-    private boolean operatingMode;
+    private OperatingMode currentOperatingMode;
 
-    public Operation(Group recourcesInUse,Series[] serialAffiliation, Operation[] previousOperations, Operation[] followingOperations,
-                     int durationOfExecution, boolean operatingMode) {
+    public Operation(Group recourcesInUse,Series serialAffiliation, Operation[] previousOperations, Operation[] followingOperations,
+                     int durationOfExecution, int currentOperatingMode) {
         this.recourcesInUse = recourcesInUse;
         this.serialAffiliation = serialAffiliation;
         this.previousOperations = previousOperations;
         this.followingOperations = followingOperations;
         this.durationOfExecution = durationOfExecution;
-        this.operatingMode = operatingMode;
+        switch (currentOperatingMode)
+        {
+            case 0:
+                this.currentOperatingMode = OperatingMode.canBeInterrupted;
+                break;
+            default:
+                this.currentOperatingMode = OperatingMode.canNotBeInterrupted;
+
+        }
     }
 
-    public Operation(Group recourcesInUse,Series[] serialAffiliation, Operation[] previousOperations,
+    public Operation(Group recourcesInUse,Series serialAffiliation, Operation[] previousOperations,
                      Operation[] followingOperations, int durationOfExecution) {
-        this(recourcesInUse, serialAffiliation, previousOperations, followingOperations, durationOfExecution,false);
+        this(recourcesInUse, serialAffiliation, previousOperations, followingOperations, durationOfExecution, 0);
     }
 
     public Group getRecourcesInUse() { return recourcesInUse; }
 
-    public Series[] getSerialAffiliation() { return serialAffiliation; }
+    public Series getSerialAffiliation() { return serialAffiliation; }
 
     public Operation[] getPreviousOperations() { return previousOperations; }
 
@@ -33,11 +46,11 @@ public class Operation {
 
     public int getDurationOfExecution() { return durationOfExecution; }
 
-    public boolean getOperatingMode() { return operatingMode; }
+    public OperatingMode getOperatingMode() { return currentOperatingMode; }
 
     public void setRecourcesInUse(Group recourcesInUse) { this.recourcesInUse = recourcesInUse; }
 
-    public void setSerialAffiliation(Series[] serialAffiliation) { this.serialAffiliation = serialAffiliation; }
+    public void setSerialAffiliation(Series serialAffiliation) { this.serialAffiliation = serialAffiliation; }
 
     public void setPreviousOperations(Operation[] previousOperations) { this.previousOperations = previousOperations; }
 
@@ -45,5 +58,14 @@ public class Operation {
 
     public void setDurationOfExecution(int durationOfExecution) { this.durationOfExecution = durationOfExecution; }
 
-    public  void setOperatingMode(boolean operatingMode) { this.operatingMode = operatingMode; }
+    public  void setOperatingMode(int currentOperatingMode) {
+        switch (currentOperatingMode) { // вынести в отдельную функцию, узнать куда на самом деле это стоит выносить?
+            case 0:
+                this.currentOperatingMode = OperatingMode.canBeInterrupted;
+                break;
+            default:
+                this.currentOperatingMode = OperatingMode.canNotBeInterrupted;
+        }
+        //this.currentOperatingMode = currentOperatingMode;
+    }
 }

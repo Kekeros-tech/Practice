@@ -1,24 +1,25 @@
 package com.company;
+import java.util.ArrayList;
 
 public class Series {
-    private Operation[] operationsToCreate;
-    private int deadlineForCompletion;
+    private ArrayList<Operation> operationsToCreate;
+    private int deadlineForCompletion;//опять же тут проблема с датой, как это реализовать
     private int arrivalTime;
 
 
-    public Series(Operation[] operationsToCreate, int deadlineForCompletion, int arrivalTime)
+    public Series(ArrayList<Operation> operationsToCreate, int deadlineForCompletion, int arrivalTime)
     {
         this.operationsToCreate = operationsToCreate;
         this.deadlineForCompletion = deadlineForCompletion;
         this.arrivalTime = arrivalTime;
     }
 
-    public Series(Operation[] operationsToCreate, int deadlineForCompletion)
+    public Series(ArrayList<Operation> operationsToCreate, int deadlineForCompletion)
     {
         this(operationsToCreate,deadlineForCompletion,0);
     }
 
-    public Operation[] getOperationsToCreate() { return operationsToCreate; }
+    public ArrayList<Operation> getOperationsToCreate() { return operationsToCreate; }
 
     public int getDeadlineForCompletion() { return deadlineForCompletion; }
 
@@ -26,7 +27,7 @@ public class Series {
 
     public void setArrivalTime(int arrivalTime) { this.arrivalTime = arrivalTime; }
 
-    public void setOperationsToCreate(Operation[] operationsToCreate) { this.operationsToCreate = operationsToCreate; }
+    public void setOperationsToCreate(ArrayList<Operation> operationsToCreate) { this.operationsToCreate = operationsToCreate; }
 
     public void setDeadlineForCompletion(int deadlineForCompletion) { this.deadlineForCompletion = deadlineForCompletion; }
 }

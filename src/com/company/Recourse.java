@@ -1,5 +1,4 @@
 package com.company;
-import java.util.ArrayList;
 
 public class Recourse {
     private int schedule; // здесь надо ещё подумать, ведь у каждой машины не просто время входа в систему, а четкий график работы

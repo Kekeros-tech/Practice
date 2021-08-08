@@ -1,19 +1,40 @@
 package com.company;
 
 public class WorkingHours {
-    byte hours;
-    byte minute;
+    private int hours;
+    private int minute;
 
-    WorkingHours(byte hours, byte minute){
+    WorkingHours(int hours, int minute){
         this.hours = hours;
         this.minute = minute;
     }
 
-    WorkingHours(byte hours){
-        this(hours, (byte)0);
+    WorkingHours(int hours){
+        this(hours, 0);
     }
 
     WorkingHours(){
-        this((byte) 0);
+        this(0);
+    }
+
+    public WorkingHours convertDateToWorkingHours(int day,int hours,int minute) { // разобраться с этим
+        WorkingHours workingHours = new WorkingHours(day*24+hours,minute);
+        return workingHours;
+    }
+
+    public int getHours() {
+        return hours;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public void setHours(int hours) {
+        this.hours = hours;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
     }
 }

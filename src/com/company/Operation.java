@@ -2,16 +2,16 @@ package com.company;
 import java.util.ArrayList;
 
 public class Operation {
-    private Group recourcesInUse;
+    private Group resourcesInUse;
     private Series serialAffiliation;
     private ArrayList<Operation> previousOperations;
     private ArrayList<Operation> followingOperations;
-    private int durationOfExecution;
+    private WorkingHours durationOfExecution; // сколько рабочих часов уйдет на выполнение операции (срок выполнения операции)
     private OperatingMode currentOperatingMode;
 
-    public Operation(Group recourcesInUse,Series serialAffiliation, ArrayList<Operation> previousOperations, ArrayList<Operation> followingOperations,
-                     int durationOfExecution, int currentOperatingMode) {
-        this.recourcesInUse = recourcesInUse;
+    Operation(Group resourcesInUse,Series serialAffiliation, ArrayList<Operation> previousOperations, ArrayList<Operation> followingOperations,
+                     WorkingHours durationOfExecution, int currentOperatingMode) {
+        this.resourcesInUse = resourcesInUse;
         this.serialAffiliation = serialAffiliation;
         this.previousOperations = previousOperations;
         this.followingOperations = followingOperations;
@@ -19,12 +19,16 @@ public class Operation {
         this.currentOperatingMode = OperatingMode.modeSelection(currentOperatingMode);
     }
 
-    public Operation(Group recourcesInUse,Series serialAffiliation, ArrayList<Operation> previousOperations,
-                     ArrayList<Operation> followingOperations, int durationOfExecution) {
-        this(recourcesInUse, serialAffiliation, previousOperations, followingOperations, durationOfExecution, 0);
+    Operation(Group resourcesInUse,Series serialAffiliation, ArrayList<Operation> previousOperations,
+                     ArrayList<Operation> followingOperations, WorkingHours durationOfExecution) {
+        this(resourcesInUse, serialAffiliation, previousOperations, followingOperations, durationOfExecution, 0);
     }
 
-    public Group getRecourcesInUse() { return recourcesInUse; }
+    Operation(){
+
+    }
+
+    public Group getResourcesInUse() { return resourcesInUse; }
 
     public Series getSerialAffiliation() { return serialAffiliation; }
 
@@ -32,11 +36,11 @@ public class Operation {
 
     public ArrayList<Operation> getFollowingOperations() { return followingOperations; }
 
-    public int getDurationOfExecution() { return durationOfExecution; }
+    public WorkingHours getDurationOfExecution() { return durationOfExecution; }
 
     public OperatingMode getOperatingMode() { return currentOperatingMode; }
 
-    public void setRecourcesInUse(Group recourcesInUse) { this.recourcesInUse = recourcesInUse; }
+    public void setResourcesInUse(Group resourcesInUse) { this.resourcesInUse = resourcesInUse; }
 
     public void setSerialAffiliation(Series serialAffiliation) { this.serialAffiliation = serialAffiliation; }
 
@@ -44,9 +48,17 @@ public class Operation {
 
     public void setFollowingOperations(ArrayList<Operation> followingOperations) { this.followingOperations = followingOperations; }
 
-    public void setDurationOfExecution(int durationOfExecution) { this.durationOfExecution = durationOfExecution; }
+    public void setDurationOfExecution(WorkingHours durationOfExecution) { this.durationOfExecution = durationOfExecution; }
 
     public  void setOperatingMode(int currentOperatingMode) {
         this.currentOperatingMode = OperatingMode.modeSelection(currentOperatingMode);
+    }
+
+    public void addPreviousOperation(Operation previousOperation) {
+        this.previousOperations.add(previousOperation);
+    }
+
+    public void addFollowingOperation(Operation followingOperation) {
+        this.followingOperations.add(followingOperation);
     }
 }

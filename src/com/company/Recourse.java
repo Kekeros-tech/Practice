@@ -1,29 +1,31 @@
 package com.company;
 
 public class Recourse {
-    private int schedule; // здесь надо ещё подумать, ведь у каждой машины не просто время входа в систему, а четкий график работы
-    private int nowInWork; // к какому такту будет завершена работа
-    // но это не логично, потому что тогда если мы такт зададим как месяц например, то он будт простаивать до новго месяца
-    // может тогда как время
+    private Schedule schedule;
+    private Date releaseDate; // когда станок освободится, может тут тоже Date, а то так получается сколько станок ещё будет работать
 
-    public Recourse() {}
-
-    public Recourse(int schedule, int nowInWork)
+    public Recourse(Schedule schedule, Date releaseDate)
     {
         this.schedule = schedule;
-        this.nowInWork = nowInWork;
+        this.releaseDate = releaseDate;
     }
 
-    public Recourse(int schedule)
+    public Recourse(Schedule schedule)
     {
-        this(schedule, 0);
+        this.schedule = schedule;
+        this.releaseDate = new Date();
     }
 
-    public int getSchedule() { return this.schedule; }
+    public Schedule getSchedule() { return this.schedule; }
 
-    public int getNowInWork() { return this.nowInWork; }
+    public Date getReleaseTime() { return this.releaseDate; }
 
-    public void setSchedule(int schedule) { this.schedule = schedule; }
+    public void setSchedule(Schedule schedule) { this.schedule = schedule; }
 
-    public void setNowInWork(int nowInWork) { this.nowInWork = nowInWork; }
+    public void setReleaseTime(Date releaseDate) { this.releaseDate = releaseDate; }
+
+    public void takeToRecourse(Operation operation) {
+        releaseDate.setDate(releaseDate.getDate().plusHours(operation.getDurationOfExecution().getHours()));
+        releaseDate.setDate(releaseDate.getDate().plusMinutes(operation.getDurationOfExecution().getMinute()));
+    }
 }

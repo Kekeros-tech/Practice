@@ -1,40 +1,23 @@
 package com.company;
 
+import java.time.LocalDateTime;
+
 public class WorkingHours {
-    private int hours;
-    private int minute;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
-    WorkingHours(int hours, int minute){
-        this.hours = hours;
-        this.minute = minute;
+    WorkingHours(LocalDateTime startTime, LocalDateTime endTime){
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
-    WorkingHours(int hours){
-        this(hours, 0);
-    }
+    WorkingHours() {}
 
-    WorkingHours(){
-        this(0);
-    }
+    public LocalDateTime getHours() { return startTime; }
 
-    public WorkingHours convertDateToWorkingHours(int day,int hours,int minute) { // разобраться с этим
-        WorkingHours workingHours = new WorkingHours(day*24+hours,minute);
-        return workingHours;
-    }
+    public LocalDateTime getMinute() { return endTime; }
 
-    public int getHours() {
-        return hours;
-    }
+    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
 
-    public int getMinute() {
-        return minute;
-    }
-
-    public void setHours(int hours) {
-        this.hours = hours;
-    }
-
-    public void setMinute(int minute) {
-        this.minute = minute;
-    }
+    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
 }

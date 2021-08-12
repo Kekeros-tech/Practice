@@ -20,10 +20,11 @@ public class Date {
 
     public Duration getDurationBetweenToDates(Date deductibleDate) { // возвращает промежуток между двумя датами
         Duration duration = Duration.between(deductibleDate.date,this.date);
+        System.out.println(duration.toMillis());
         return duration;
     }
 
-    public WorkingHours getWorkingHoursBetweenToDates(Date deductibleDate) {
+    /*public WorkingHours getWorkingHoursBetweenToDates(Date deductibleDate) {
         Duration duration;
         if(this.date.isAfter(deductibleDate.date))
             duration = Duration.between(deductibleDate.date, this.date);
@@ -31,14 +32,7 @@ public class Date {
             duration = Duration.between(this.date, deductibleDate.date);
         WorkingHours clock = new WorkingHours((int)duration.toMinutes() / 60,(int)duration.toMinutes() % 60);
         return clock;
-    }
-
-    public Date plusHoursAndMinutes(int hours, int minute) {
-        Date result = this;
-        result.date.plusHours((long)hours);
-        result.date.plusMinutes((long)minute);
-        return result;
-    }
+    }*/
 
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

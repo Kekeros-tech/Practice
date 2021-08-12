@@ -1,58 +1,60 @@
 package com.company;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Operation {
-    private Group resourcesInUse;
+    private Group resourceGroup;
     private Series serialAffiliation;
-    private ArrayList<Operation> previousOperations;
-    private ArrayList<Operation> followingOperations;
-    private WorkingHours durationOfExecution; // сколько рабочих часов уйдет на выполнение операции (срок выполнения операции)
+    private Collection<Operation> previousOperations;
+    private Collection<Operation> followingOperations;
+    private Duration durationOfExecution;
     private OperatingMode currentOperatingMode;
 
-    Operation(Group resourcesInUse,Series serialAffiliation, ArrayList<Operation> previousOperations, ArrayList<Operation> followingOperations,
-                     WorkingHours durationOfExecution, int currentOperatingMode) {
-        this.resourcesInUse = resourcesInUse;
+    Operation(Group resourceGroup,Series serialAffiliation, Collection<Operation> previousOperations, Collection<Operation> followingOperations,
+                     Duration durationOfExecution, int currentOperatingMode) {
+        this.resourceGroup = resourceGroup;
         this.serialAffiliation = serialAffiliation;
-        this.previousOperations = previousOperations;
-        this.followingOperations = followingOperations;
+        this.previousOperations = new ArrayList<>(previousOperations);
+        this.followingOperations = new ArrayList<>(followingOperations);
         this.durationOfExecution = durationOfExecution;
         this.currentOperatingMode = OperatingMode.modeSelection(currentOperatingMode);
     }
 
-    Operation(Group resourcesInUse,Series serialAffiliation, ArrayList<Operation> previousOperations,
-                     ArrayList<Operation> followingOperations, WorkingHours durationOfExecution) {
-        this(resourcesInUse, serialAffiliation, previousOperations, followingOperations, durationOfExecution, 0);
+    Operation(Group resourceGroup,Series serialAffiliation, ArrayList<Operation> previousOperations,
+                     ArrayList<Operation> followingOperations, Duration durationOfExecution) {
+        this(resourceGroup, serialAffiliation, previousOperations, followingOperations, durationOfExecution, 0);
     }
 
-    Operation(){
+    Operation(){ }
 
-    }
-
-    public Group getResourcesInUse() { return resourcesInUse; }
+    public Group getResourceGroup() { return resourceGroup; }
 
     public Series getSerialAffiliation() { return serialAffiliation; }
 
-    public ArrayList<Operation> getPreviousOperations() { return previousOperations; }
+    public Collection<Operation> getPreviousOperations() { return previousOperations; }
 
-    public ArrayList<Operation> getFollowingOperations() { return followingOperations; }
+    public Collection<Operation> getFollowingOperations() { return followingOperations; }
 
-    public WorkingHours getDurationOfExecution() { return durationOfExecution; }
+    public Duration getDurationOfExecution() { return durationOfExecution; }
 
     public OperatingMode getOperatingMode() { return currentOperatingMode; }
 
-    public void setResourcesInUse(Group resourcesInUse) { this.resourcesInUse = resourcesInUse; }
+
+    public void setResourceGroup(Group resourceGroup) { this.resourceGroup = resourceGroup; }
 
     public void setSerialAffiliation(Series serialAffiliation) { this.serialAffiliation = serialAffiliation; }
 
-    public void setPreviousOperations(ArrayList<Operation> previousOperations) { this.previousOperations = previousOperations; }
+    public void setPreviousOperations(Collection<Operation> previousOperations) { this.previousOperations = new ArrayList<>(previousOperations); }
 
-    public void setFollowingOperations(ArrayList<Operation> followingOperations) { this.followingOperations = followingOperations; }
+    public void setFollowingOperations(Collection<Operation> followingOperations) { this.followingOperations = new ArrayList<>(followingOperations); }
 
-    public void setDurationOfExecution(WorkingHours durationOfExecution) { this.durationOfExecution = durationOfExecution; }
+    public void setDurationOfExecution(Duration durationOfExecution) { this.durationOfExecution = durationOfExecution; }
 
     public  void setOperatingMode(int currentOperatingMode) {
         this.currentOperatingMode = OperatingMode.modeSelection(currentOperatingMode);
     }
+
 
     public void addPreviousOperation(Operation previousOperation) {
         this.previousOperations.add(previousOperation);

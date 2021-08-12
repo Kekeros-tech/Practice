@@ -1,31 +1,33 @@
 package com.company;
 
+import java.time.LocalDateTime;
+
 public class Recourse {
     private Schedule schedule;
-    private Date releaseDate; // когда станок освободится, может тут тоже Date, а то так получается сколько станок ещё будет работать
+    private LocalDateTime releaseDate;
 
-    public Recourse(Schedule schedule, Date releaseDate)
+    Recourse(Schedule schedule, LocalDateTime releaseDate)
     {
         this.schedule = schedule;
         this.releaseDate = releaseDate;
     }
 
-    public Recourse(Schedule schedule)
+    Recourse(Schedule schedule)
     {
         this.schedule = schedule;
-        this.releaseDate = new Date();
+        this.releaseDate = LocalDateTime.now();
     }
 
     public Schedule getSchedule() { return this.schedule; }
 
-    public Date getReleaseTime() { return this.releaseDate; }
+    public LocalDateTime getReleaseTime() { return this.releaseDate; }
 
     public void setSchedule(Schedule schedule) { this.schedule = schedule; }
 
-    public void setReleaseTime(Date releaseDate) { this.releaseDate = releaseDate; }
+    public void setReleaseTime(LocalDateTime releaseDate) { this.releaseDate = releaseDate; }
 
-    public void takeToRecourse(Operation operation) {
+    /*public void takeToRecourse(Operation operation) {
         releaseDate.setDate(releaseDate.getDate().plusHours(operation.getDurationOfExecution().getHours()));
         releaseDate.setDate(releaseDate.getDate().plusMinutes(operation.getDurationOfExecution().getMinute()));
-    }
+    }*/
 }

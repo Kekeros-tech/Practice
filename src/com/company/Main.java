@@ -20,7 +20,7 @@ public class Main {
 	//group.addRecourseInTheGroup(recourse);
 	Operation operation = new Operation();
 	operation.setResourceGroup(group);
-	System.out.println(operation.getResourceGroup().getRecoursesInTheGroup().get(0).getReleaseTime());
+	//System.out.println(operation.getResourceGroup().getRecoursesInTheGroup().get(0).getReleaseTime());
 	System.out.println(operation.getOperatingMode());
 	operation.setOperatingMode(0);
 	System.out.println(operation.getOperatingMode());

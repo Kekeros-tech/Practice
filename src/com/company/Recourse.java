@@ -1,33 +1,33 @@
 package com.company;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Recourse {
-    private Schedule schedule;
+    private Collection<WorkingHours> schedule;
     private LocalDateTime releaseDate;
 
-    Recourse(Schedule schedule, LocalDateTime releaseDate)
+    Recourse(Collection<WorkingHours> schedule, LocalDateTime releaseDate)
     {
-        this.schedule = schedule;
+        this.schedule = new ArrayList<>(schedule);
         this.releaseDate = releaseDate;
     }
 
-    Recourse(Schedule schedule)
+    Recourse(Collection<WorkingHours> schedule)
     {
-        this.schedule = schedule;
+        this.schedule = new ArrayList<>(schedule);
         this.releaseDate = LocalDateTime.now();
     }
 
-    public Schedule getSchedule() { return this.schedule; }
+
+    public Collection<WorkingHours> getSchedule() { return this.schedule; }
 
     public LocalDateTime getReleaseTime() { return this.releaseDate; }
 
-    public void setSchedule(Schedule schedule) { this.schedule = schedule; }
+
+    public void setSchedule(Collection<WorkingHours> schedule) { this.schedule = new ArrayList<>(schedule); }
 
     public void setReleaseTime(LocalDateTime releaseDate) { this.releaseDate = releaseDate; }
 
-    /*public void takeToRecourse(Operation operation) {
-        releaseDate.setDate(releaseDate.getDate().plusHours(operation.getDurationOfExecution().getHours()));
-        releaseDate.setDate(releaseDate.getDate().plusMinutes(operation.getDurationOfExecution().getMinute()));
-    }*/
 }

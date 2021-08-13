@@ -1,9 +1,9 @@
 package com.company;
-import java.util.ArrayList; // Либо HashSet, если оборудование уникальное
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class Group {
-    private ArrayList<Recourse> recoursesInTheGroup;
+    private Collection<Recourse> recoursesInTheGroup;
 
     public Group() { //он ведь так по умолчанию формирует
         recoursesInTheGroup = new ArrayList<>();
@@ -21,6 +21,6 @@ public class Group {
         this.recoursesInTheGroup.addAll(recoursesInTheGroup);
     }
 
-    public ArrayList<Recourse>  getRecoursesInTheGroup() { return recoursesInTheGroup; }
+    public Collection<Recourse>  getRecoursesInTheGroup() { return recoursesInTheGroup; }
 
 }

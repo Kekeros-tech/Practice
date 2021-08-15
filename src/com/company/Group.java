@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Group {
-    private Collection<Recourse> recoursesInTheGroup;
+    private ArrayList<Recourse> recoursesInTheGroup;
 
     public Group() { //он ведь так по умолчанию формирует
         recoursesInTheGroup = new ArrayList<>();
@@ -21,6 +21,6 @@ public class Group {
         this.recoursesInTheGroup.addAll(recoursesInTheGroup);
     }
 
-    public Collection<Recourse>  getRecoursesInTheGroup() { return recoursesInTheGroup; }
+    public ArrayList<Recourse>  getRecoursesInTheGroup() { return recoursesInTheGroup; }
 
 }

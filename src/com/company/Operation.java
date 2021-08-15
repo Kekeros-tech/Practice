@@ -6,8 +6,8 @@ import java.util.Collection;
 public class Operation {
     private Group resourceGroup;
     private Series serialAffiliation;
-    private Collection<Operation> previousOperations;
-    private Collection<Operation> followingOperations;
+    private ArrayList<Operation> previousOperations;
+    private ArrayList<Operation> followingOperations;
     private Duration durationOfExecution;
     private OperatingMode currentOperatingMode;
 
@@ -35,9 +35,9 @@ public class Operation {
 
     public Series getSerialAffiliation() { return serialAffiliation; }
 
-    public Collection<Operation> getPreviousOperations() { return previousOperations; }
+    public ArrayList<Operation> getPreviousOperations() { return previousOperations; }
 
-    public Collection<Operation> getFollowingOperations() { return followingOperations; }
+    public ArrayList<Operation> getFollowingOperations() { return followingOperations; }
 
     public Duration getDurationOfExecution() { return durationOfExecution; }
 

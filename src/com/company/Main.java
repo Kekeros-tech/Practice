@@ -36,7 +36,7 @@ public class Main {
 	myoper2.setSerialAffiliation(myseries);
 	myoper2.addFollowingOperation(myoper);
 	//myoper.addPreviousOperation(myoper2);
-	LocalDateTime currentdate = LocalDateTime.of(2021,8,13,1,00);
+	LocalDateTime currentdate = LocalDateTime.of(2021,8,13,20,00);
 	ArrayList<Operation> frontOfWork = new ArrayList<>();
 
 	Operation[] buffer = myseries.getOperationsToCreate().toArray(new Operation[myseries.getOperationsToCreate().size()]);
@@ -46,10 +46,33 @@ public class Main {
 			frontOfWork.add(buffer[i]);
 		}
 	}
-
-
+	buffer = frontOfWork.toArray(new Operation[frontOfWork.size()]);
 	recourse.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
 	WHComparatorBasedOnDuration whcomp = new WHComparatorBasedOnDuration();
+	recourse.getSchedule().sort(whcomp);
+	for(int i = 0; i < buffer.length; i++)
+	{
+		for(int j=0;j < buffer[i].getResourceGroup().getRecoursesInTheGroup().size();j++){
+			if(buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getReleaseTime().isBefore(currentdate)){
+				for(int k=0;k < buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getSchedule().size();k++){
+					 WorkingHours current = buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getSchedule().get(k);
+					 Duration duration = Duration.between(current.getStartTime(),current.getEndTime());
+					 if(duration.toMillis()>=buffer[i].getDurationOfExecution().toMillis()){
+					 	System.out.println("EEE");
+						 buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).takeRecourse(buffer[i]);
+						 System.out.println(buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getReleaseTime());
+					 	break;
+						// buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).takeRecourse(buffer[i]);
+					 }
+				}
+			}
+		}
+		//System.out.println(buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getReleaseTime());
+	}
+
+
+	//recourse.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
+	//WHComparatorBasedOnDuration whcomp = new WHComparatorBasedOnDuration();
 	recourse.getSchedule().sort(whcomp);
 	System.out.println();
 	for(int i = 0;i<recourse.getSchedule().size();i++)

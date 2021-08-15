@@ -9,35 +9,53 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-	System.out.println("Hello world");
-	System.out.println("Here I wrote other line");
-	System.out.println("well, it`s work");
-
-	//WorkingHours workingHours[] = new WorkingHours[7];
-	//WorkingHours work = new WorkingHours();
-		LocalDateTime firstStart = LocalDateTime.of(2021,8,14,10,00);
-		LocalDateTime firstEnd = LocalDateTime.of(2021,8,14,18,00);
-		LocalDateTime secondStart = LocalDateTime.of(2021,8,14,19,00);
-		LocalDateTime secondEnd = LocalDateTime.of(2021,8,14,21,00);
-		LocalDateTime thirdStart = LocalDateTime.of(2021,8,15,22,00);
-		LocalDateTime thirdEnd = LocalDateTime.of(2021,8,15,23,00);
-		//secondEnd = secondEnd.plusNanos(Duration.between(firstStart,firstEnd).toNanos());
-		//System.out.println(secondEnd);
-	WorkingHours work = new WorkingHours(firstStart,firstEnd);
-	WorkingHours work2 = new WorkingHours(secondStart,secondEnd);
-	WorkingHours work3 = new WorkingHours(thirdStart,thirdEnd);
+	WorkingHours work = new WorkingHours("14-08-2021 09:00","14-08-2021 13:00");
+	WorkingHours work2 = new WorkingHours("14-08-2021 14:00","14-08-2021 19:00");
+	WorkingHours work3 = new WorkingHours("15-08-2021 10:00","15-08-2021 18:00");
 		ArrayList<WorkingHours> arrayList = new ArrayList<>();
 		arrayList.add(work);
 		arrayList.add(work2);
 		arrayList.add(work3);
-	Recourse recourse = new Recourse(arrayList);
-	LocalDateTime future = LocalDateTime.of(2021,8,20,00,00);
-	recourse.fillScheduleUsingPreviousData(future);
+	Recourse recourse = new Recourse(arrayList, "13-08-2021 19:00");
+	ArrayList<Recourse> arrayOfRecourse = new ArrayList<>();
+	arrayOfRecourse.add(recourse);
+	Group mygroup = new Group(arrayOfRecourse);
+	Operation myoper = new Operation();
+	myoper.setResourceGroup(mygroup);
+	myoper.setDurationOfExecution(Duration.ofHours(4));
+	Operation myoper2 = new Operation();
+	myoper2.setResourceGroup(mygroup);
+	myoper2.setDurationOfExecution(Duration.ofHours(8));
+	ArrayList<Operation> arrayOfOperations = new ArrayList<>();
+	arrayOfOperations.add(myoper);
+	arrayOfOperations.add(myoper2);
+	Series myseries = new Series(arrayOfOperations,"20-08-2021 00:00","13-08-2021 00:00");
+
+
+	myoper.setSerialAffiliation(myseries);
+	myoper2.setSerialAffiliation(myseries);
+	myoper2.addFollowingOperation(myoper);
+	//myoper.addPreviousOperation(myoper2);
+	LocalDateTime currentdate = LocalDateTime.of(2021,8,13,1,00);
+	ArrayList<Operation> frontOfWork = new ArrayList<>();
+
+	Operation[] buffer = myseries.getOperationsToCreate().toArray(new Operation[myseries.getOperationsToCreate().size()]);
+	for(int i=0; i<buffer.length; i++)
+	{
+		if(buffer[i].getPreviousOperations().isEmpty() && buffer[i].getSerialAffiliation().getArrivalTime().isBefore(currentdate)){
+			frontOfWork.add(buffer[i]);
+		}
+	}
+
+
+	recourse.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
+	WHComparatorBasedOnDuration whcomp = new WHComparatorBasedOnDuration();
+	recourse.getSchedule().sort(whcomp);
+	System.out.println();
 	for(int i = 0;i<recourse.getSchedule().size();i++)
 	{
-		System.out.println(recourse.getSchedule().get(i).getStartTime());
-		System.out.println(recourse.getSchedule().get(i).getEndTime());
-		System.out.println();
+		System.out.println(recourse.getSchedule().get(i).getStartTime() + " " +recourse.getSchedule().get(i).getEndTime());
+		//System.out.println(" "+ recourse.getSchedule().get(i).getEndTime());
 	}
 	//System.out.println(work.getHours() + " " + work.getMinute());
 	//Schedule schedule = new Schedule(workingHours);

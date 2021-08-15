@@ -1,6 +1,7 @@
 package com.company;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class WorkingHours {
     private LocalDateTime startTime;
@@ -9,6 +10,12 @@ public class WorkingHours {
     WorkingHours(LocalDateTime startTime, LocalDateTime endTime){
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    WorkingHours(String startTime, String endTime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        this.startTime = LocalDateTime.parse(startTime,formatter);
+        this.endTime = LocalDateTime.parse(endTime,formatter);
     }
 
     WorkingHours() {
@@ -28,4 +35,12 @@ public class WorkingHours {
     public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
 
     public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        return startTime.format(formatter)+"--->"+ endTime.format(formatter);
+    }
+
+
 }

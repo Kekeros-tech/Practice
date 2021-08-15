@@ -26,7 +26,10 @@ public class Operation {
         this(resourceGroup, serialAffiliation, previousOperations, followingOperations, durationOfExecution, 0);
     }
 
-    Operation(){ }
+    Operation(){
+        this.previousOperations = new ArrayList<>();
+        this.followingOperations = new ArrayList<>();
+    }
 
     public Group getResourceGroup() { return resourceGroup; }
 
@@ -57,10 +60,25 @@ public class Operation {
 
 
     public void addPreviousOperation(Operation previousOperation) {
+        if(this.previousOperations == null) {
+            this.previousOperations = new ArrayList<>();
+        }
         this.previousOperations.add(previousOperation);
+        if(previousOperation.followingOperations == null){
+            previousOperation.followingOperations = new ArrayList<>();
+        }
+        previousOperation.followingOperations.add(this);
     }
 
     public void addFollowingOperation(Operation followingOperation) {
+        if(this.followingOperations == null) {
+            this.followingOperations = new ArrayList<>();
+        }
         this.followingOperations.add(followingOperation);
+        if(followingOperation.previousOperations == null){
+            followingOperation.previousOperations = new ArrayList<>();
+        }
+        followingOperation.previousOperations.add(this);
+        //followingOperation.addPreviousOperation(this);
     }
 }

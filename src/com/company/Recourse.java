@@ -1,6 +1,7 @@
 package com.company;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -8,10 +9,11 @@ public class Recourse {
     private ArrayList<WorkingHours> schedule;
     private LocalDateTime releaseDate;
 
-    Recourse(Collection<WorkingHours> schedule, LocalDateTime releaseDate)
+    Recourse(Collection<WorkingHours> schedule, String releaseDate)
     {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.schedule = new ArrayList<>(schedule);
-        this.releaseDate = releaseDate;
+        this.releaseDate = LocalDateTime.parse(releaseDate,formatter);
     }
 
     Recourse(Collection<WorkingHours> schedule)

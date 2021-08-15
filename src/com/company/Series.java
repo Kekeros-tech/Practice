@@ -1,5 +1,6 @@
 package com.company;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,6 +17,14 @@ public class Series {
         this.operationsToCreate = new ArrayList<>(operationsToCreate);
         this.deadlineForCompletion = deadlineForCompletion;
         this.arrivalTime = arrivalTime;
+    }
+
+    Series(Collection<Operation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        this.operationsToCreate = new ArrayList<>(operationsToCreate);
+        this.deadlineForCompletion = LocalDateTime.parse(deadlineForCompletion,formatter);
+        this.arrivalTime = LocalDateTime.parse(arrivalTime,formatter);
     }
 
 

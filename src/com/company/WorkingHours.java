@@ -11,11 +11,19 @@ public class WorkingHours {
         this.endTime = endTime;
     }
 
-    WorkingHours() {}
+    WorkingHours() {
+        this.startTime = LocalDateTime.now();
+        this.endTime = LocalDateTime.now();
+    }
 
-    public LocalDateTime getHours() { return startTime; }
+    /*public boolean haveSameDayOfStartTime(WorkingHours another){
+        System.out.println(this.startTime.getDayOfMonth() == another.startTime.getDayOfMonth());
+        return (this.startTime.getDayOfMonth() == another.startTime.getDayOfMonth());
+    }*/
 
-    public LocalDateTime getMinute() { return endTime; }
+    public LocalDateTime getStartTime() { return startTime; }
+
+    public LocalDateTime getEndTime() { return endTime; }
 
     public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
 

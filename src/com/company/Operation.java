@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Operation {
-    private Group resourceGroup;
+    private Group resourceGroup; //когда операция назначается, мы должны группу уменьшать до 1 элемента, чтобы понимать где сейчас обрабатывается операция и сколько ещё времени ей требуется
     private Series serialAffiliation;
     private ArrayList<Operation> previousOperations;
     private ArrayList<Operation> followingOperations;
@@ -59,7 +59,7 @@ public class Operation {
     }
 
 
-    public void addPreviousOperation(Operation previousOperation) {
+    public void addPreviousOperation(Operation previousOperation) { //один и тот же код
         if(this.previousOperations == null) {
             this.previousOperations = new ArrayList<>();
         }
@@ -80,5 +80,12 @@ public class Operation {
         }
         followingOperation.previousOperations.add(this);
         //followingOperation.addPreviousOperation(this);
+    }
+
+    public void scheduleAnOperation(int number, int numberOfWorkingInterval){
+        Recourse currentRecourse = resourceGroup.get(number);
+        currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
+        resourceGroup.setRecoursesInTheGroup(resourceGroup.get(number));
+        serialAffiliation.removePreviousOperations(this);
     }
 }

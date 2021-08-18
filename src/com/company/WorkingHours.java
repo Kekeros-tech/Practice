@@ -18,15 +18,16 @@ public class WorkingHours {
         this.endTime = LocalDateTime.parse(endTime,formatter);
     }
 
+    WorkingHours(String endTime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        this.startTime = LocalDateTime.now();
+        this.endTime = LocalDateTime.parse(endTime, formatter);
+    }
+
     WorkingHours() {
         this.startTime = LocalDateTime.now();
         this.endTime = LocalDateTime.now();
     }
-
-    /*public boolean haveSameDayOfStartTime(WorkingHours another){
-        System.out.println(this.startTime.getDayOfMonth() == another.startTime.getDayOfMonth());
-        return (this.startTime.getDayOfMonth() == another.startTime.getDayOfMonth());
-    }*/
 
     public LocalDateTime getStartTime() { return startTime; }
 

@@ -46,4 +46,12 @@ public class Series {
 
     public void addOperationCollectionToCreate(Collection<Operation> operationsToCreate) { this.operationsToCreate.addAll(operationsToCreate); }
 
+    public void removePreviousOperations(Operation requiredOperation){
+        for (Operation operation: operationsToCreate) {
+            if(operation.getPreviousOperations().contains(requiredOperation)){
+                operation.getPreviousOperations().remove(requiredOperation);
+            }
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.company;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -7,36 +8,46 @@ import java.util.Collection;
 
 public class Recourse {
     private ArrayList<WorkingHours> schedule;
-    private LocalDateTime releaseDate;
+    private WorkingHours releaseDate; // может сделать это как рабочие часы, чтобы был как промежуток работы между 2 временами, потому что иначе если
+    // будет слишком много времени будет показываться, что станок занят, но задачу он выполнить ведь может
 
-    Recourse(Collection<WorkingHours> schedule, String releaseDate)
+    Recourse(Collection<WorkingHours> schedule, String releaseDateStart, String releaseDateEnd)
     {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.schedule = new ArrayList<>(schedule);
-        this.releaseDate = LocalDateTime.parse(releaseDate,formatter);
+        this.releaseDate = new WorkingHours(releaseDateStart, releaseDateEnd);
     }
 
-    Recourse(Collection<WorkingHours> schedule)
+    Recourse(Collection<WorkingHours> schedule, String releaseDateEnd)
     {
         this.schedule = new ArrayList<>(schedule);
-        this.releaseDate = LocalDateTime.now();
+        this.releaseDate = new WorkingHours(releaseDateEnd);
     }
 
-    public void fillScheduleUsingPreviousData(LocalDateTime requiredDate) {
+    public void fillScheduleUsingPreviousData(LocalDateTime requiredDate) //ещё подумать над реализацией
+    {
         if (!schedule.isEmpty()){
             int kol = 0;
-            for(int i = 0; i < schedule.size();i++) {
+            int maxSpan = 1;
+            for(int i = 0; i < schedule.size(); i++) {
+                int first = schedule.get(i).getStartTime().getDayOfMonth();
                 for(int j = i + 1; j < schedule.size(); j++) {
-                    int first = schedule.get(i).getStartTime().getDayOfMonth();
                     int second = schedule.get(j).getStartTime().getDayOfMonth();
                     if(first == second) {
                         kol += 1;
                         break;
                     }
                 }
+                if(i != 0){
+                    int second = schedule.get(i-1).getStartTime().getDayOfMonth();
+                    if(first - second >= maxSpan) {
+                        maxSpan = first - second;
+                    }
+                }
             }
-            int unique = schedule.size() - kol;
-            System.out.println(unique);
+            int lastDay = schedule.get(schedule.size()-1).getStartTime().getDayOfMonth();
+            int firstDay = schedule.get(0).getStartTime().getDayOfMonth();
+            int unique = lastDay + maxSpan - firstDay;
 
             int iteration = 0;
             for(int i = iteration; i < schedule.size(); i++){
@@ -54,15 +65,27 @@ public class Recourse {
 
     public ArrayList<WorkingHours> getSchedule() { return this.schedule; }
 
-    public LocalDateTime getReleaseTime() { return this.releaseDate; }
+    public WorkingHours getReleaseTime() { return this.releaseDate; }
 
 
     public void setSchedule(Collection<WorkingHours> schedule) { this.schedule = new ArrayList<>(schedule); }
 
-    public void setReleaseTime(LocalDateTime releaseDate) { this.releaseDate = releaseDate; }
+    public void setReleaseTime(WorkingHours releaseDate) { this.releaseDate = releaseDate; }
 
-    public void takeRecourse(Operation operation) {
-        releaseDate = releaseDate.plusNanos(operation.getDurationOfExecution().toNanos());
+    //Подумать ещё над реализацией
+    public void takeRecourse(Duration currentDuration, int number) {
+        releaseDate.setStartTime(schedule.get(number).getStartTime());
+        releaseDate.setEndTime(schedule.get(number).getStartTime().plusNanos(currentDuration.toNanos()));
+        //releaseDate = schedule.get(number).getStartTime();
+        //releaseDate = releaseDate.plusNanos(operation.getDurationOfExecution().toNanos());
     }
 
+    public boolean isWorkingTime(LocalDateTime currentDate){
+        if(currentDate.isAfter(releaseDate.getStartTime()) && currentDate.isBefore(releaseDate.getEndTime())){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 }

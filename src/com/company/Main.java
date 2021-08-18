@@ -9,33 +9,53 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
+
 	WorkingHours work = new WorkingHours("14-08-2021 09:00","14-08-2021 13:00");
-	WorkingHours work2 = new WorkingHours("14-08-2021 14:00","14-08-2021 19:00");
-	WorkingHours work3 = new WorkingHours("15-08-2021 10:00","15-08-2021 18:00");
-		ArrayList<WorkingHours> arrayList = new ArrayList<>();
-		arrayList.add(work);
-		arrayList.add(work2);
-		arrayList.add(work3);
-	Recourse recourse = new Recourse(arrayList, "13-08-2021 19:00");
+	WorkingHours work2 = new WorkingHours("15-08-2021 10:00","15-08-2021 18:00");
+	WorkingHours work3 = new WorkingHours("17-08-2021 09:00","17-08-2021 13:00");
+	WorkingHours work4 = new WorkingHours("18-08-2021 10:00", "18-08-2021 18:00");
+
+	WorkingHours work5 = new WorkingHours("15-08-2021 09:00", "15-08-2021 12:00");
+	WorkingHours work6 = new WorkingHours("16-08-2021 09:00", "16-08-2021 15:00");
+
+
+	ArrayList<WorkingHours> arrayList = new ArrayList<>();
+	arrayList.add(work);
+	arrayList.add(work2);
+	arrayList.add(work3);
+	arrayList.add(work4);
+
+	ArrayList<WorkingHours> arrayList1 = new ArrayList<>();
+	arrayList1.add(work5);
+	arrayList1.add(work6);
+
+
+	Recourse recourse = new Recourse(arrayList, "13-08-2021 00:00","13-08-2021 00:00");
+	Recourse recourse1 = new Recourse(arrayList1,"13-08-2021 00:00", "13-08-2021 00:00");
+
 	ArrayList<Recourse> arrayOfRecourse = new ArrayList<>();
 	arrayOfRecourse.add(recourse);
+	arrayOfRecourse.add(recourse1);
 	Group mygroup = new Group(arrayOfRecourse);
+
 	Operation myoper = new Operation();
 	myoper.setResourceGroup(mygroup);
 	myoper.setDurationOfExecution(Duration.ofHours(4));
+
 	Operation myoper2 = new Operation();
 	myoper2.setResourceGroup(mygroup);
-	myoper2.setDurationOfExecution(Duration.ofHours(8));
+	myoper2.setDurationOfExecution(Duration.ofHours(6));
+
 	ArrayList<Operation> arrayOfOperations = new ArrayList<>();
 	arrayOfOperations.add(myoper);
 	arrayOfOperations.add(myoper2);
-	Series myseries = new Series(arrayOfOperations,"20-08-2021 00:00","13-08-2021 00:00");
+	Series myseries = new Series(arrayOfOperations,"30-08-2021 00:00","13-08-2021 00:00");
 
 
 	myoper.setSerialAffiliation(myseries);
 	myoper2.setSerialAffiliation(myseries);
 	myoper2.addFollowingOperation(myoper);
-	//myoper.addPreviousOperation(myoper2);
+
 	LocalDateTime currentdate = LocalDateTime.of(2021,8,13,20,00);
 	ArrayList<Operation> frontOfWork = new ArrayList<>();
 
@@ -46,24 +66,32 @@ public class Main {
 			frontOfWork.add(buffer[i]);
 		}
 	}
+
 	buffer = frontOfWork.toArray(new Operation[frontOfWork.size()]);
 	recourse.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
+	recourse1.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
 	WHComparatorBasedOnDuration whcomp = new WHComparatorBasedOnDuration();
 	recourse.getSchedule().sort(whcomp);
+	recourse1.getSchedule().sort(whcomp);
 	for(int i = 0; i < buffer.length; i++)
 	{
-		for(int j=0;j < buffer[i].getResourceGroup().getRecoursesInTheGroup().size();j++){
-			if(buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getReleaseTime().isBefore(currentdate)){
-				for(int k=0;k < buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getSchedule().size();k++){
-					 WorkingHours current = buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getSchedule().get(k);
-					 Duration duration = Duration.between(current.getStartTime(),current.getEndTime());
-					 if(duration.toMillis()>=buffer[i].getDurationOfExecution().toMillis()){
-					 	System.out.println("EEE");
-						 buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).takeRecourse(buffer[i]);
-						 System.out.println(buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getReleaseTime());
+		int recoursesSize = buffer[i].getResourceGroup().getRecoursesInTheGroup().size();
+		Recourse[] recoursesBuffer = buffer[i].getResourceGroup().getRecoursesInTheGroup().toArray(new Recourse[recoursesSize]);
+		for(int j = 0; j < buffer[i].getResourceGroup().getRecoursesInTheGroup().size(); j++) {
+			if(recoursesBuffer[j].isWorkingTime(currentdate)){
+				int workingSize = buffer[i].getResourceGroup().get(j).getSchedule().size();
+				WorkingHours[] workingHours = buffer[i].getResourceGroup().get(j).getSchedule().toArray(new WorkingHours[workingSize]);
+				for(int k=0;k < workingSize;k++) {
+					//WorkingHours current = buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getSchedule().get(k);
+					Duration duration = Duration.between(workingHours[k].getStartTime(),workingHours[k].getEndTime());
+					if(duration.toMillis()>=buffer[i].getDurationOfExecution().toMillis()){
+						System.out.println("EEE");
+					 	System.out.println(buffer[i].getResourceGroup().getRecoursesInTheGroup());
+					 	buffer[i].scheduleAnOperation(j, k);
+					 	System.out.println(buffer[i].getResourceGroup().getRecoursesInTheGroup());
+					 	System.out.println(buffer[i].getResourceGroup().get(j).getReleaseTime());
 					 	break;
-						// buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).takeRecourse(buffer[i]);
-					 }
+					}
 				}
 			}
 		}
@@ -73,7 +101,7 @@ public class Main {
 
 	//recourse.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
 	//WHComparatorBasedOnDuration whcomp = new WHComparatorBasedOnDuration();
-	recourse.getSchedule().sort(whcomp);
+	//recourse.getSchedule().sort(whcomp);
 	System.out.println();
 	for(int i = 0;i<recourse.getSchedule().size();i++)
 	{

@@ -1,5 +1,6 @@
 package com.company;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -82,10 +83,34 @@ public class Operation {
         //followingOperation.addPreviousOperation(this);
     }
 
-    public void scheduleAnOperation(int number, int numberOfWorkingInterval){
-        Recourse currentRecourse = resourceGroup.get(number);
+    public void scheduleAnOperation(int numberOfRecourse, int numberOfWorkingInterval){
+        Recourse currentRecourse = resourceGroup.get(numberOfRecourse);
         currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
-        resourceGroup.setRecoursesInTheGroup(resourceGroup.get(number));
+        resourceGroup.setRecoursesInTheGroup(resourceGroup.get(numberOfRecourse));
         serialAffiliation.removePreviousOperations(this);
+    }
+
+    public boolean hasRecourseForThisDate(LocalDateTime currentDate){
+        for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
+            LocalDateTime workingDate = currentRecourse.getSchedule().get(0).getStartTime();
+            int iteration = 0;
+            while(workingDate.isBefore(currentDate)){
+                Duration currentDuration = Duration.between(currentRecourse.getSchedule().get(iteration).getStartTime(),currentRecourse.getSchedule().get(iteration).getEndTime());
+                if(currentDuration.toMillis() >= durationOfExecution.toMillis()){
+                    return true;
+                }
+                iteration++;
+                workingDate = currentRecourse.getSchedule().get(iteration).getStartTime();
+            }
+        }
+        return false;
+    }
+
+    public boolean enoughTime(LocalDateTime startTime, LocalDateTime endTime){
+        Duration duration = Duration.between(startTime,endTime);
+        if(duration.toNanos() >= durationOfExecution.toNanos()){
+            return true;
+        }
+        return false;
     }
 }

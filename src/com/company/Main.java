@@ -56,35 +56,42 @@ public class Main {
 	myoper2.setSerialAffiliation(myseries);
 	myoper2.addFollowingOperation(myoper);
 
-	LocalDateTime currentdate = LocalDateTime.of(2021,8,13,20,00);
+	LocalDateTime currentdate = LocalDateTime.of(2021,8,15,11,00);
 	ArrayList<Operation> frontOfWork = new ArrayList<>();
 
-	Operation[] buffer = myseries.getOperationsToCreate().toArray(new Operation[myseries.getOperationsToCreate().size()]);
-	for(int i=0; i<buffer.length; i++)
+	recourse.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
+	recourse1.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
+	Operation[] buffer;
+	if(myseries.getArrivalTime().isBefore(currentdate))
 	{
-		if(buffer[i].getPreviousOperations().isEmpty() && buffer[i].getSerialAffiliation().getArrivalTime().isBefore(currentdate)){
-			frontOfWork.add(buffer[i]);
+		buffer = myseries.getOperationsToCreate().toArray(new Operation[myseries.getOperationsToCreate().size()]);
+		for(Operation currentOperation: buffer)
+		{
+			if(currentOperation.getPreviousOperations().isEmpty() && currentOperation.hasRecourseForThisDate(currentdate)) {
+				frontOfWork.add(currentOperation);
+			}
 		}
+	}
+	else{
+		//break;
 	}
 
 	buffer = frontOfWork.toArray(new Operation[frontOfWork.size()]);
-	recourse.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
-	recourse1.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
 	WHComparatorBasedOnDuration whcomp = new WHComparatorBasedOnDuration();
 	recourse.getSchedule().sort(whcomp);
 	recourse1.getSchedule().sort(whcomp);
+
 	for(int i = 0; i < buffer.length; i++)
 	{
-		int recoursesSize = buffer[i].getResourceGroup().getRecoursesInTheGroup().size();
-		Recourse[] recoursesBuffer = buffer[i].getResourceGroup().getRecoursesInTheGroup().toArray(new Recourse[recoursesSize]);
-		for(int j = 0; j < buffer[i].getResourceGroup().getRecoursesInTheGroup().size(); j++) {
-			if(recoursesBuffer[j].isWorkingTime(currentdate)){
-				int workingSize = buffer[i].getResourceGroup().get(j).getSchedule().size();
-				WorkingHours[] workingHours = buffer[i].getResourceGroup().get(j).getSchedule().toArray(new WorkingHours[workingSize]);
-				for(int k=0;k < workingSize;k++) {
+		Recourse[] recoursesBuffer = buffer[i].getResourceGroup().getRecoursesInTheGroup().toArray(new Recourse[buffer[i].getResourceGroup().getRecoursesInTheGroup().size()]);
+		for(int j = 0; j < recoursesBuffer.length; j++) {
+			if(recoursesBuffer[j].isWorkingTime(currentdate)) {
+				//int workingSize = buffer[i].getResourceGroup().get(j).getSchedule().size();
+				WorkingHours[] workingHours = buffer[i].getResourceGroup().get(j).getSchedule().toArray(new WorkingHours[buffer[i].getResourceGroup().get(j).getSchedule().size()]);
+				for(int k = 0; k < workingHours.length; k++) {
 					//WorkingHours current = buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getSchedule().get(k);
-					Duration duration = Duration.between(workingHours[k].getStartTime(),workingHours[k].getEndTime());
-					if(duration.toMillis()>=buffer[i].getDurationOfExecution().toMillis()){
+					//Duration duration = Duration.between(workingHours[k].getStartTime(),workingHours[k].getEndTime());
+					if(buffer[i].enoughTime(workingHours[k].getStartTime(), workingHours[k].getEndTime())){
 						System.out.println("EEE");
 					 	System.out.println(buffer[i].getResourceGroup().getRecoursesInTheGroup());
 					 	buffer[i].scheduleAnOperation(j, k);
@@ -95,7 +102,7 @@ public class Main {
 				}
 			}
 		}
-		//System.out.println(buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getReleaseTime());
+	//System.out.println(buffer[i].getResourceGroup().getRecoursesInTheGroup().get(j).getReleaseTime());
 	}
 
 

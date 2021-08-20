@@ -84,7 +84,7 @@ public class Main {
 	for(int i = 0; i < buffer.length; i++)
 	{
 		Recourse[] recoursesBuffer = buffer[i].getResourceGroup().getRecoursesInTheGroup().toArray(new Recourse[buffer[i].getResourceGroup().getRecoursesInTheGroup().size()]);
-		for(int j = 0; j < recoursesBuffer.length; j++) {
+		for(int j = 0; j < buffer[i].getResourceGroup().getRecoursesInTheGroup().size(); j++) {
 			if(recoursesBuffer[j].isWorkingTime(currentdate)) {
 				//int workingSize = buffer[i].getResourceGroup().get(j).getSchedule().size();
 				WorkingHours[] workingHours = buffer[i].getResourceGroup().get(j).getSchedule().toArray(new WorkingHours[buffer[i].getResourceGroup().get(j).getSchedule().size()]);
@@ -110,7 +110,7 @@ public class Main {
 	//WHComparatorBasedOnDuration whcomp = new WHComparatorBasedOnDuration();
 	//recourse.getSchedule().sort(whcomp);
 	System.out.println();
-	for(int i = 0;i<recourse.getSchedule().size();i++)
+	for(int i = 0;i < recourse.getSchedule().size();i++)
 	{
 		System.out.println(recourse.getSchedule().get(i).getStartTime() + " " +recourse.getSchedule().get(i).getEndTime());
 		//System.out.println(" "+ recourse.getSchedule().get(i).getEndTime());

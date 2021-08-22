@@ -54,7 +54,7 @@ public class Recourse {
                 WorkingHours parameter = new WorkingHours(schedule.get(i).getStartTime().plusDays(unique),schedule.get(i).getEndTime().plusDays(unique));
                 if(parameter.getEndTime().isBefore(requiredDate))
                 {
-                    System.out.println(parameter.getStartTime()+" "+parameter.getEndTime());
+                    //System.out.println(parameter.getStartTime()+" "+parameter.getEndTime());
                     schedule.add(parameter);
                 }
                 else { break; }
@@ -87,12 +87,19 @@ public class Recourse {
         //releaseDate = releaseDate.plusNanos(operation.getDurationOfExecution().toNanos());
     }
 
-    public boolean isWorkingTime(LocalDateTime currentDate){
+    public boolean isNotWorkingTime(LocalDateTime currentDate){
         if(currentDate.isAfter(releaseDate.getStartTime()) && currentDate.isBefore(releaseDate.getEndTime())){
-            return false;
-        }
-        else{
             return true;
         }
+        else{
+            return false;
+        }
+    }
+
+    public boolean nowFree(LocalDateTime operationStart, LocalDateTime operationEnd){
+        if(releaseDate.getStartTime().isEqual(operationStart) && releaseDate.getEndTime().isBefore(operationEnd)){
+            return false;
+        }
+        return true;
     }
 }

@@ -83,6 +83,23 @@ public class Operation {
         //followingOperation.addPreviousOperation(this);
     }
 
+    public void addFollowingOperation(Collection<Operation> followingOperation) {
+        if(this.followingOperations == null) {
+            this.followingOperations = new ArrayList<>();
+        }
+        this.followingOperations.addAll(followingOperation);
+        for (Operation currentOperation: followingOperation) {
+            if(currentOperation.previousOperations == null) {
+                currentOperation.previousOperations = new ArrayList<>();
+            }
+            currentOperation.previousOperations.add(this);
+        }
+        //if(followingOperation.previousOperations == null){
+        //    followingOperation.previousOperations = new ArrayList<>();
+        //}
+        //followingOperation.previousOperations.add(this);
+    }
+
     public Recourse scheduleAnOperation(int numberOfRecourse, int numberOfWorkingInterval){
         Recourse currentRecourse = resourceGroup.get(numberOfRecourse);
         //currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
@@ -93,13 +110,30 @@ public class Operation {
         //serialAffiliation.removePreviousOperations(this);
     }
 
+    //тестовый метод
+    public void installAnOperation(int numberOfRecourse, int numberOfWorkingInterval, LocalDateTime currentDate) {
+        if(this.getOperatingMode() == OperatingMode.canNotBeInterrupted){
+            Recourse currentRecourse = resourceGroup.get(numberOfRecourse);
+            Duration duration = currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
+            this.setDurationOfExecution(duration);
+            resourceGroup.setRecoursesInTheGroup(resourceGroup.get(numberOfRecourse));
+        }
+        else{
+            while(!durationOfExecution.isZero() || this.hasRecourseForThisDate(currentDate)){
+                for(Recourse recourse: resourceGroup.getRecoursesInTheGroup()){
+
+                }
+            }
+        }
+    }
+
+    //метод определяет есть ли ресурс до времени currentDate, куда мы можем назначить операцию
     public boolean hasRecourseForThisDate(LocalDateTime currentDate){
         for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
             LocalDateTime workingDate = currentRecourse.getSchedule().get(0).getStartTime();
             int iteration = 0;
-            while(workingDate.isBefore(currentDate)){
-                Duration currentDuration = Duration.between(currentRecourse.getSchedule().get(iteration).getStartTime(),currentRecourse.getSchedule().get(iteration).getEndTime());
-                if(currentDuration.toMillis() >= durationOfExecution.toMillis()){
+            while(workingDate.isBefore(currentDate)) {
+                if(this.enoughTime(currentRecourse.getSchedule().get(iteration).getStartTime(),currentRecourse.getSchedule().get(iteration).getEndTime())){
                     return true;
                 }
                 iteration++;
@@ -109,7 +143,7 @@ public class Operation {
         return false;
     }
 
-    public boolean enoughTime(LocalDateTime startTime, LocalDateTime endTime){
+    public boolean enoughTime(LocalDateTime startTime, LocalDateTime endTime) {
         Duration duration = Duration.between(startTime,endTime);
         if(duration.toNanos() >= durationOfExecution.toNanos()) {
             return true;

@@ -83,11 +83,14 @@ public class Operation {
         //followingOperation.addPreviousOperation(this);
     }
 
-    public void scheduleAnOperation(int numberOfRecourse, int numberOfWorkingInterval){
+    public Recourse scheduleAnOperation(int numberOfRecourse, int numberOfWorkingInterval){
         Recourse currentRecourse = resourceGroup.get(numberOfRecourse);
-        currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
-        resourceGroup.setRecoursesInTheGroup(resourceGroup.get(numberOfRecourse));
-        serialAffiliation.removePreviousOperations(this);
+        //currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
+        Duration duration = currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
+        this.setDurationOfExecution(duration);
+        return currentRecourse;
+        //resourceGroup.setRecoursesInTheGroup(resourceGroup.get(numberOfRecourse));
+        //serialAffiliation.removePreviousOperations(this);
     }
 
     public boolean hasRecourseForThisDate(LocalDateTime currentDate){
@@ -108,7 +111,7 @@ public class Operation {
 
     public boolean enoughTime(LocalDateTime startTime, LocalDateTime endTime){
         Duration duration = Duration.between(startTime,endTime);
-        if(duration.toNanos() >= durationOfExecution.toNanos()){
+        if(duration.toNanos() >= durationOfExecution.toNanos()) {
             return true;
         }
         return false;

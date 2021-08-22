@@ -11,3 +11,16 @@ class WHComparatorBasedOnDuration implements Comparator<WorkingHours> {
         return -first.compareTo(second);
     }
 }
+
+class WHComparatorBasedOnDate implements Comparator<WorkingHours> {
+
+    public int compare(WorkingHours a, WorkingHours b){
+        if(a.getEndTime().isBefore(b.getStartTime())){
+            return -1;
+        }
+        else{
+            return 1;
+        }
+    }
+
+}

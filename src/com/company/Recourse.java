@@ -73,9 +73,16 @@ public class Recourse {
     public void setReleaseTime(WorkingHours releaseDate) { this.releaseDate = releaseDate; }
 
     //Подумать ещё над реализацией
-    public void takeRecourse(Duration currentDuration, int number) {
+    public Duration takeRecourse(Duration currentDuration, int number) {
         releaseDate.setStartTime(schedule.get(number).getStartTime());
         releaseDate.setEndTime(schedule.get(number).getStartTime().plusNanos(currentDuration.toNanos()));
+        Duration resultDuration = Duration.between(schedule.get(number).getStartTime(),schedule.get(number).getEndTime());
+        resultDuration = currentDuration.minus(resultDuration);
+        if(resultDuration.isNegative() || resultDuration.toNanos() == 0)
+        {
+            return Duration.ZERO;
+        }
+        return resultDuration;
         //releaseDate = schedule.get(number).getStartTime();
         //releaseDate = releaseDate.plusNanos(operation.getDurationOfExecution().toNanos());
     }

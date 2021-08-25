@@ -8,7 +8,9 @@ import java.util.Collection;
 
 public class Recourse {
     private ArrayList<WorkingHours> schedule;
-    private WorkingHours releaseDate; // может сделать это как рабочие часы, чтобы был как промежуток работы между 2 временами, потому что иначе если
+    private WorkingHours releaseDate;
+    private LocalDateTime releaseDate2;
+    // может сделать это как рабочие часы, чтобы был как промежуток работы между 2 временами, потому что иначе если
     // будет слишком много времени будет показываться, что станок занят, но задачу он выполнить ведь может
 
     Recourse(Collection<WorkingHours> schedule, String releaseDateStart, String releaseDateEnd)
@@ -16,6 +18,7 @@ public class Recourse {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.schedule = new ArrayList<>(schedule);
         this.releaseDate = new WorkingHours(releaseDateStart, releaseDateEnd);
+        this.releaseDate2 = LocalDateTime.parse(releaseDateEnd,formatter);
     }
 
     Recourse(Collection<WorkingHours> schedule, String releaseDateEnd)
@@ -24,7 +27,8 @@ public class Recourse {
         this.releaseDate = new WorkingHours(releaseDateEnd);
     }
 
-    public void fillScheduleUsingPreviousData(LocalDateTime requiredDate) //ещё подумать над реализацией
+    //задавать через правила, набор характеристик, как должен работать станок
+    public void fillScheduleUsingPreviousData(LocalDateTime requiredDate)
     {
         if (!schedule.isEmpty()){
             int kol = 0;

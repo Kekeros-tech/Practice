@@ -12,6 +12,9 @@ public class Operation {
     private Duration durationOfExecution;
     private OperatingMode currentOperatingMode;
 
+    private int cNumberOfAssignedRecourse;
+    private WorkingHours cWorkingInterval;
+
     Operation(Group resourceGroup,Series serialAffiliation, Collection<Operation> previousOperations, Collection<Operation> followingOperations,
                      Duration durationOfExecution, int currentOperatingMode) {
         this.resourceGroup = resourceGroup;
@@ -44,6 +47,11 @@ public class Operation {
 
     public OperatingMode getOperatingMode() { return currentOperatingMode; }
 
+    public int getCNumberOfAssignedRecourse() { return cNumberOfAssignedRecourse; }
+
+    public WorkingHours getCWorkingInterval() { return cWorkingInterval; }
+
+
 
     public void setResourceGroup(Group resourceGroup) { this.resourceGroup = resourceGroup; }
 
@@ -59,6 +67,13 @@ public class Operation {
         this.currentOperatingMode = OperatingMode.modeSelection(currentOperatingMode);
     }
 
+    public void setCNumberOfAssignedRecourse(int cNumberOfAssignedRecourse) {
+        this.cNumberOfAssignedRecourse = cNumberOfAssignedRecourse;
+    }
+
+    public void setCWorkingInterval(WorkingHours cWorkingInterval) {
+        this.cWorkingInterval = cWorkingInterval;
+    }
 
     public void addPreviousOperation(Operation previousOperation) { //один и тот же код
         if(this.previousOperations == null) {
@@ -110,6 +125,26 @@ public class Operation {
         //serialAffiliation.removePreviousOperations(this);
     }
 
+    //5
+    public boolean allPreviousAssigned() {
+        for (int i = 0; i < this.previousOperations.size(); i++) {
+            if(this.previousOperations.get(i).cWorkingInterval == null || this.previousOperations.get(i).cWorkingInterval.toDuration().compareTo(this.previousOperations.get(i).durationOfExecution) >= 0){
+            //if(this.previousOperations.get(i).cWorkingInterval.toDuration().compareTo(this.previousOperations.get(i).durationOfExecution) >= 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //5
+    public Duration getSumOfDurationOfPreviousOperations(){
+        Duration resultDuration = Duration.ZERO;
+        for (Operation currentOperation: previousOperations) {
+            resultDuration = resultDuration.plus(currentOperation.durationOfExecution);
+        }
+        return resultDuration;
+    }
+
     //тестовый метод
     public void installAnOperation(int numberOfRecourse, int numberOfWorkingInterval, LocalDateTime currentDate) {
         if(this.getOperatingMode() == OperatingMode.canNotBeInterrupted){
@@ -127,18 +162,33 @@ public class Operation {
         }
     }
 
-    //метод определяет есть ли ресурс до времени currentDate, куда мы можем назначить операцию
+    //5
     public boolean hasRecourseForThisDate(LocalDateTime currentDate){
         for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
-            LocalDateTime workingDate = currentRecourse.getSchedule().get(0).getStartTime();
-            int iteration = 0;
-            while(workingDate.isBefore(currentDate)) {
-                if(this.enoughTime(currentRecourse.getSchedule().get(iteration).getStartTime(),currentRecourse.getSchedule().get(iteration).getEndTime())){
-                    return true;
+            for(int i = 0; i < currentRecourse.getSchedule().size(); i++) {
+                if(currentRecourse.getSchedule().get(i).getStartTime().isBefore(currentDate) && currentRecourse.getSchedule().get(i).getEndTime().isAfter(currentDate)){
+                    if(currentOperatingMode == OperatingMode.canNotBeInterrupted){
+                        if(this.enoughTime(currentRecourse.getSchedule().get(i).getStartTime(), currentRecourse.getSchedule().get(i).getEndTime())){
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                    //return true;
                 }
-                iteration++;
-                workingDate = currentRecourse.getSchedule().get(iteration).getStartTime();
             }
+
+            //LocalDateTime workingDate = currentRecourse.getSchedule().get(0).getStartTime();
+            //int iteration = 0;
+            //while(workingDate.isBefore(currentDate)) {
+            //    if(this.enoughTime(currentRecourse.getSchedule().get(iteration).getStartTime(),currentRecourse.getSchedule().get(iteration).getEndTime())){
+            //        return true;
+            //    }
+            //    iteration++;
+            //    workingDate = currentRecourse.getSchedule().get(iteration).getStartTime();
+            //}
         }
         return false;
     }

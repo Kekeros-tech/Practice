@@ -1,5 +1,6 @@
 package com.company;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -43,5 +44,13 @@ public class WorkingHours {
         return startTime.format(formatter)+"--->"+ endTime.format(formatter);
     }
 
+    public Duration toDuration(){
+        Duration result = Duration.between(startTime, endTime);
+        return result;
+    }
+
+    public int getDayOfStartDate(){
+        return this.startTime.getDayOfMonth();
+    }
 
 }

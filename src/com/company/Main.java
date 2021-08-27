@@ -15,7 +15,7 @@ public class Main {
 		WorkingHours work3 = new WorkingHours("15-08-2021 17:00", "15-08-2021 23:00");
 		WorkingHours work4 = new WorkingHours("18-08-2021 10:00", "18-08-2021 18:00");
 		//рабочий график каждый день
-		WorkingHours work5 = new WorkingHours("15-08-2021 09:00", "15-08-2021 12:00");
+		WorkingHours work5 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
 		WorkingHours work6 = new WorkingHours("16-08-2021 09:00", "16-08-2021 15:00");
 
 
@@ -30,8 +30,8 @@ public class Main {
 		arrayList1.add(work6);
 
 		//задаем 2 ресурса. 1 - график работы 2 через 2. 2 - работает каждый день
-		Recourse recourse = new Recourse(arrayList, "13-08-2021 00:00", "13-08-2021 00:00");
-		Recourse recourse1 = new Recourse(arrayList1, "13-08-2021 00:00", "13-08-2021 00:00");
+		Recourse recourse = new Recourse(arrayList, "13-08-2021 00:00");
+		Recourse recourse1 = new Recourse(arrayList1, "13-08-2021 00:00");
 
 		//задаем группу ресурсов
 		ArrayList<Recourse> arrayOfRecourse = new ArrayList<>();
@@ -59,7 +59,7 @@ public class Main {
 
 		myoper2.addFollowingOperation(myoper);
 
-		LocalDateTime tactDate = LocalDateTime.of(2021, 8, 14, 10, 00);
+		LocalDateTime tactDate = LocalDateTime.of(2021, 8, 15, 10, 01);
 		LocalDateTime previousDate = LocalDateTime.of(2021, 8, 15, 00,00);
 
 		ArrayList<Operation> frontOfWork = new ArrayList<>();
@@ -72,13 +72,19 @@ public class Main {
 		while (!myseries.allOperationsAssigned()) {
 
 			//формируем фронт работы
-
 			for(int i = 0; i < myseries.getOperationsToCreate().size(); i++){
-				if(myseries.getOperationsToCreate().get(i).allPreviousAssigned() && myseries.getOperationsToCreate().get(i).hasRecourseForThisDate(tactDate))
+				if(myseries.getOperationsToCreate().get(i).allPreviousAssigned() && myseries.getOperationsToCreate().get(i).hasRecourseForThisDate(tactDate) != null && myseries.getOperationsToCreate().get(i).getCNumberOfAssignedRecourse() == null)
 				{
 					frontOfWork.add(myseries.getOperationsToCreate().get(i));
 				}
 			}
+
+			for(int i = 0; i < frontOfWork.size(); i++) {
+				Recourse assignedRecourse = frontOfWork.get(i).hasRecourseForThisDate(tactDate);
+				frontOfWork.get(i).installAnOperation(assignedRecourse, tactDate);
+			}
+
+			frontOfWork.clear();
 
 		}
 		System.out.println("График работы 1 станка");

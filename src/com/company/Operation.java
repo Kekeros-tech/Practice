@@ -135,9 +135,9 @@ public class Operation {
         for (int i = 0; i < currentRecourse.getSchedule().size(); i++) {
             if (currentRecourse.getSchedule().get(i).isWorkingTime(tackDate) && currentRecourse.isFree(tackDate)) {
                 if (currentOperatingMode == OperatingMode.canNotBeInterrupted) {
-                    if (this.enoughTime(currentRecourse.getSchedule().get(i).getStartTime(), currentRecourse.getSchedule().get(i).getEndTime())) {
+                    if (this.enoughTime(tackDate, currentRecourse.getSchedule().get(i).getEndTime())) {
                        cNumberOfAssignedRecourse = currentRecourse;
-                       cWorkingInterval = new WorkingHours(currentRecourse.getSchedule().get(i).getStartTime(), currentRecourse.getSchedule().get(i).getStartTime().plusNanos(durationOfExecution.toNanos()));
+                       cWorkingInterval = new WorkingHours(tackDate, tackDate.plusNanos(durationOfExecution.toNanos()));
                        break;
                     }
                 }
@@ -146,10 +146,10 @@ public class Operation {
                     Duration resultDuration = durationOfExecution;
                     cNumberOfAssignedRecourse = currentRecourse;
                     int iteration = i + 1;
-                    resultDuration = currentRecourse.takeRecourse(durationOfExecution, i);
-                    cWorkingInterval = new WorkingHours(currentRecourse.getSchedule().get(i).getStartTime(), currentRecourse.getSchedule().get(i).getStartTime().plusNanos(resultDuration.toNanos()));
+                    resultDuration = currentRecourse.takeRecourse(durationOfExecution, i, tackDate);
+                    cWorkingInterval = new WorkingHours(tackDate, tackDate.plusNanos(resultDuration.toNanos()));
                     while (resultDuration.toNanos() > 0) {
-                        resultDuration = currentRecourse.takeRecourse(resultDuration, iteration);
+                        resultDuration = currentRecourse.takeRecourse(resultDuration, iteration, currentRecourse.getSchedule().get(iteration).getStartTime());
                         cWorkingInterval.setEndTime(currentRecourse.getReleaseTime());
                         iteration++;
                     }
@@ -160,14 +160,25 @@ public class Operation {
         serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
     }
 
+    //public Duration takeRecourse(LocalDateTime tackDate, int numberOfWorkingInterval) {
+    //    Duration resultDuration = Duration.between(tackDate, cNumberOfAssignedRecourse.getSchedule().get(numberOfWorkingInterval).getEndTime());
+    //    if(durationOfExecution.toNanos() > resultDuration.toNanos()) {
+    //       resourceGroup.get(  ).setReleaseTime(resourceGroup.get(   ).getSchedule().get(numberOfWorkingInterval).getEndTime());
+    //        cWorkingInterval.setEndTime(resourceGroup.get(   ).getSchedule().get(numberOfWorkingInterval).getEndTime());
+    //    }
+    //}
+
     //5
     public Recourse hasRecourseForThisDate(LocalDateTime currentDate) {
         for (Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
             for (int i = 0; i < currentRecourse.getSchedule().size(); i++) {
                 WorkingHours currentWorkingInterval = currentRecourse.getSchedule().get(i);
+                if(currentWorkingInterval.getStartTime().isAfter(currentDate)) {
+                    break;
+                }
                 if (currentWorkingInterval.isWorkingTime(currentDate) && currentRecourse.isFree(currentDate)){
                     if (currentOperatingMode == OperatingMode.canNotBeInterrupted) {
-                        if (this.enoughTime(currentWorkingInterval.getStartTime(), currentWorkingInterval.getEndTime())){
+                        if (this.enoughTime(currentDate, currentWorkingInterval.getEndTime())){
                             return currentRecourse;
                         }
                     }
@@ -175,19 +186,8 @@ public class Operation {
                     {
                         return currentRecourse;
                     }
-                    //return true;
                 }
             }
-
-            //LocalDateTime workingDate = currentRecourse.getSchedule().get(0).getStartTime();
-            //int iteration = 0;
-            //while(workingDate.isBefore(currentDate)) {
-            //    if(this.enoughTime(currentRecourse.getSchedule().get(iteration).getStartTime(),currentRecourse.getSchedule().get(iteration).getEndTime())){
-            //        return true;
-            //    }
-            //    iteration++;
-            //    workingDate = currentRecourse.getSchedule().get(iteration).getStartTime();
-            //}
         }
         return null;
     }

@@ -67,12 +67,12 @@ public class Recourse {
     public void setReleaseTime(LocalDateTime releaseDate) { this.releaseDate = releaseDate; }
 
     //Подумать ещё над реализацией
-    public Duration takeRecourse(Duration currentDuration, int number) {
+    public Duration takeRecourse(Duration currentDuration, int number, LocalDateTime tackDate) {
         //releaseDate = schedule.get(number).getStartTime().plusNanos(currentDuration.toNanos());
-        Duration resultDuration = Duration.between(schedule.get(number).getStartTime(),schedule.get(number).getEndTime());
+        Duration resultDuration = Duration.between(tackDate,schedule.get(number).getEndTime());
         resultDuration = currentDuration.minus(resultDuration);
-        if(resultDuration.toNanos() > 0){
-            releaseDate = schedule.get(number).getStartTime().plusNanos(resultDuration.toNanos());
+        if(resultDuration.toNanos() > 0) {
+            releaseDate = tackDate.plusNanos(resultDuration.toNanos());
         }
         else
         {

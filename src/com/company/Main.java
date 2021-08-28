@@ -42,7 +42,7 @@ public class Main {
 		//задаем 2 операции
 		Operation myoper = new Operation();
 		myoper.setResourceGroup(mygroup);
-		myoper.setDurationOfExecution(Duration.ofHours(4));
+		myoper.setDurationOfExecution(Duration.ofHours(2));
 		myoper.setOperatingMode(0);
 		Operation myoper2 = new Operation();
 		myoper2.setResourceGroup(mygroup);
@@ -59,7 +59,7 @@ public class Main {
 
 		myoper2.addFollowingOperation(myoper);
 
-		LocalDateTime tactDate = LocalDateTime.of(2021, 8, 15, 10, 01);
+		LocalDateTime tactDate = LocalDateTime.of(2021, 8, 15, 10, 00);
 		LocalDateTime previousDate = LocalDateTime.of(2021, 8, 15, 00,00);
 
 		ArrayList<Operation> frontOfWork = new ArrayList<>();
@@ -79,13 +79,26 @@ public class Main {
 				}
 			}
 
+			int iteration = 0;
 			for(int i = 0; i < frontOfWork.size(); i++) {
 				Recourse assignedRecourse = frontOfWork.get(i).hasRecourseForThisDate(tactDate);
 				frontOfWork.get(i).installAnOperation(assignedRecourse, tactDate);
+				if(frontOfWork.get(i).getDurationOfExecution().toNanos() >= frontOfWork.get(iteration).getDurationOfExecution().toNanos()) {
+					iteration = i;
+				}
+				System.out.println(frontOfWork.get(i).getCWorkingInterval());
 			}
-
+			if(frontOfWork.isEmpty())
+			{
+				tactDate = tactDate.plusHours(12);
+				//tactDate = tactDate.plusMinutes(1);
+			}
+			else{
+				tactDate = frontOfWork.get(iteration).getCWorkingInterval().getEndTime();
+			}
+			System.out.println(tactDate);
+			//tactDate = frontOfWork.get(iteration).getCWorkingInterval().getEndTime();
 			frontOfWork.clear();
-
 		}
 		System.out.println("График работы 1 станка");
 		for(int i = 0;i < recourse.getSchedule().size();i++)

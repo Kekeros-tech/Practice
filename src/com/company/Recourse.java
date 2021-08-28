@@ -78,10 +78,6 @@ public class Recourse {
         {
             releaseDate = schedule.get(number).getEndTime().plusNanos(resultDuration.toNanos());
         }
-        //if(resultDuration.isNegative() || resultDuration.toNanos() == 0)
-        //{
-        //    return Duration.ZERO;
-        //}
         return resultDuration;
     }
 
@@ -89,9 +85,10 @@ public class Recourse {
         if(currentDate.isAfter(releaseDate)) {
             return true;
         }
-        else{
-            return false;
+        else if(currentDate.isEqual(releaseDate)){
+            return true;
         }
+        return false;
     }
 
     //public boolean nowFree(LocalDateTime operationStart, LocalDateTime operationEnd){

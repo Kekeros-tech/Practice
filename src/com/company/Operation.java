@@ -109,27 +109,12 @@ public class Operation {
             }
             currentOperation.previousOperations.add(this);
         }
-        //if(followingOperation.previousOperations == null){
-        //    followingOperation.previousOperations = new ArrayList<>();
-        //}
-        //followingOperation.previousOperations.add(this);
-    }
-
-    public Recourse scheduleAnOperation(int numberOfRecourse, int numberOfWorkingInterval){
-        Recourse currentRecourse = resourceGroup.get(numberOfRecourse);
-        //currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
-        Duration duration = currentRecourse.takeRecourse(durationOfExecution, numberOfWorkingInterval);
-        this.setDurationOfExecution(duration);
-        return currentRecourse;
-        //resourceGroup.setRecoursesInTheGroup(resourceGroup.get(numberOfRecourse));
-        //serialAffiliation.removePreviousOperations(this);
     }
 
     //5
     public boolean allPreviousAssigned() {
         for (int i = 0; i < this.previousOperations.size(); i++) {
-            if(this.previousOperations.get(i).cNumberOfAssignedRecourse == null){
-            //if(this.previousOperations.get(i).cWorkingInterval.toDuration().compareTo(this.previousOperations.get(i).durationOfExecution) >= 0){
+            if(this.previousOperations.get(i).cNumberOfAssignedRecourse == null) {
                 return false;
             }
         }
@@ -148,11 +133,12 @@ public class Operation {
     //тестовый метод
     public void installAnOperation(Recourse currentRecourse, LocalDateTime tackDate) {
         for (int i = 0; i < currentRecourse.getSchedule().size(); i++) {
-            if (currentRecourse.getSchedule().get(i).getStartTime().isBefore(tackDate) && currentRecourse.getSchedule().get(i).getEndTime().isAfter(tackDate) && currentRecourse.isFree(tackDate)) {
+            if (currentRecourse.getSchedule().get(i).isWorkingTime(tackDate) && currentRecourse.isFree(tackDate)) {
                 if (currentOperatingMode == OperatingMode.canNotBeInterrupted) {
                     if (this.enoughTime(currentRecourse.getSchedule().get(i).getStartTime(), currentRecourse.getSchedule().get(i).getEndTime())) {
                        cNumberOfAssignedRecourse = currentRecourse;
                        cWorkingInterval = new WorkingHours(currentRecourse.getSchedule().get(i).getStartTime(), currentRecourse.getSchedule().get(i).getStartTime().plusNanos(durationOfExecution.toNanos()));
+                       break;
                     }
                 }
                 else
@@ -162,16 +148,13 @@ public class Operation {
                     int iteration = i + 1;
                     resultDuration = currentRecourse.takeRecourse(durationOfExecution, i);
                     cWorkingInterval = new WorkingHours(currentRecourse.getSchedule().get(i).getStartTime(), currentRecourse.getSchedule().get(i).getStartTime().plusNanos(resultDuration.toNanos()));
-                    //cWorkingInterval.setStartTime(currentRecourse.getSchedule().get(i).getStartTime());
-                    //cWorkingInterval.setEndTime(currentRecourse.getSchedule().get(i).getStartTime().plusNanos(resultDuration.toNanos()));
                     while (resultDuration.toNanos() > 0) {
                         resultDuration = currentRecourse.takeRecourse(resultDuration, iteration);
                         cWorkingInterval.setEndTime(currentRecourse.getReleaseTime());
-                        //cWorkingInterval.setEndTime(currentRecourse.getSchedule().get(iteration).getStartTime().plusNanos(resultDuration.toNanos()));
                         iteration++;
                     }
+                    break;
                 }
-                //return true;
             }
         }
         serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
@@ -181,9 +164,10 @@ public class Operation {
     public Recourse hasRecourseForThisDate(LocalDateTime currentDate) {
         for (Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
             for (int i = 0; i < currentRecourse.getSchedule().size(); i++) {
-                if (currentRecourse.getSchedule().get(i).getStartTime().isBefore(currentDate) && currentRecourse.getSchedule().get(i).getEndTime().isAfter(currentDate) && currentRecourse.isFree(currentDate)){
+                WorkingHours currentWorkingInterval = currentRecourse.getSchedule().get(i);
+                if (currentWorkingInterval.isWorkingTime(currentDate) && currentRecourse.isFree(currentDate)){
                     if (currentOperatingMode == OperatingMode.canNotBeInterrupted) {
-                        if (this.enoughTime(currentRecourse.getSchedule().get(i).getStartTime(), currentRecourse.getSchedule().get(i).getEndTime())){
+                        if (this.enoughTime(currentWorkingInterval.getStartTime(), currentWorkingInterval.getEndTime())){
                             return currentRecourse;
                         }
                     }

@@ -160,6 +160,21 @@ public class Operation {
         serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
     }
 
+    public void installOperation2(Recourse currentRecourse, LocalDateTime tackDate){
+        cNumberOfAssignedRecourse = currentRecourse;
+        if(currentOperatingMode == OperatingMode.canBeInterrupted) {
+            //cNumberOfAssignedRecourse = currentRecourse;
+            cNumberOfAssignedRecourse.takeWhichCanBeInterrupted(this.getDurationOfExecution(), tackDate);
+            //cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
+        }
+        else
+        {
+            cNumberOfAssignedRecourse.tackWhichCanNotBeInterrupted(this.getDurationOfExecution(), tackDate);
+        }
+        cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
+        serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+    }
+
     //public Duration takeRecourse(LocalDateTime tackDate, int numberOfWorkingInterval) {
     //    Duration resultDuration = Duration.between(tackDate, cNumberOfAssignedRecourse.getSchedule().get(numberOfWorkingInterval).getEndTime());
     //    if(durationOfExecution.toNanos() > resultDuration.toNanos()) {

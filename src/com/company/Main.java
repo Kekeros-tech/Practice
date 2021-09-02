@@ -82,7 +82,7 @@ public class Main {
 			int iteration = 0;
 			for(int i = 0; i < frontOfWork.size(); i++) {
 				Recourse assignedRecourse = frontOfWork.get(i).hasRecourseForThisDate(tactDate);
-				frontOfWork.get(i).installAnOperation(assignedRecourse, tactDate);
+				frontOfWork.get(i).installOperation2(assignedRecourse, tactDate);
 				if(frontOfWork.get(i).getDurationOfExecution().toNanos() >= frontOfWork.get(iteration).getDurationOfExecution().toNanos()) {
 					iteration = i;
 				}

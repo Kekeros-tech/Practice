@@ -17,6 +17,8 @@ public class Recourse {
         this.releaseDate = LocalDateTime.parse(releaseDate, formatter);
     }
 
+    Recourse() {};
+
     //задавать через правила, набор характеристик, как должен работать станок
     public void fillScheduleUsingPreviousData(LocalDateTime requiredDate)
     {
@@ -64,22 +66,61 @@ public class Recourse {
 
     public void setSchedule(Collection<WorkingHours> schedule) { this.schedule = new ArrayList<>(schedule); }
 
-    public void setReleaseTime(LocalDateTime releaseDate) { this.releaseDate = releaseDate; }
+    public void setReleaseTime(LocalDateTime releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setReleaseTime(String releaseDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        this.releaseDate = LocalDateTime.parse(releaseDate, formatter);;
+    }
+
 
     //Подумать ещё над реализацией
     public Duration takeRecourse(Duration currentDuration, int number, LocalDateTime tackDate) {
-        //releaseDate = schedule.get(number).getStartTime().plusNanos(currentDuration.toNanos());
         Duration resultDuration = Duration.between(tackDate,schedule.get(number).getEndTime());
         resultDuration = currentDuration.minus(resultDuration);
-        if(resultDuration.toNanos() > 0) {
-            releaseDate = tackDate.plusNanos(resultDuration.toNanos());
-        }
-        else
-        {
-            releaseDate = schedule.get(number).getEndTime().plusNanos(resultDuration.toNanos());
-        }
+        //if(resultDuration.toNanos() <= 0) {
+        //    releaseDate = schedule.get(number).getEndTime().plusNanos(resultDuration.toNanos());
+        //}
         return resultDuration;
     }
+
+    public void takeWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
+        int iteration = 0;
+        while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
+            if (schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
+                int numberOfNextWorkingInterval = iteration + 1;
+                durationOfExecution = this.takeRecourse(durationOfExecution, iteration, tackDate);
+                while (durationOfExecution.toNanos() > 0) {
+                    durationOfExecution = this.takeRecourse(durationOfExecution, numberOfNextWorkingInterval, schedule.get(numberOfNextWorkingInterval).getStartTime());
+                    numberOfNextWorkingInterval++;
+                }
+                releaseDate = schedule.get(numberOfNextWorkingInterval - 1).getEndTime().plusNanos(durationOfExecution.toNanos());
+                break;
+            }
+            iteration++;
+        }
+
+    }
+
+    public void tackWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
+        int iteration = 0;
+        while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
+            if(schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
+                Duration resultDuration = this.takeRecourse(durationOfExecution, iteration, tackDate);
+                if(resultDuration.toNanos() <= 0)
+                {
+                    releaseDate = tackDate.plusNanos(durationOfExecution.toNanos());
+                    break;
+                }
+            }
+            iteration++;
+        }
+    }
+
+
+
 
     public boolean isFree(LocalDateTime currentDate){
         if(currentDate.isAfter(releaseDate)) {

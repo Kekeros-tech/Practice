@@ -42,7 +42,7 @@ public class Main {
 		//задаем 2 операции
 		Operation myoper = new Operation();
 		myoper.setResourceGroup(mygroup);
-		myoper.setDurationOfExecution(Duration.ofHours(2));
+		myoper.setDurationOfExecution(Duration.ofHours(4));
 		myoper.setOperatingMode(0);
 		Operation myoper2 = new Operation();
 		myoper2.setResourceGroup(mygroup);
@@ -60,7 +60,7 @@ public class Main {
 		myoper2.addFollowingOperation(myoper);
 
 		LocalDateTime tactDate = LocalDateTime.of(2021, 8, 15, 10, 00);
-		LocalDateTime previousDate = LocalDateTime.of(2021, 8, 15, 00,00);
+		LocalDateTime futureDate = LocalDateTime.of(2021, 8, 15, 10,00);
 
 		ArrayList<Operation> frontOfWork = new ArrayList<>();
 
@@ -69,11 +69,13 @@ public class Main {
 
 		//int kol = myseries.getOperationsToCreate().size();
 
+
 		while (!myseries.allOperationsAssigned()) {
 
 			//формируем фронт работы
+			int numberOfUnassigned = 0;
 			for(int i = 0; i < myseries.getOperationsToCreate().size(); i++){
-				if(myseries.getOperationsToCreate().get(i).allPreviousAssigned() && myseries.getOperationsToCreate().get(i).hasRecourseForThisDate(tactDate) != null && myseries.getOperationsToCreate().get(i).getCNumberOfAssignedRecourse() == null)
+				if(myseries.getOperationsToCreate().get(i).allPreviousAssigned() && myseries.getOperationsToCreate().get(i).getCNumberOfAssignedRecourse() == null)
 				{
 					frontOfWork.add(myseries.getOperationsToCreate().get(i));
 				}
@@ -81,20 +83,33 @@ public class Main {
 
 			int iteration = 0;
 			for(int i = 0; i < frontOfWork.size(); i++) {
-				Recourse assignedRecourse = frontOfWork.get(i).hasRecourseForThisDate(tactDate);
-				frontOfWork.get(i).installOperation2(assignedRecourse, tactDate);
-				if(frontOfWork.get(i).getDurationOfExecution().toNanos() >= frontOfWork.get(iteration).getDurationOfExecution().toNanos()) {
-					iteration = i;
+
+				frontOfWork.get(i).installOperation2(tactDate);
+
+				if(frontOfWork.get(i).getCWorkingInterval() != null)
+				{
+					if(frontOfWork.get(i).getCWorkingInterval().getEndTime().isAfter(futureDate)) {
+						futureDate = frontOfWork.get(i).getCWorkingInterval().getEndTime();
+					}
+				}else
+				{
+					numberOfUnassigned++;
 				}
+
+				//if(frontOfWork.get(i).getCWorkingInterval().getEndTime().isAfter(futureDate)) {
+				//	futureDate = frontOfWork.get(i).getCWorkingInterval().getEndTime();
+				//}
 				System.out.println(frontOfWork.get(i).getCWorkingInterval());
 			}
-			if(frontOfWork.isEmpty())
+
+			if(frontOfWork.isEmpty() || numberOfUnassigned > 0)
 			{
-				tactDate = tactDate.plusHours(12);
+				myseries.nullifyPriorities();
+				tactDate = myseries.PrioritizeRecourse().getStartDateAfterReleaseDate(tactDate);
 				//tactDate = tactDate.plusMinutes(1);
 			}
-			else{
-				tactDate = frontOfWork.get(iteration).getCWorkingInterval().getEndTime();
+			else {
+				tactDate = futureDate;
 			}
 			System.out.println(tactDate);
 			//tactDate = frontOfWork.get(iteration).getCWorkingInterval().getEndTime();

@@ -10,6 +10,10 @@ public class Recourse {
     private ArrayList<WorkingHours> schedule;
     private LocalDateTime releaseDate;
 
+    private int cPriority;
+
+    //private ArrayList<Operation> cOperationOfThisRecourse;
+
     Recourse(Collection<WorkingHours> schedule, String releaseDate)
     {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -63,6 +67,8 @@ public class Recourse {
 
     public LocalDateTime getReleaseTime() { return this.releaseDate; }
 
+    public int getCPriority() { return cPriority; }
+
 
     public void setSchedule(Collection<WorkingHours> schedule) { this.schedule = new ArrayList<>(schedule); }
 
@@ -75,18 +81,19 @@ public class Recourse {
         this.releaseDate = LocalDateTime.parse(releaseDate, formatter);;
     }
 
+    public void setCPriority(int priority) {
+        this.cPriority = priority;
+    }
+
 
     //Подумать ещё над реализацией
     public Duration takeRecourse(Duration currentDuration, int number, LocalDateTime tackDate) {
         Duration resultDuration = Duration.between(tackDate,schedule.get(number).getEndTime());
         resultDuration = currentDuration.minus(resultDuration);
-        //if(resultDuration.toNanos() <= 0) {
-        //    releaseDate = schedule.get(number).getEndTime().plusNanos(resultDuration.toNanos());
-        //}
         return resultDuration;
     }
 
-    public void takeWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
+    public Recourse takeWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if (schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
@@ -97,14 +104,14 @@ public class Recourse {
                     numberOfNextWorkingInterval++;
                 }
                 releaseDate = schedule.get(numberOfNextWorkingInterval - 1).getEndTime().plusNanos(durationOfExecution.toNanos());
-                break;
+                return this;
             }
             iteration++;
         }
-
+        return null;
     }
 
-    public void tackWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
+    public Recourse tackWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if(schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
@@ -112,15 +119,26 @@ public class Recourse {
                 if(resultDuration.toNanos() <= 0)
                 {
                     releaseDate = tackDate.plusNanos(durationOfExecution.toNanos());
-                    break;
+                    return this;
                 }
             }
             iteration++;
         }
+        return null;
     }
 
+    public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tackDate) {
+        for (WorkingHours currentWorkingHours: schedule) {
+            if(currentWorkingHours.getStartTime().isAfter(releaseDate) && currentWorkingHours.getStartTime().isAfter(tackDate)) {
+                return currentWorkingHours.getStartTime();
+            }
+        }
+        return null;
+    }
 
-
+    public void increasePriority() {
+        cPriority++;
+    }
 
     public boolean isFree(LocalDateTime currentDate){
         if(currentDate.isAfter(releaseDate)) {
@@ -132,10 +150,4 @@ public class Recourse {
         return false;
     }
 
-    //public boolean nowFree(LocalDateTime operationStart, LocalDateTime operationEnd){
-    //    if(releaseDate.getStartTime().isEqual(operationStart) && releaseDate.getEndTime().isBefore(operationEnd)){
-    //        return false;
-    //    }
-    //    return true;
-    //}
 }

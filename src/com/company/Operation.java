@@ -160,28 +160,25 @@ public class Operation {
         serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
     }
 
-    public void installOperation2(Recourse currentRecourse, LocalDateTime tackDate){
-        cNumberOfAssignedRecourse = currentRecourse;
-        if(currentOperatingMode == OperatingMode.canBeInterrupted) {
-            //cNumberOfAssignedRecourse = currentRecourse;
-            cNumberOfAssignedRecourse.takeWhichCanBeInterrupted(this.getDurationOfExecution(), tackDate);
-            //cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
+    public void installOperation2( LocalDateTime tackDate){
+        for (Recourse tackRecourse: resourceGroup.getRecoursesInTheGroup()) {
+            if(currentOperatingMode == OperatingMode.canBeInterrupted) {
+                cNumberOfAssignedRecourse = tackRecourse.takeWhichCanBeInterrupted(durationOfExecution, tackDate);
+            }
+            else
+            {
+                cNumberOfAssignedRecourse = tackRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tackDate);
+            }
+            if(cNumberOfAssignedRecourse != null) {
+                cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
+                serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+                break;
+            }
         }
-        else
-        {
-            cNumberOfAssignedRecourse.tackWhichCanNotBeInterrupted(this.getDurationOfExecution(), tackDate);
-        }
-        cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
-        serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
-    }
 
-    //public Duration takeRecourse(LocalDateTime tackDate, int numberOfWorkingInterval) {
-    //    Duration resultDuration = Duration.between(tackDate, cNumberOfAssignedRecourse.getSchedule().get(numberOfWorkingInterval).getEndTime());
-    //    if(durationOfExecution.toNanos() > resultDuration.toNanos()) {
-    //       resourceGroup.get(  ).setReleaseTime(resourceGroup.get(   ).getSchedule().get(numberOfWorkingInterval).getEndTime());
-    //        cWorkingInterval.setEndTime(resourceGroup.get(   ).getSchedule().get(numberOfWorkingInterval).getEndTime());
-    //    }
-    //}
+        //cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
+        //serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+    }
 
     //5
     public Recourse hasRecourseForThisDate(LocalDateTime currentDate) {
@@ -207,9 +204,6 @@ public class Operation {
         return null;
     }
 
-
-
-
     public boolean enoughTime(LocalDateTime startTime, LocalDateTime endTime) {
         Duration duration = Duration.between(startTime,endTime);
         if(duration.toNanos() >= durationOfExecution.toNanos()) {
@@ -217,4 +211,5 @@ public class Operation {
         }
         return false;
     }
+
 }

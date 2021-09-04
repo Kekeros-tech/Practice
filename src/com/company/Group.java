@@ -33,4 +33,9 @@ public class Group {
         return recoursesArray[number];
     }
 
+    public Recourse getRecourseWithMaxOperation() {
+
+        return  null;
+    }
+
 }

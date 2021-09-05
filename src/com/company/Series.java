@@ -83,7 +83,7 @@ public class Series {
             if(currentOperation.getCNumberOfAssignedRecourse() == null && currentOperation.allPreviousAssigned()) {
                 for (Recourse recourse: currentOperation.getResourceGroup().getRecoursesInTheGroup()) {
                     recourse.increasePriority();
-                    if(recourse.getCPriority() >= maxRecourse.getCPriority()){
+                    if(recourse.getCPriority() > maxRecourse.getCPriority()){
                         maxRecourse = recourse;
                     }
                 }

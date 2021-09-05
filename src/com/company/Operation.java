@@ -75,16 +75,7 @@ public class Operation {
         this.cWorkingInterval = cWorkingInterval;
     }
 
-    public void addPreviousOperation(Operation previousOperation) { //один и тот же код
-        if(this.previousOperations == null) {
-            this.previousOperations = new ArrayList<>();
-        }
-        this.previousOperations.add(previousOperation);
-        if(previousOperation.followingOperations == null){
-            previousOperation.followingOperations = new ArrayList<>();
-        }
-        previousOperation.followingOperations.add(this);
-    }
+
 
     public void addFollowingOperation(Operation followingOperation) {
         if(this.followingOperations == null) {
@@ -111,6 +102,7 @@ public class Operation {
         }
     }
 
+
     //5
     public boolean allPreviousAssigned() {
         for (int i = 0; i < this.previousOperations.size(); i++) {
@@ -122,7 +114,7 @@ public class Operation {
     }
 
     //5
-    public Duration getSumOfDurationOfPreviousOperations(){
+    public Duration getSumOfDurationOfPreviousOperations() {
         Duration resultDuration = Duration.ZERO;
         for (Operation currentOperation: previousOperations) {
             resultDuration = resultDuration.plus(currentOperation.durationOfExecution);
@@ -130,37 +122,8 @@ public class Operation {
         return resultDuration;
     }
 
-    //тестовый метод
-    public void installAnOperation(Recourse currentRecourse, LocalDateTime tackDate) {
-        for (int i = 0; i < currentRecourse.getSchedule().size(); i++) {
-            if (currentRecourse.getSchedule().get(i).isWorkingTime(tackDate) && currentRecourse.isFree(tackDate)) {
-                if (currentOperatingMode == OperatingMode.canNotBeInterrupted) {
-                    if (this.enoughTime(tackDate, currentRecourse.getSchedule().get(i).getEndTime())) {
-                       cNumberOfAssignedRecourse = currentRecourse;
-                       cWorkingInterval = new WorkingHours(tackDate, tackDate.plusNanos(durationOfExecution.toNanos()));
-                       break;
-                    }
-                }
-                else
-                {
-                    Duration resultDuration = durationOfExecution;
-                    cNumberOfAssignedRecourse = currentRecourse;
-                    int iteration = i + 1;
-                    resultDuration = currentRecourse.takeRecourse(durationOfExecution, i, tackDate);
-                    cWorkingInterval = new WorkingHours(tackDate, tackDate.plusNanos(resultDuration.toNanos()));
-                    while (resultDuration.toNanos() > 0) {
-                        resultDuration = currentRecourse.takeRecourse(resultDuration, iteration, currentRecourse.getSchedule().get(iteration).getStartTime());
-                        cWorkingInterval.setEndTime(currentRecourse.getReleaseTime());
-                        iteration++;
-                    }
-                    break;
-                }
-            }
-        }
-        serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
-    }
 
-    public void installOperation2( LocalDateTime tackDate){
+    public void installOperation( LocalDateTime tackDate){
         for (Recourse tackRecourse: resourceGroup.getRecoursesInTheGroup()) {
             if(currentOperatingMode == OperatingMode.canBeInterrupted) {
                 cNumberOfAssignedRecourse = tackRecourse.takeWhichCanBeInterrupted(durationOfExecution, tackDate);
@@ -175,9 +138,6 @@ public class Operation {
                 break;
             }
         }
-
-        //cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
-        //serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
     }
 
     //5

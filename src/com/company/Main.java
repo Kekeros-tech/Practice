@@ -5,8 +5,43 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Main {
+
+
+
+	public static ArrayList<Operation> choiceFrontOfWork(ArrayList<Operation> operationsToCreate) {
+		ArrayList<Operation> frontOfWork = new ArrayList<>();
+		for(int i = 0; i < operationsToCreate.size(); i++) {
+			if(operationsToCreate.get(i).allPreviousAssigned() && operationsToCreate.get(i).getCNumberOfAssignedRecourse() == null)
+			{
+				frontOfWork.add(operationsToCreate.get(i));
+			}
+		}
+		return frontOfWork;
+	}
+
+
+
+	public static LocalDateTime installOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork, LocalDateTime tactDate) {
+		LocalDateTime futureDate = tactDate;
+		for(int i = 0; i < frontOfWork.size(); i++) {
+
+			frontOfWork.get(i).installOperation(tactDate);
+
+			if(frontOfWork.get(i).getCWorkingInterval() != null)
+			{
+				if(frontOfWork.get(i).getCWorkingInterval().getEndTime().isAfter(futureDate)) {
+					futureDate = frontOfWork.get(i).getCWorkingInterval().getEndTime();
+				}
+			}
+			System.out.println(frontOfWork.get(i).getCWorkingInterval());
+		}
+		return futureDate;
+	}
+
+
 
     public static void main(String[] args) {
 		//рабочий график 2 через 2
@@ -53,79 +88,58 @@ public class Main {
 		ArrayList<Operation> arrayOfOperations = new ArrayList<>();
 		arrayOfOperations.add(myoper);
 		arrayOfOperations.add(myoper2);
-		Series myseries = new Series(arrayOfOperations, "30-08-2021 00:00", "13-08-2021 00:00");
-		myoper.setSerialAffiliation(myseries);
-		myoper2.setSerialAffiliation(myseries);
+		Series mySeries = new Series(arrayOfOperations, "30-08-2021 00:00", "13-08-2021 00:00");
+		myoper.setSerialAffiliation(mySeries);
+		myoper2.setSerialAffiliation(mySeries);
 
 		myoper2.addFollowingOperation(myoper);
 
 		LocalDateTime tactDate = LocalDateTime.of(2021, 8, 15, 10, 00);
-		LocalDateTime futureDate = LocalDateTime.of(2021, 8, 15, 10,00);
+		LocalDateTime futureDate;
 
 		ArrayList<Operation> frontOfWork = new ArrayList<>();
 
-		recourse.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
-		recourse1.fillScheduleUsingPreviousData(myseries.getDeadlineForCompletion());
+		recourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
+		recourse1.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
 		//int kol = myseries.getOperationsToCreate().size();
 
 
-		while (!myseries.allOperationsAssigned()) {
+		while (!mySeries.allOperationsAssigned()) {
 
-			//формируем фронт работы
 			int numberOfUnassigned = 0;
-			for(int i = 0; i < myseries.getOperationsToCreate().size(); i++){
-				if(myseries.getOperationsToCreate().get(i).allPreviousAssigned() && myseries.getOperationsToCreate().get(i).getCNumberOfAssignedRecourse() == null)
-				{
-					frontOfWork.add(myseries.getOperationsToCreate().get(i));
-				}
-			}
+			frontOfWork = choiceFrontOfWork(mySeries.getOperationsToCreate());
 
-			int iteration = 0;
-			for(int i = 0; i < frontOfWork.size(); i++) {
+			futureDate = installOperationsAndReturnFutureDate(frontOfWork, tactDate);
+			//futureDate = installOperationsAndReturnFutureDate(frontOfWork, tactDate);
+			//for(int i = 0; i < frontOfWork.size(); i++) {
+//
+			//	frontOfWork.get(i).installOperation2(tactDate);
 
-				frontOfWork.get(i).installOperation2(tactDate);
+			//	if(frontOfWork.get(i).getCWorkingInterval() != null)
+			//	{
+			//		if(frontOfWork.get(i).getCWorkingInterval().getEndTime().isAfter(futureDate)) {
+			//			futureDate = frontOfWork.get(i).getCWorkingInterval().getEndTime();
+			//		}
+			//	}else
+			//	{
+			//		numberOfUnassigned++;
+			//	}
 
-				if(frontOfWork.get(i).getCWorkingInterval() != null)
-				{
-					if(frontOfWork.get(i).getCWorkingInterval().getEndTime().isAfter(futureDate)) {
-						futureDate = frontOfWork.get(i).getCWorkingInterval().getEndTime();
-					}
-				}else
-				{
-					numberOfUnassigned++;
-				}
+			//	System.out.println(frontOfWork.get(i).getCWorkingInterval());
+			//}
 
-				//if(frontOfWork.get(i).getCWorkingInterval().getEndTime().isAfter(futureDate)) {
-				//	futureDate = frontOfWork.get(i).getCWorkingInterval().getEndTime();
-				//}
-				System.out.println(frontOfWork.get(i).getCWorkingInterval());
-			}
-
-			if(frontOfWork.isEmpty() || numberOfUnassigned > 0)
+			//if(frontOfWork.isEmpty() || numberOfUnassigned > 0)
+			if(frontOfWork.isEmpty() || futureDate == tactDate)
 			{
-				myseries.nullifyPriorities();
-				tactDate = myseries.PrioritizeRecourse().getStartDateAfterReleaseDate(tactDate);
-				//tactDate = tactDate.plusMinutes(1);
+				mySeries.nullifyPriorities();
+				futureDate = mySeries.PrioritizeRecourse().getStartDateAfterReleaseDate(tactDate);
 			}
-			else {
-				tactDate = futureDate;
-			}
+			tactDate = futureDate;
+
+
 			System.out.println(tactDate);
-			//tactDate = frontOfWork.get(iteration).getCWorkingInterval().getEndTime();
 			frontOfWork.clear();
-		}
-		System.out.println("График работы 1 станка");
-		for(int i = 0;i < recourse.getSchedule().size();i++)
-		{
-			System.out.println(recourse.getSchedule().get(i).getStartTime() + " " +recourse.getSchedule().get(i).getEndTime());
-			//System.out.println(" "+ recourse.getSchedule().get(i).getEndTime());
-		}
-		System.out.println("График работы 2 станка");
-		for(int i = 0;i < recourse1.getSchedule().size();i++)
-		{
-			System.out.println(recourse1.getSchedule().get(i).getStartTime() + " " +recourse1.getSchedule().get(i).getEndTime());
-			//System.out.println(" "+ recourse.getSchedule().get(i).getEndTime());
 		}
     }
 }

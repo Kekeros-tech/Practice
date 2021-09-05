@@ -23,6 +23,21 @@ public class Recourse {
 
     Recourse() {};
 
+    Recourse(String releaseDate)
+    {
+        schedule = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        this.releaseDate = LocalDateTime.parse(releaseDate, formatter);
+    }
+
+    public void addSchedule(WorkingHours currentWorkingHours){
+        schedule.add(currentWorkingHours);
+    }
+
+    public void addAllSchedule(Collection<WorkingHours> collectionWorkingHours) {
+        schedule.addAll(collectionWorkingHours);
+    }
+
     //задавать через правила, набор характеристик, как должен работать станок
     public void fillScheduleUsingPreviousData(LocalDateTime requiredDate)
     {
@@ -97,6 +112,7 @@ public class Recourse {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if (schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
+                System.out.println("Ресурс" + this);
                 int numberOfNextWorkingInterval = iteration + 1;
                 durationOfExecution = this.takeRecourse(durationOfExecution, iteration, tackDate);
                 while (durationOfExecution.toNanos() > 0) {
@@ -115,9 +131,11 @@ public class Recourse {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if(schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
+                //System.out.println("Ресурс" + this);
                 Duration resultDuration = this.takeRecourse(durationOfExecution, iteration, tackDate);
                 if(resultDuration.toNanos() <= 0)
                 {
+                    System.out.println("Ресурс" + this);
                     releaseDate = tackDate.plusNanos(durationOfExecution.toNanos());
                     return this;
                 }

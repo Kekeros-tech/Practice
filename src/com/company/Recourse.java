@@ -10,7 +10,7 @@ public class Recourse {
     private ArrayList<WorkingHours> schedule;
     private LocalDateTime releaseDate;
 
-    private int cPriority;
+    //private int cPriority;
 
     //private ArrayList<Operation> cOperationOfThisRecourse;
 
@@ -82,7 +82,7 @@ public class Recourse {
 
     public LocalDateTime getReleaseTime() { return this.releaseDate; }
 
-    public int getCPriority() { return cPriority; }
+    //public int getCPriority() { return cPriority; }
 
 
     public void setSchedule(Collection<WorkingHours> schedule) { this.schedule = new ArrayList<>(schedule); }
@@ -96,9 +96,7 @@ public class Recourse {
         this.releaseDate = LocalDateTime.parse(releaseDate, formatter);;
     }
 
-    public void setCPriority(int priority) {
-        this.cPriority = priority;
-    }
+    //public void setCPriority(int priority) {this.cPriority = priority;}
 
 
     //Подумать ещё над реализацией
@@ -150,13 +148,17 @@ public class Recourse {
             if(currentWorkingHours.getStartTime().isAfter(releaseDate) && currentWorkingHours.getStartTime().isAfter(tackDate)) {
                 return currentWorkingHours.getStartTime();
             }
+            else if(currentWorkingHours.isWorkingTime(releaseDate)) {
+                if(tackDate.isBefore(releaseDate))
+                {
+                    return releaseDate;
+                }
+            }
         }
         return null;
     }
 
-    public void increasePriority() {
-        cPriority++;
-    }
+    //public void increasePriority() { cPriority++; }
 
     public boolean isFree(LocalDateTime currentDate){
         if(currentDate.isAfter(releaseDate)) {

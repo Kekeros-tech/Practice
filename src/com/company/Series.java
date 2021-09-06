@@ -69,15 +69,15 @@ public class Series {
         return false;
     }
 
-    public void nullifyPriorities() {
+/*    public void nullifyPriorities() {
         for (Operation currentOperation: operationsToCreate) {
             for (Recourse recourse: currentOperation.getResourceGroup().getRecoursesInTheGroup()) {
                 recourse.setCPriority(0);
             }
         }
-    }
+    }*/
 
-    public Recourse PrioritizeRecourse() {
+/*    public Recourse PrioritizeRecourse() {
         Recourse maxRecourse = new Recourse();
         for (Operation currentOperation: operationsToCreate) {
             if(currentOperation.getCNumberOfAssignedRecourse() == null && currentOperation.allPreviousAssigned()) {
@@ -90,5 +90,5 @@ public class Series {
             }
         }
         return maxRecourse;
-    }
+    }*/
 }

@@ -1,14 +1,38 @@
 package com.company;
 
-import java.nio.file.attribute.GroupPrincipal;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class Main {
 
+	//Reverse
+	public static ArrayList<Operation> choiceReverseFrontOfWork( ArrayList<Operation> operationsToCreate) {
+		ArrayList<Operation> frontOfWork = new ArrayList<>();
+		for(int i = 0; i < operationsToCreate.size(); i++) {
+			if(operationsToCreate.get(i).allPreviousAssignedReverse() && operationsToCreate.get(i).getCLateStartTime() == null ) {
+				frontOfWork.add(operationsToCreate.get(i));
+			}
+		}
+		return frontOfWork;
+	}
+
+	//Reverse
+	public static LocalDateTime installReverseOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork, LocalDateTime tactDate) {
+		LocalDateTime futureDate = LocalDateTime.MIN;
+
+		for(int i = 0; i < frontOfWork.size(); i++) {
+
+			futureDate = frontOfWork.get(i).installOperation(tactDate);
+
+			if(futureDate.isBefore(futureDate)) {
+				futureDate = futureDate;
+			}
+
+			System.out.println(frontOfWork.get(i).getCWorkingInterval());
+		}
+		return futureDate;
+	}
 
 
 	public static ArrayList<Operation> choiceFrontOfWork(ArrayList<Operation> operationsToCreate) {
@@ -32,7 +56,7 @@ public class Main {
 
 			futureDate = frontOfWork.get(i).installOperation(tactDate);
 
-			if(futureDate.isBefore(futureDate)){
+			if(futureDate.isBefore(futureDate)) {
 				futureDate = futureDate;
 			}
 
@@ -42,7 +66,7 @@ public class Main {
 	}
 
 	public static void installOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate){
-		ArrayList<Operation> frontOfWork = new ArrayList<>();
+		ArrayList<Operation> frontOfWork;
 		LocalDateTime futureDate;
 
 		while (!currentSeries.allOperationsAssigned()) {

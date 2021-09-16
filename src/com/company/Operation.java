@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Operation {
-    private Group resourceGroup; //когда операция назначается, мы должны группу уменьшать до 1 элемента, чтобы понимать где сейчас обрабатывается операция и сколько ещё времени ей требуется
+    private Group resourceGroup;
     private Series serialAffiliation;
     private ArrayList<Operation> previousOperations;
     private ArrayList<Operation> followingOperations;
@@ -14,6 +14,8 @@ public class Operation {
 
     private Recourse cNumberOfAssignedRecourse;
     private WorkingHours cWorkingInterval;
+    private LocalDateTime cEarlierStartTime;
+    private LocalDateTime cLateStartTime;
 
     Operation(Group resourceGroup,Series serialAffiliation, Collection<Operation> previousOperations, Collection<Operation> followingOperations,
                      Duration durationOfExecution, int currentOperatingMode) {
@@ -35,6 +37,8 @@ public class Operation {
         this.followingOperations = new ArrayList<>();
     }
 
+
+
     public Group getResourceGroup() { return resourceGroup; }
 
     public Series getSerialAffiliation() { return serialAffiliation; }
@@ -51,7 +55,9 @@ public class Operation {
 
     public WorkingHours getCWorkingInterval() { return cWorkingInterval; }
 
+    public LocalDateTime getCLateStartTime() { return cLateStartTime; }
 
+    public LocalDateTime getCEarlierStartTime() { return cEarlierStartTime; }
 
     public void setResourceGroup(Group resourceGroup) { this.resourceGroup = resourceGroup; }
 
@@ -74,6 +80,8 @@ public class Operation {
     public void setCWorkingInterval(WorkingHours cWorkingInterval) {
         this.cWorkingInterval = cWorkingInterval;
     }
+
+    public void setCLateStartTime(LocalDateTime cLateStartTime) { this.cLateStartTime = cLateStartTime; }
 
 
 
@@ -105,12 +113,38 @@ public class Operation {
 
     //5
     public boolean allPreviousAssigned() {
-        for (int i = 0; i < this.previousOperations.size(); i++) {
-            if(this.previousOperations.get(i).cNumberOfAssignedRecourse == null) {
+        for (int i = 0; i < previousOperations.size(); i++) {
+            if (previousOperations.get(i).cNumberOfAssignedRecourse == null) {
                 return false;
             }
         }
         return true;
+    }
+
+    //Reverse
+    public boolean allPreviousAssignedReverse() {
+        for(int i = 0; i < followingOperations.size(); i++) {
+            if(previousOperations.get(i).cEarlierStartTime == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //Reverse
+    public LocalDateTime getEarliestStartTime() {
+        LocalDateTime minTime = LocalDateTime.MAX;
+        for(int i = 0; i < previousOperations.size(); i++ ) {
+            if(previousOperations.get(i).cEarlierStartTime.isBefore(minTime))
+            {
+                minTime = previousOperations.get(i).cEarlierStartTime;
+            }
+        }
+        if(cEarlierStartTime.isBefore(minTime))
+        {
+            minTime = cEarlierStartTime;
+        }
+        return minTime;
     }
 
     //5
@@ -123,54 +157,67 @@ public class Operation {
     }
 
 
+
+
     public LocalDateTime installOperation(LocalDateTime tackDate) {
+
         LocalDateTime startDate = LocalDateTime.MAX;
-        for (Recourse tackRecourse: resourceGroup.getRecoursesInTheGroup()) {
-            if(currentOperatingMode == OperatingMode.canBeInterrupted) {
-                cNumberOfAssignedRecourse = tackRecourse.takeWhichCanBeInterrupted(durationOfExecution, tackDate);
+
+        for ( Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup() ) {
+            if( currentOperatingMode == OperatingMode.canBeInterrupted ) {
+                cNumberOfAssignedRecourse = tactRecourse.takeWhichCanBeInterrupted(durationOfExecution, tackDate);
             }
             else
             {
-                cNumberOfAssignedRecourse = tackRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tackDate);
+                cNumberOfAssignedRecourse = tactRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tackDate);
             }
             if(cNumberOfAssignedRecourse != null) {
                 cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
                 serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+                cEarlierStartTime = tackDate;
                 return cWorkingInterval.getEndTime();
             }
             else
             {
-                if(tackRecourse.getStartDateAfterReleaseDate(tackDate).isBefore(startDate)){
-                    startDate = tackRecourse.getStartDateAfterReleaseDate(tackDate);
+                if(tactRecourse.getStartDateAfterReleaseDate(tackDate).isBefore(startDate)) {
+                    startDate = tactRecourse.getStartDateAfterReleaseDate(tackDate);
                 }
             }
         }
         return startDate;
     }
 
-    //5
-    public Recourse hasRecourseForThisDate(LocalDateTime currentDate) {
-        for (Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
-            for (int i = 0; i < currentRecourse.getSchedule().size(); i++) {
-                WorkingHours currentWorkingInterval = currentRecourse.getSchedule().get(i);
-                if(currentWorkingInterval.getStartTime().isAfter(currentDate)) {
-                    break;
-                }
-                if (currentWorkingInterval.isWorkingTime(currentDate) && currentRecourse.isFree(currentDate)) {
-                    if (currentOperatingMode == OperatingMode.canNotBeInterrupted) {
-                        if (this.enoughTime(currentDate, currentWorkingInterval.getEndTime())){
-                            return currentRecourse;
-                        }
-                    }
-                    else
-                    {
-                        return currentRecourse;
-                    }
+
+    //Reverse
+    public LocalDateTime installReverseOperation(LocalDateTime tackDate) {
+
+        LocalDateTime startDate = LocalDateTime.MAX;
+
+        for (Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
+            Recourse flagRecourse;
+            if(currentOperatingMode == OperatingMode.canBeInterrupted) {
+                flagRecourse = tactRecourse.takeWhichCanBeInterrupted(durationOfExecution, tackDate);
+            }
+            else
+            {
+                flagRecourse = tactRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tackDate);
+            }
+            if(flagRecourse != null) {
+                cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
+                serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+                cEarlierStartTime = tackDate;
+                return cWorkingInterval.getEndTime();
+            }
+            else
+            {
+                if(tactRecourse.getStartDateAfterReleaseDate(tackDate).isBefore(startDate)) {
+                    startDate = tactRecourse.getStartDateAfterReleaseDate(tackDate);
                 }
             }
         }
-        return null;
+        return startDate;
     }
+
 
     public boolean enoughTime(LocalDateTime startTime, LocalDateTime endTime) {
         Duration duration = Duration.between(startTime,endTime);

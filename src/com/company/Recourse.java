@@ -96,7 +96,6 @@ public class Recourse {
         this.releaseDate = LocalDateTime.parse(releaseDate, formatter);;
     }
 
-    //public void setCPriority(int priority) {this.cPriority = priority;}
 
 
     //Подумать ещё над реализацией
@@ -158,16 +157,47 @@ public class Recourse {
         return null;
     }
 
-    //public void increasePriority() { cPriority++; }
 
-    public boolean isFree(LocalDateTime currentDate){
-        if(currentDate.isAfter(releaseDate)) {
-            return true;
+    public LocalDateTime getCLateStartTimeBeforeReleaseDate(LocalDateTime tackDate, LocalDateTime StartDate) {
+        for ( int i = schedule.size(); i > 0; i-- ) {
+            if(schedule.get(i).getStartTime().isBefore(StartDate) && schedule.get(i).getEndTime().isBefore(tackDate)) {
+                return schedule.get(i).getEndTime();
+            }
         }
-        else if(currentDate.isEqual(releaseDate)){
-            return true;
-        }
-        return false;
+        return null;
     }
 
+
+    public boolean isFree(LocalDateTime currentDate) {
+        if(currentDate.isBefore(releaseDate)){
+            return false;
+        }
+        return true;
+    }
+
+
+
+    public Recourse takeReverseWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
+        int iteration = 0;
+        //LocalDateTime endTime = getCLateStartTimeBeforeReleaseDate(tackDate)
+        return null;
+    }
+
+    public Recourse tackReverseWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
+        int iteration = 0;
+        while (iteration < schedule.size()) {
+            if(schedule.get(iteration).isWorkingTime(tackDate)) {
+                //System.out.println("Ресурс" + this);
+                Duration resultDuration = this.takeRecourse(durationOfExecution, iteration, tackDate);
+                if(resultDuration.toNanos() <= 0)
+                {
+                    System.out.println("Ресурс" + this);
+                    releaseDate = tackDate.plusNanos(durationOfExecution.toNanos());
+                    return this;
+                }
+            }
+            iteration++;
+        }
+        return null;
+    }
 }

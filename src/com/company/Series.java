@@ -69,26 +69,5 @@ public class Series {
         return false;
     }
 
-/*    public void nullifyPriorities() {
-        for (Operation currentOperation: operationsToCreate) {
-            for (Recourse recourse: currentOperation.getResourceGroup().getRecoursesInTheGroup()) {
-                recourse.setCPriority(0);
-            }
-        }
-    }*/
 
-/*    public Recourse PrioritizeRecourse() {
-        Recourse maxRecourse = new Recourse();
-        for (Operation currentOperation: operationsToCreate) {
-            if(currentOperation.getCNumberOfAssignedRecourse() == null && currentOperation.allPreviousAssigned()) {
-                for (Recourse recourse: currentOperation.getResourceGroup().getRecoursesInTheGroup()) {
-                    recourse.increasePriority();
-                    if(recourse.getCPriority() > maxRecourse.getCPriority()){
-                        maxRecourse = recourse;
-                    }
-                }
-            }
-        }
-        return maxRecourse;
-    }*/
 }

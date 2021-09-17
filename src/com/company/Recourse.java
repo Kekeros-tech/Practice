@@ -160,8 +160,8 @@ public class Recourse {
 
     public LocalDateTime getCLateStartTimeBeforeReleaseDate(LocalDateTime tackDate, LocalDateTime StartDate) {
         for ( int i = schedule.size(); i > 0; i-- ) {
-            if(schedule.get(i).getStartTime().isBefore(StartDate) && schedule.get(i).getEndTime().isBefore(tackDate)) {
-                return schedule.get(i).getEndTime();
+            if(schedule.get(i).getStartTime().isAfter(StartDate) && schedule.get(i).getEndTime().isBefore(tackDate)) {
+                return schedule.get(i).getStartTime();
             }
         }
         return null;
@@ -183,20 +183,15 @@ public class Recourse {
         return null;
     }
 
-    public Recourse tackReverseWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
-        int iteration = 0;
-        while (iteration < schedule.size()) {
-            if(schedule.get(iteration).isWorkingTime(tackDate)) {
-                //System.out.println("Ресурс" + this);
-                Duration resultDuration = this.takeRecourse(durationOfExecution, iteration, tackDate);
-                if(resultDuration.toNanos() <= 0)
-                {
-                    System.out.println("Ресурс" + this);
-                    releaseDate = tackDate.plusNanos(durationOfExecution.toNanos());
-                    return this;
+    public LocalDateTime tackReverseWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate, LocalDateTime maxStartTime) {
+        for(int i = schedule.size() - 1; i > 0; i--) {
+            if(schedule.get(i).getStartTime().isAfter(maxStartTime) && schedule.get(i).getEndTime().isBefore(tackDate)){
+                Duration resultDuration = Duration.between(schedule.get(i).getStartTime(), schedule.get(i).getEndTime());
+                if(resultDuration.toNanos() >= durationOfExecution.toNanos()) {
+                    return schedule.get(i).getEndTime().minusNanos(durationOfExecution.toNanos());
                 }
             }
-            iteration++;
+            else break;
         }
         return null;
     }

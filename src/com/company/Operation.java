@@ -122,9 +122,19 @@ public class Operation {
     }
 
     //Reverse
+
+    public boolean allFollowingAssignedReverse() {
+        for(int i = 0; i < followingOperations.size(); i++){
+            if(followingOperations.get(i).cLateStartTime == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean allPreviousAssignedReverse() {
-        for(int i = 0; i < followingOperations.size(); i++) {
-            if(previousOperations.get(i).cEarlierStartTime == null) {
+        for(int i = 0; i < previousOperations.size(); i++) {
+            if(previousOperations.get(i).cLateStartTime != null) {
                 return false;
             }
         }
@@ -133,18 +143,19 @@ public class Operation {
 
     //Reverse
     public LocalDateTime getEarliestStartTime() {
-        LocalDateTime minTime = LocalDateTime.MAX;
+        LocalDateTime maxTime = LocalDateTime.MIN;
+
         for(int i = 0; i < previousOperations.size(); i++ ) {
-            if(previousOperations.get(i).cEarlierStartTime.isBefore(minTime))
+            if(previousOperations.get(i).cEarlierStartTime.isAfter(maxTime))
             {
-                minTime = previousOperations.get(i).cEarlierStartTime;
+                maxTime = previousOperations.get(i).cEarlierStartTime;
             }
         }
-        if(cEarlierStartTime.isBefore(minTime))
+        if(cEarlierStartTime.isAfter(maxTime))
         {
-            minTime = cEarlierStartTime;
+            maxTime = cEarlierStartTime;
         }
-        return minTime;
+        return maxTime;
     }
 
     //5
@@ -195,22 +206,21 @@ public class Operation {
 
         for (Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
             Recourse flagRecourse;
+            LocalDateTime newTime = null;
             if(currentOperatingMode == OperatingMode.canBeInterrupted) {
                 flagRecourse = tactRecourse.takeWhichCanBeInterrupted(durationOfExecution, tackDate);
             }
             else
             {
-                flagRecourse = tactRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tackDate);
+                newTime = tactRecourse.tackReverseWhichCanNotBeInterrupted(durationOfExecution, tackDate, this.getEarliestStartTime());
             }
-            if(flagRecourse != null) {
-                cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
-                serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
-                cEarlierStartTime = tackDate;
-                return cWorkingInterval.getEndTime();
+            if(newTime != null) {
+                cLateStartTime = newTime;
+                return cLateStartTime;
             }
             else
             {
-                if(tactRecourse.getStartDateAfterReleaseDate(tackDate).isBefore(startDate)) {
+                if(tactRecourse.getCLateStartTimeBeforeReleaseDate(tackDate, this.getEarliestStartTime()).isBefore(startDate)) {
                     startDate = tactRecourse.getStartDateAfterReleaseDate(tackDate);
                 }
             }

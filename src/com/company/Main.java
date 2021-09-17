@@ -10,7 +10,7 @@ public class Main {
 	public static ArrayList<Operation> choiceReverseFrontOfWork( ArrayList<Operation> operationsToCreate) {
 		ArrayList<Operation> frontOfWork = new ArrayList<>();
 		for(int i = 0; i < operationsToCreate.size(); i++) {
-			if(operationsToCreate.get(i).allPreviousAssignedReverse() && operationsToCreate.get(i).getCLateStartTime() == null ) {
+			if(operationsToCreate.get(i).allPreviousAssignedReverse() && operationsToCreate.get(i).allFollowingAssignedReverse() && operationsToCreate.get(i).getCLateStartTime() == null ) {
 				frontOfWork.add(operationsToCreate.get(i));
 			}
 		}
@@ -23,7 +23,7 @@ public class Main {
 
 		for(int i = 0; i < frontOfWork.size(); i++) {
 
-			futureDate = frontOfWork.get(i).installOperation(tactDate);
+			futureDate = frontOfWork.get(i).installReverseOperation(tactDate);
 
 			if(futureDate.isBefore(futureDate)) {
 				futureDate = futureDate;

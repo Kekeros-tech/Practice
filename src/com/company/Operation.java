@@ -202,7 +202,7 @@ public class Operation {
     //Reverse
     public LocalDateTime installReverseOperation(LocalDateTime tackDate) {
 
-        LocalDateTime startDate = LocalDateTime.MAX;
+        LocalDateTime startDate = LocalDateTime.MIN;
 
         for (Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
             Recourse flagRecourse;
@@ -214,18 +214,16 @@ public class Operation {
             {
                 newTime = tactRecourse.tackReverseWhichCanNotBeInterrupted(durationOfExecution, tackDate, this.getEarliestStartTime());
             }
-            if(newTime != null) {
-                cLateStartTime = newTime;
-                return cLateStartTime;
-            }
-            else
-            {
-                if(tactRecourse.getCLateStartTimeBeforeReleaseDate(tackDate, this.getEarliestStartTime()).isBefore(startDate)) {
-                    startDate = tactRecourse.getStartDateAfterReleaseDate(tackDate);
-                }
+
+            if ( newTime != null && newTime.isAfter(startDate) ) {
+                startDate = newTime;
             }
         }
-        return startDate;
+        if( startDate != LocalDateTime.MIN ) {
+            cLateStartTime = startDate;
+            return startDate;
+        }
+        return null;
     }
 
 

@@ -159,7 +159,7 @@ public class Recourse {
 
 
     public LocalDateTime getCLateStartTimeBeforeReleaseDate(LocalDateTime tackDate, LocalDateTime StartDate) {
-        for ( int i = schedule.size(); i > 0; i-- ) {
+        for ( int i = schedule.size() - 1; i > 0; i-- ) {
             if(schedule.get(i).getStartTime().isAfter(StartDate) && schedule.get(i).getEndTime().isBefore(tackDate)) {
                 return schedule.get(i).getStartTime();
             }
@@ -191,7 +191,12 @@ public class Recourse {
                     return schedule.get(i).getEndTime().minusNanos(durationOfExecution.toNanos());
                 }
             }
-            else break;
+            else if(schedule.get(i).isWorkingTime(tackDate)) {
+                Duration resultDuration = Duration.between(schedule.get(i).getStartTime(), tackDate);
+                if(resultDuration.toNanos() >= durationOfExecution.toNanos()) {
+                    return tackDate.minusNanos(durationOfExecution.toNanos());
+                }
+            }
         }
         return null;
     }

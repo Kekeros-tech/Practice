@@ -151,10 +151,7 @@ public class Operation {
                 maxTime = previousOperations.get(i).cEarlierStartTime;
             }
         }
-        if(cEarlierStartTime.isAfter(maxTime))
-        {
-            maxTime = cEarlierStartTime;
-        }
+
         return maxTime;
     }
 
@@ -208,7 +205,7 @@ public class Operation {
             Recourse flagRecourse;
             LocalDateTime newTime = null;
             if(currentOperatingMode == OperatingMode.canBeInterrupted) {
-                flagRecourse = tactRecourse.takeWhichCanBeInterrupted(durationOfExecution, tackDate);
+                newTime = tactRecourse.takeReverseWhichCanBeInterrupted(durationOfExecution, tackDate, this.getEarliestStartTime());
             }
             else
             {
@@ -221,6 +218,7 @@ public class Operation {
         }
         if( startDate != LocalDateTime.MIN ) {
             cLateStartTime = startDate;
+            serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
             return startDate;
         }
         return null;

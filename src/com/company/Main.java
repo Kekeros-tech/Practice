@@ -29,7 +29,7 @@ public class Main {
 				futureDate = futureDate;
 			}
 
-			System.out.println(frontOfWork.get(i).getCWorkingInterval());
+			System.out.println(frontOfWork.get(i).getCLateStartTime());
 		}
 		return futureDate;
 	}
@@ -77,10 +77,28 @@ public class Main {
 
 			tactDate = futureDate;
 
-			System.out.println(tactDate);
+			//System.out.println(tactDate);
 			frontOfWork.clear();
 		}
 	}
+
+	public static void installReverseOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate){
+		ArrayList<Operation> frontOfWork;
+		LocalDateTime futureDate;
+
+		while (!currentSeries.allOperationsAssigned()) {
+
+			frontOfWork = choiceReverseFrontOfWork(currentSeries.getOperationsToCreate());
+
+			futureDate = installReverseOperationsAndReturnFutureDate(frontOfWork, tactDate);
+
+			tactDate = futureDate;
+
+			//System.out.println(tactDate);
+			frontOfWork.clear();
+		}
+	}
+
 
     public static void main(String[] args) {
 		//рабочий график 2 через 2

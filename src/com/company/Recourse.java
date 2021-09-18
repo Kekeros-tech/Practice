@@ -177,9 +177,27 @@ public class Recourse {
 
 
 
-    public Recourse takeReverseWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
-        int iteration = 0;
-        //LocalDateTime endTime = getCLateStartTimeBeforeReleaseDate(tackDate)
+    public LocalDateTime takeReverseWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate, LocalDateTime maxStartTime) {
+        for( int i = schedule.size() - 1; i > 0; i--) {
+            if(schedule.get(i).getStartTime().isAfter(maxStartTime) && schedule.get(i).getEndTime().isBefore(tackDate)) {
+                Duration resultDuration = durationOfExecution.minus(Duration.between(schedule.get(i).getStartTime(), schedule.get(i).getEndTime()));
+                int iteration = i - 1;
+                while(resultDuration.toNanos() > 0) {
+                    resultDuration = resultDuration.minus(Duration.between(schedule.get(iteration).getStartTime(),schedule.get(iteration).getEndTime()));
+                    iteration--;
+                }
+                return schedule.get(iteration + 1).getStartTime().minusNanos(resultDuration.toNanos());
+            }
+            else if(schedule.get(i).isWorkingTime(tackDate)) {
+                Duration resultDuration = durationOfExecution.minus(Duration.between(schedule.get(i).getStartTime(), tackDate));
+                int iteration = i - 1;
+                while(resultDuration.toNanos() > 0) {
+                    resultDuration = resultDuration.minus(Duration.between(schedule.get(iteration).getStartTime(),schedule.get(iteration).getEndTime()));
+                    iteration--;
+                }
+                return schedule.get(iteration + 1).getStartTime().minusNanos(resultDuration.toNanos());
+            }
+        }
         return null;
     }
 

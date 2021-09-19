@@ -69,5 +69,11 @@ public class Series {
         return false;
     }
 
+    public void clean() {
+        for(Operation currentOperation: operationsToCreate){
+            currentOperation.clean();
+        }
+        cNumberOfAssignedOperations = 0;
+    }
 
 }

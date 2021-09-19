@@ -3,6 +3,7 @@ package com.company;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Main {
 
@@ -65,7 +66,7 @@ public class Main {
 		return futureDate;
 	}
 
-	public static void installOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate){
+	public static void installOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate) {
 		ArrayList<Operation> frontOfWork;
 		LocalDateTime futureDate;
 
@@ -79,6 +80,33 @@ public class Main {
 
 			//System.out.println(tactDate);
 			frontOfWork.clear();
+		}
+	}
+
+	public static void takeSeriesToWork(Collection<Series> seriesForWork, LocalDateTime tactDate) {
+		ArrayList<Operation> operationsToInstall = new ArrayList<>();
+		LocalDateTime maxDeadline = LocalDateTime.MIN;
+
+		for(Series currentSeries: seriesForWork) {
+			operationsToInstall.addAll(currentSeries.getOperationsToCreate());
+			installOperationsUntilDeadline(currentSeries, tactDate);
+			currentSeries.setСNumberOfAssignedOperations(0);
+			installReverseOperationsUntilDeadline(currentSeries, currentSeries.getDeadlineForCompletion());
+			currentSeries.clean();
+			//5
+			if(currentSeries.getDeadlineForCompletion().isAfter(maxDeadline)){
+				maxDeadline = currentSeries.getDeadlineForCompletion();
+			}
+		}
+
+		while(tactDate.isBefore(maxDeadline)) {
+			ArrayList frontOfWork = choiceFrontOfWork(operationsToInstall);
+			OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
+			frontOfWork.sort(sorter);
+
+			LocalDateTime futureDate = installOperationsAndReturnFutureDate(frontOfWork, tactDate);
+
+			tactDate = futureDate;
 		}
 	}
 

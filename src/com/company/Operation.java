@@ -151,7 +151,9 @@ public class Operation {
                 maxTime = previousOperations.get(i).cEarlierStartTime;
             }
         }
-
+        if(maxTime == LocalDateTime.MIN){
+            return this.cEarlierStartTime;
+        }
         return maxTime;
     }
 
@@ -231,6 +233,12 @@ public class Operation {
             return true;
         }
         return false;
+    }
+
+    public void clean() {
+        cNumberOfAssignedRecourse.clean();
+        cNumberOfAssignedRecourse = null;
+        cWorkingInterval = null;
     }
 
 }

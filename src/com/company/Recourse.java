@@ -8,17 +8,16 @@ import java.util.Collection;
 
 public class Recourse {
     private ArrayList<WorkingHours> schedule;
-    private LocalDateTime releaseDate;
+    private LocalDateTime arriveTime;
 
-    //private int cPriority;
-
-    //private ArrayList<Operation> cOperationOfThisRecourse;
+    private LocalDateTime releaseTime;
 
     Recourse(Collection<WorkingHours> schedule, String releaseDate)
     {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.schedule = new ArrayList<>(schedule);
-        this.releaseDate = LocalDateTime.parse(releaseDate, formatter);
+        this.arriveTime = LocalDateTime.parse(releaseDate, formatter);
+        this.releaseTime = LocalDateTime.parse(releaseDate, formatter);
     }
 
     Recourse() {};
@@ -27,7 +26,8 @@ public class Recourse {
     {
         schedule = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        this.releaseDate = LocalDateTime.parse(releaseDate, formatter);
+        this.arriveTime = LocalDateTime.parse(releaseDate, formatter);
+        this.releaseTime = LocalDateTime.parse(releaseDate, formatter);
     }
 
     public void addSchedule(WorkingHours currentWorkingHours){
@@ -78,22 +78,23 @@ public class Recourse {
         }
     }
 
-    public ArrayList<WorkingHours> getSchedule() { return this.schedule; }
+    public ArrayList<WorkingHours> getSchedule() { return schedule; }
 
-    public LocalDateTime getReleaseTime() { return this.releaseDate; }
+    public LocalDateTime getArriveTime() { return arriveTime; }
 
-    //public int getCPriority() { return cPriority; }
+    public LocalDateTime getReleaseTime() { return  releaseTime; }
+
 
 
     public void setSchedule(Collection<WorkingHours> schedule) { this.schedule = new ArrayList<>(schedule); }
 
-    public void setReleaseTime(LocalDateTime releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setArriveTime(LocalDateTime releaseDate) {
+        this.arriveTime = releaseDate;
     }
 
     public void setReleaseTime(String releaseDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        this.releaseDate = LocalDateTime.parse(releaseDate, formatter);;
+        this.releaseTime = LocalDateTime.parse(releaseDate, formatter);
     }
 
 
@@ -116,7 +117,7 @@ public class Recourse {
                     durationOfExecution = this.takeRecourse(durationOfExecution, numberOfNextWorkingInterval, schedule.get(numberOfNextWorkingInterval).getStartTime());
                     numberOfNextWorkingInterval++;
                 }
-                releaseDate = schedule.get(numberOfNextWorkingInterval - 1).getEndTime().plusNanos(durationOfExecution.toNanos());
+                releaseTime = schedule.get(numberOfNextWorkingInterval - 1).getEndTime().plusNanos(durationOfExecution.toNanos());
                 return this;
             }
             iteration++;
@@ -133,7 +134,7 @@ public class Recourse {
                 if(resultDuration.toNanos() <= 0)
                 {
                     System.out.println("Ресурс" + this);
-                    releaseDate = tackDate.plusNanos(durationOfExecution.toNanos());
+                    releaseTime = tackDate.plusNanos(durationOfExecution.toNanos());
                     return this;
                 }
             }
@@ -144,13 +145,13 @@ public class Recourse {
 
     public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tackDate) {
         for (WorkingHours currentWorkingHours: schedule) {
-            if(currentWorkingHours.getStartTime().isAfter(releaseDate) && currentWorkingHours.getStartTime().isAfter(tackDate)) {
+            if(currentWorkingHours.getStartTime().isAfter(releaseTime) && currentWorkingHours.getStartTime().isAfter(tackDate)) {
                 return currentWorkingHours.getStartTime();
             }
-            else if(currentWorkingHours.isWorkingTime(releaseDate)) {
-                if(tackDate.isBefore(releaseDate))
+            else if(currentWorkingHours.isWorkingTime(releaseTime)) {
+                if(tackDate.isBefore(releaseTime))
                 {
-                    return releaseDate;
+                    return releaseTime;
                 }
             }
         }
@@ -169,7 +170,7 @@ public class Recourse {
 
 
     public boolean isFree(LocalDateTime currentDate) {
-        if(currentDate.isBefore(releaseDate)){
+        if(currentDate.isBefore(releaseTime)) {
             return false;
         }
         return true;
@@ -217,5 +218,9 @@ public class Recourse {
             }
         }
         return null;
+    }
+
+    public void clean() {
+        releaseTime = arriveTime;
     }
 }

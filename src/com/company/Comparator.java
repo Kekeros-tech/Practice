@@ -22,5 +22,14 @@ class WHComparatorBasedOnDate implements Comparator<WorkingHours> {
             return 1;
         }
     }
+}
 
+class OComparatorBasedOnLateStartTime implements Comparator<Operation> {
+
+    public int compare(Operation a, Operation b) {
+        if(a.getCLateStartTime().isBefore(b.getCLateStartTime())) {
+            return -1;
+        }
+        return 1;
+    }
 }

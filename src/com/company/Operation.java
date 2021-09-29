@@ -253,7 +253,7 @@ public class Operation {
     }
 
     //Reverse
-    public LocalDateTime installReverseOperation(LocalDateTime tackDate) {
+    public LocalDateTime installReverseOperation() {
 
         LocalDateTime startDate = LocalDateTime.MIN;
 
@@ -305,7 +305,9 @@ public class Operation {
     }
 
     public void clean() {
-        cNumberOfAssignedRecourse.clean();
+        if(cNumberOfAssignedRecourse != null){
+            cNumberOfAssignedRecourse.clean();
+        }
         cNumberOfAssignedRecourse = null;
         cWorkingInterval = null;
         tactTime = null;

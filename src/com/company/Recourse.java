@@ -110,7 +110,7 @@ public class Recourse {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if (schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
-                System.out.println("Ресурс" + this);
+                //System.out.println("Ресурс" + this);
                 int numberOfNextWorkingInterval = iteration + 1;
                 durationOfExecution = this.takeRecourse(durationOfExecution, iteration, tackDate);
                 while (durationOfExecution.toNanos() > 0) {
@@ -129,11 +129,11 @@ public class Recourse {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if(schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
-                //System.out.println("Ресурс" + this);
+
                 Duration resultDuration = this.takeRecourse(durationOfExecution, iteration, tackDate);
                 if(resultDuration.toNanos() <= 0)
                 {
-                    System.out.println("Ресурс" + this);
+                    //System.out.println("Ресурс" + this);
                     releaseTime = tackDate.plusNanos(durationOfExecution.toNanos());
                     return this;
                 }
@@ -145,7 +145,7 @@ public class Recourse {
 
     public boolean isTactDateWorkingTime(LocalDateTime tackDate) {
         for(WorkingHours currentWorkingHours: schedule) {
-            if(currentWorkingHours.isWorkingTime(tackDate)){
+            if(currentWorkingHours.isWorkingTime(tackDate)) {
                 return true;
             }
         }
@@ -154,29 +154,21 @@ public class Recourse {
 
     public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tackDate) {
         for (WorkingHours currentWorkingHours: schedule) {
+
             if(currentWorkingHours.getStartTime().isAfter(tackDate) && this.isFree(currentWorkingHours.getStartTime())) {
                 return currentWorkingHours.getStartTime();
             }
             else if(currentWorkingHours.isWorkingTime(releaseTime) && tackDate.isBefore(releaseTime)) {
                 return releaseTime;
             }
+
         }
         return null;
     }
 
 
-    public LocalDateTime getCLateStartTimeBeforeReleaseDate(LocalDateTime tackDate, LocalDateTime StartDate) {
-        for ( int i = schedule.size() - 1; i > 0; i-- ) {
-            if(schedule.get(i).getStartTime().isAfter(StartDate) && schedule.get(i).getEndTime().isBefore(tackDate)) {
-                return schedule.get(i).getStartTime();
-            }
-        }
-        return null;
-    }
-
-
-    public boolean isFree(LocalDateTime currentDate) {
-        if(currentDate.isBefore(releaseTime)) {
+    public boolean isFree(LocalDateTime tactTime) {
+        if(tactTime.isBefore(releaseTime)) {
             return false;
         }
         return true;
@@ -209,9 +201,10 @@ public class Recourse {
     }
 
     public WorkingHours getEndTimeBeforeTactDate( LocalDateTime tactDate, LocalDateTime maxStartTime){
-        for(int i = schedule.size() - 1; i > 0; i--) {
+        for(int i = schedule.size() - 1; i >= 0; i--) {
+
             if(schedule.get(i).getStartTime().isAfter(maxStartTime) && !schedule.get(i).getEndTime().isAfter(tactDate)) {
-                return new WorkingHours(schedule.get(i).getStartTime(), schedule.get(i).getEndTime());
+                return schedule.get(i);
             }
             else if(schedule.get(i).isWorkingTime(tactDate)) {
                 return new WorkingHours(schedule.get(i).getStartTime(), tactDate);
@@ -231,6 +224,5 @@ public class Recourse {
 
     public void clean() {
         releaseTime = arriveTime;
-        //
     }
 }

@@ -24,11 +24,9 @@ public class Main {
 
 		for(int i = 0; i < frontOfWork.size(); i++) {
 
+			frontOfWork.get(i).getLatestEndTimeOfFollowing();
 			futureDate = frontOfWork.get(i).installReverseOperation(tactDate);
 
-			if(futureDate.isBefore(futureDate)) {
-				futureDate = futureDate;
-			}
 
 			System.out.println(frontOfWork.get(i).getCLateStartTime());
 		}
@@ -50,20 +48,17 @@ public class Main {
 
 
 
-	public static LocalDateTime installOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork, LocalDateTime tactDate) {
-		LocalDateTime futureDate = LocalDateTime.MAX;
+	public static void installOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork) {
+		//LocalDateTime futureDate = LocalDateTime.MAX;
 
 		for(int i = 0; i < frontOfWork.size(); i++) {
 
-			futureDate = frontOfWork.get(i).installOperation(tactDate);
-
-			if(futureDate.isBefore(futureDate)) {
-				futureDate = futureDate;
-			}
+			frontOfWork.get(i).getLatestEndTimeOfPrevious();
+			frontOfWork.get(i).installOperation();
 
 			System.out.println(frontOfWork.get(i).getCWorkingInterval());
 		}
-		return futureDate;
+		//return futureDate;
 	}
 
 	public static void installOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate) {
@@ -74,9 +69,9 @@ public class Main {
 
 			frontOfWork = choiceFrontOfWork(currentSeries.getOperationsToCreate());
 
-			futureDate = installOperationsAndReturnFutureDate(frontOfWork, tactDate);
+			installOperationsAndReturnFutureDate(frontOfWork);
 
-			tactDate = futureDate;
+			//tactDate = futureDate;
 
 			//System.out.println(tactDate);
 			frontOfWork.clear();
@@ -99,14 +94,13 @@ public class Main {
 			}
 		}
 
+		//временное решение с максимальным дедлайном
 		while(tactDate.isBefore(maxDeadline)) {
 			ArrayList frontOfWork = choiceFrontOfWork(operationsToInstall);
 			OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
 			frontOfWork.sort(sorter);
 
-			LocalDateTime futureDate = installOperationsAndReturnFutureDate(frontOfWork, tactDate);
-
-			tactDate = futureDate;
+			installOperationsAndReturnFutureDate(frontOfWork);
 		}
 	}
 

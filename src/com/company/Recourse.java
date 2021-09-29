@@ -222,5 +222,6 @@ public class Recourse {
 
     public void clean() {
         releaseTime = arriveTime;
+        //
     }
 }

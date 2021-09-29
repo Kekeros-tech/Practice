@@ -143,16 +143,22 @@ public class Recourse {
         return null;
     }
 
+    public boolean isTactDateWorkingTime(LocalDateTime tackDate) {
+        for(WorkingHours currentWorkingHours: schedule) {
+            if(currentWorkingHours.isWorkingTime(tackDate)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tackDate) {
         for (WorkingHours currentWorkingHours: schedule) {
-            if(currentWorkingHours.getStartTime().isAfter(releaseTime) && currentWorkingHours.getStartTime().isAfter(tackDate)) {
+            if(currentWorkingHours.getStartTime().isAfter(tackDate) && this.isFree(currentWorkingHours.getStartTime())) {
                 return currentWorkingHours.getStartTime();
             }
-            else if(currentWorkingHours.isWorkingTime(releaseTime)) {
-                if(tackDate.isBefore(releaseTime))
-                {
-                    return releaseTime;
-                }
+            else if(currentWorkingHours.isWorkingTime(releaseTime) && tackDate.isBefore(releaseTime)) {
+                return releaseTime;
             }
         }
         return null;
@@ -202,20 +208,23 @@ public class Recourse {
         return null;
     }
 
-    public LocalDateTime tackReverseWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate, LocalDateTime maxStartTime) {
+    public WorkingHours getEndTimeBeforeTactDate( LocalDateTime tactDate, LocalDateTime maxStartTime){
         for(int i = schedule.size() - 1; i > 0; i--) {
-            if(schedule.get(i).getStartTime().isAfter(maxStartTime) && schedule.get(i).getEndTime().isBefore(tackDate)){
-                Duration resultDuration = Duration.between(schedule.get(i).getStartTime(), schedule.get(i).getEndTime());
-                if(resultDuration.toNanos() >= durationOfExecution.toNanos()) {
-                    return schedule.get(i).getEndTime().minusNanos(durationOfExecution.toNanos());
-                }
+            if(schedule.get(i).getStartTime().isAfter(maxStartTime) && !schedule.get(i).getEndTime().isAfter(tactDate)) {
+                return new WorkingHours(schedule.get(i).getStartTime(), schedule.get(i).getEndTime());
             }
-            else if(schedule.get(i).isWorkingTime(tackDate)) {
-                Duration resultDuration = Duration.between(schedule.get(i).getStartTime(), tackDate);
-                if(resultDuration.toNanos() >= durationOfExecution.toNanos()) {
-                    return tackDate.minusNanos(durationOfExecution.toNanos());
-                }
+            else if(schedule.get(i).isWorkingTime(tactDate)) {
+                return new WorkingHours(schedule.get(i).getStartTime(), tactDate);
             }
+        }
+        return null;
+    }
+
+    public LocalDateTime tackReverseWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate, LocalDateTime maxStartTime) {
+        WorkingHours tactDate = getEndTimeBeforeTactDate(tackDate, maxStartTime);
+        Duration resultDuration = Duration.between(tactDate.getStartTime(), tactDate.getEndTime());
+        if(resultDuration.toNanos() >= durationOfExecution.toNanos()) {
+            return tactDate.getEndTime().minusNanos(durationOfExecution.toNanos());
         }
         return null;
     }

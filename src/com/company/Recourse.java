@@ -110,9 +110,10 @@ public class Recourse {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if (schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
-                System.out.println("Ресурс" + this);
-                int numberOfNextWorkingInterval = iteration + 1;
+
                 durationOfExecution = this.takeRecourse(durationOfExecution, iteration, tackDate);
+
+                int numberOfNextWorkingInterval = iteration + 1;
                 while (durationOfExecution.toNanos() > 0) {
                     durationOfExecution = this.takeRecourse(durationOfExecution, numberOfNextWorkingInterval, schedule.get(numberOfNextWorkingInterval).getStartTime());
                     numberOfNextWorkingInterval++;
@@ -129,11 +130,10 @@ public class Recourse {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if(schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
-                //System.out.println("Ресурс" + this);
+
                 Duration resultDuration = this.takeRecourse(durationOfExecution, iteration, tackDate);
                 if(resultDuration.toNanos() <= 0)
                 {
-                    System.out.println("Ресурс" + this);
                     releaseTime = tackDate.plusNanos(durationOfExecution.toNanos());
                     return this;
                 }

@@ -59,6 +59,7 @@ public class Operation {
 
     public LocalDateTime getCEarlierStartTime() { return cEarlierStartTime; }
 
+
     public void setResourceGroup(Group resourceGroup) { this.resourceGroup = resourceGroup; }
 
     public void setSerialAffiliation(Series serialAffiliation) { this.serialAffiliation = serialAffiliation; }
@@ -173,14 +174,15 @@ public class Operation {
 
         LocalDateTime startDate = LocalDateTime.MAX;
 
-        for ( Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup() ) {
-            if( currentOperatingMode == OperatingMode.canBeInterrupted ) {
+        for (Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup() ) {
+            if(currentOperatingMode == OperatingMode.canBeInterrupted) {
                 cNumberOfAssignedRecourse = tactRecourse.takeWhichCanBeInterrupted(durationOfExecution, tackDate);
             }
             else
             {
                 cNumberOfAssignedRecourse = tactRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tackDate);
             }
+
             if(cNumberOfAssignedRecourse != null) {
                 cWorkingInterval = new WorkingHours(tackDate, cNumberOfAssignedRecourse.getReleaseTime());
                 serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);

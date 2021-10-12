@@ -40,7 +40,7 @@ public class Main {
 		ArrayList<Operation> frontOfWork = new ArrayList<>();
 
 		for(int i = 0; i < operationsToCreate.size(); i++) {
-			if(operationsToCreate.get(i).allPreviousAssigned() && operationsToCreate.get(i).getCNumberOfAssignedRecourse() == null)
+			if(operationsToCreate.get(i).getCNumberOfAssignedRecourse() == null && operationsToCreate.get(i).allPreviousAssigned())
 			{
 				frontOfWork.add(operationsToCreate.get(i));
 			}
@@ -51,19 +51,19 @@ public class Main {
 
 
 	public static LocalDateTime installOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork, LocalDateTime tactDate) {
-		LocalDateTime futureDate = LocalDateTime.MAX;
+		LocalDateTime currentDate = LocalDateTime.MAX;
 
 		for(int i = 0; i < frontOfWork.size(); i++) {
 
-			futureDate = frontOfWork.get(i).installOperation(tactDate);
+			LocalDateTime futureDate = frontOfWork.get(i).installOperation(tactDate);
 
-			if(futureDate.isBefore(futureDate)) {
-				futureDate = futureDate;
+			if(futureDate.isBefore(currentDate)) {
+				currentDate = futureDate;
 			}
 
 			System.out.println(frontOfWork.get(i).getCWorkingInterval());
 		}
-		return futureDate;
+		return currentDate;
 	}
 
 	public static void installOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate) {
@@ -78,21 +78,26 @@ public class Main {
 
 			tactDate = futureDate;
 
-			//System.out.println(tactDate);
 			frontOfWork.clear();
 		}
 	}
 
 	public static void takeSeriesToWork(Collection<Series> seriesForWork, LocalDateTime tactDate) {
 		ArrayList<Operation> operationsToInstall = new ArrayList<>();
+
+		//Temporarily
 		LocalDateTime maxDeadline = LocalDateTime.MIN;
 
 		for(Series currentSeries: seriesForWork) {
+
 			operationsToInstall.addAll(currentSeries.getOperationsToCreate());
+
 			installOperationsUntilDeadline(currentSeries, tactDate);
+
 			currentSeries.setСNumberOfAssignedOperations(0);
 			installReverseOperationsUntilDeadline(currentSeries, currentSeries.getDeadlineForCompletion());
 			currentSeries.clean();
+
 			//5
 			if(currentSeries.getDeadlineForCompletion().isAfter(maxDeadline)){
 				maxDeadline = currentSeries.getDeadlineForCompletion();

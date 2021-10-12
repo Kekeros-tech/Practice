@@ -33,3 +33,13 @@ class OComparatorBasedOnLateStartTime implements Comparator<Operation> {
         return 1;
     }
 }
+
+class OComparatorBasedOnWorkingInterval implements Comparator<Operation> {
+
+    public int compare(Operation a, Operation b) {
+        if(a.getCWorkingInterval().getStartTime().isBefore(b.getCWorkingInterval().getStartTime())) {
+            return -1;
+        }
+        return 1;
+    }
+}

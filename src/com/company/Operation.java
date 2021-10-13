@@ -201,9 +201,10 @@ public class Operation {
 
 
     //Reverse
-    public LocalDateTime installReverseOperation(LocalDateTime tackDate) {
+    public LocalDateTime installReverseOperation() {
 
         LocalDateTime startDate = LocalDateTime.MIN;
+        LocalDateTime tackDate = upperDateTimeLimit();
 
         for (Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
             Recourse flagRecourse;
@@ -226,6 +227,16 @@ public class Operation {
             return startDate;
         }
         return null;
+    }
+
+    public LocalDateTime upperDateTimeLimit() {
+        LocalDateTime upperDateTime = serialAffiliation.getDeadlineForCompletion();
+        for (Operation currentFollowing: followingOperations) {
+            if(currentFollowing.cLateStartTime.isBefore(upperDateTime)) {
+                upperDateTime = currentFollowing.cLateStartTime;
+            }
+        }
+        return upperDateTime;
     }
 
 

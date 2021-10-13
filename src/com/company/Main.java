@@ -24,11 +24,7 @@ public class Main {
 
 		for(int i = 0; i < frontOfWork.size(); i++) {
 
-			futureDate = frontOfWork.get(i).installReverseOperation(tactDate);
-
-			if(futureDate.isBefore(futureDate)) {
-				futureDate = futureDate;
-			}
+			futureDate = frontOfWork.get(i).installReverseOperation();
 
 			System.out.println(frontOfWork.get(i).getCLateStartTime());
 		}
@@ -116,19 +112,12 @@ public class Main {
 	}
 
 	public static void installReverseOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate){
-		ArrayList<Operation> frontOfWork;
-		LocalDateTime futureDate;
 
 		while (!currentSeries.allOperationsAssigned()) {
 
-			frontOfWork = choiceReverseFrontOfWork(currentSeries.getOperationsToCreate());
+			 ArrayList<Operation> frontOfWork = choiceReverseFrontOfWork(currentSeries.getOperationsToCreate());
 
-			futureDate = installReverseOperationsAndReturnFutureDate(frontOfWork, tactDate);
-
-			tactDate = futureDate;
-
-			//System.out.println(tactDate);
-			frontOfWork.clear();
+			installReverseOperationsAndReturnFutureDate(frontOfWork, tactDate);
 		}
 	}
 

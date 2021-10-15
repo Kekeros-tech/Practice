@@ -61,22 +61,22 @@ public class Operation {
     public LocalDateTime getCEarlierStartTime() { return cEarlierStartTime; }
 
     public void getLatestEndTimeOfPrevious() {
-        LocalDateTime resultTime = null;
         if(tactTime != null) {
             return;
         }
         if (previousOperations.isEmpty()) {
-            tactTime = LocalDateTime.MAX;
             for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
-                LocalDateTime currentDate = null;
                 if(currentRecourse.isTactDateWorkingTime(serialAffiliation.getArrivalTime())) {
-                    currentDate = serialAffiliation.getArrivalTime();
+                    tactTime = serialAffiliation.getArrivalTime();
+                    break;
                 }
                 else {
-                    currentDate = currentRecourse.getStartDateAfterReleaseDate(serialAffiliation.getArrivalTime());
-                }
-                if(currentDate.isBefore(tactTime)) {
-                    tactTime = currentDate;
+                    tactTime = LocalDateTime.MAX;
+                    LocalDateTime startDateAfterArrivalTime = currentRecourse.getStartDateAfterReleaseDate(serialAffiliation.getArrivalTime());
+
+                    if( startDateAfterArrivalTime.isBefore(tactTime)) {
+                        tactTime =  startDateAfterArrivalTime;
+                    }
                 }
             }
         }
@@ -88,7 +88,6 @@ public class Operation {
                 }
             }
         }
-        //return resultTime;
     }
 
     public void setResourceGroup(Group resourceGroup) { this.resourceGroup = resourceGroup; }
@@ -130,7 +129,6 @@ public class Operation {
             followingOperation.previousOperations = new ArrayList<>();
         }
         followingOperation.previousOperations.add(this);
-        //followingOperation.addPreviousOperation(this);
     }
 
     public void addFollowingOperation(Collection<Operation> followingOperation) {
@@ -158,7 +156,6 @@ public class Operation {
     }
 
     //Reverse
-
     public boolean allFollowingAssignedReverse() {
         for(int i = 0; i < followingOperations.size(); i++){
             if(followingOperations.get(i).cLateStartTime == null) {
@@ -187,7 +184,7 @@ public class Operation {
                 maxTime = previousOperations.get(i).cEarlierStartTime;
             }
         }
-        if(maxTime == LocalDateTime.MIN){
+        if(maxTime == LocalDateTime.MIN) {
             return this.cEarlierStartTime;
         }
         return maxTime;
@@ -197,23 +194,28 @@ public class Operation {
 
 
 
-    public LocalDateTime installOperation() {
+    public void installOperation() {
 
         LocalDateTime startDate = LocalDateTime.MAX;
 
         for ( Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup() ) {
-            if( currentOperatingMode == OperatingMode.canBeInterrupted ) {
-                cNumberOfAssignedRecourse = tactRecourse.takeWhichCanBeInterrupted(durationOfExecution, tactTime);
+
+            switch (currentOperatingMode) {
+                case canNotBeInterrupted:{
+                    cNumberOfAssignedRecourse = tactRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tactTime);
+                    break;
+                }
+                case canBeInterrupted:{
+                    cNumberOfAssignedRecourse = tactRecourse.takeWhichCanBeInterrupted(durationOfExecution, tactTime);
+                    break;
+                }
             }
-            else
-            {
-                cNumberOfAssignedRecourse = tactRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tactTime);
-            }
+
             if(cNumberOfAssignedRecourse != null) {
                 cWorkingInterval = new WorkingHours(tactTime, cNumberOfAssignedRecourse.getReleaseTime());
                 serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
                 cEarlierStartTime = tactTime;
-                return cWorkingInterval.getEndTime();
+                break;
             }
             else
             {
@@ -223,30 +225,22 @@ public class Operation {
             }
         }
         tactTime = startDate;
-        return tactTime;
+        //return tactTime;
     }
 
     public void getLatestEndTimeOfFollowing() {
-        LocalDateTime resultTime = null;
         if(tactTime != null) {
             return;
         }
+
+        else if (followingOperations.isEmpty()) {
+            tactTime = serialAffiliation.getDeadlineForCompletion();
+        }
         else {
-            if (followingOperations.isEmpty()) {
-                tactTime = serialAffiliation.getDeadlineForCompletion();
-            /*for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
-                LocalDateTime currentDate = null;
-                currentDate = currentRecourse.getEndTimeBeforeTactDate(serialAffiliation.getDeadlineForCompletion(), this.getEarliestStartTime()).getEndTime();
-                if(currentDate.isAfter(tactTime)) {
-                    tactTime = currentDate;
-                }
-            }*/
-            } else {
-                tactTime = LocalDateTime.MAX;
-                for (int i = 0; i < followingOperations.size(); i++) {
-                    if (followingOperations.get(i).getCLateStartTime().isBefore(tactTime)) {
-                        tactTime = followingOperations.get(i).getCLateStartTime();
-                    }
+            tactTime = LocalDateTime.MAX;
+            for (int i = 0; i < followingOperations.size(); i++) {
+                if (followingOperations.get(i).getCLateStartTime().isBefore(tactTime)) {
+                    tactTime = followingOperations.get(i).getCLateStartTime();
                 }
             }
         }
@@ -258,7 +252,6 @@ public class Operation {
         LocalDateTime startDate = LocalDateTime.MIN;
 
         for (Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
-            Recourse flagRecourse;
             LocalDateTime newTime = null;
             if(currentOperatingMode == OperatingMode.canBeInterrupted) {
                 newTime = tactRecourse.takeReverseWhichCanBeInterrupted(durationOfExecution, tactTime, this.getEarliestStartTime());
@@ -293,15 +286,6 @@ public class Operation {
         }
         tactTime = localmax;
         return null;
-    }
-
-
-    public boolean enoughTime(LocalDateTime startTime, LocalDateTime endTime) {
-        Duration duration = Duration.between(startTime,endTime);
-        if(duration.toNanos() >= durationOfExecution.toNanos()) {
-            return true;
-        }
-        return false;
     }
 
     public void clean() {

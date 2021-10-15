@@ -26,7 +26,6 @@ public class Main {
 			frontOfWork.get(i).getLatestEndTimeOfFollowing();
 			frontOfWork.get(i).installReverseOperation();
 
-			//System.out.println(frontOfWork.get(i).getCLateStartTime());
 		}
 	}
 
@@ -52,13 +51,11 @@ public class Main {
 			frontOfWork.get(i).getLatestEndTimeOfPrevious();
 			frontOfWork.get(i).installOperation();
 
-			//System.out.println(frontOfWork.get(i).getCWorkingInterval());
 		}
 	}
 
 	public static void installOperationsUntilDeadline(Series currentSeries) {
 		ArrayList<Operation> frontOfWork;
-		ArrayList<Operation> operationsToCreate = currentSeries.getOperationsToCreate();
 
 		while (!currentSeries.allOperationsAssigned()) {
 
@@ -81,34 +78,28 @@ public class Main {
 
 	public static void takeSeriesToWork(Collection<Series> seriesForWork) {
 		ArrayList<Operation> operationsToInstall = new ArrayList<>();
-		LocalDateTime maxDeadline = LocalDateTime.MIN;
-		LocalDateTime arrivalTime = LocalDateTime.MAX;
 
 		for(Series currentSeries: seriesForWork) {
 			operationsToInstall.addAll(currentSeries.getOperationsToCreate());
 			installOperationsUntilDeadline(currentSeries);
-			currentSeries.setСNumberOfAssignedOperations(0);
 			currentSeries.clean();
+
 			installReverseOperationsUntilDeadline(currentSeries, currentSeries.getDeadlineForCompletion());
 			currentSeries.clean();
-			//5
-			if(currentSeries.getDeadlineForCompletion().isAfter(maxDeadline)){
-				maxDeadline = currentSeries.getDeadlineForCompletion();
-			}
-			if(currentSeries.getArrivalTime().isBefore(arrivalTime)) {
-				arrivalTime = currentSeries.getArrivalTime();
-			}
+
 		}
-		//Series combinedSeries = new Series(operationsToInstall, maxDeadline, arrivalTime);
 
 
 		while(!isAllOperationsInstall(operationsToInstall)) {
+
 			ArrayList frontOfWork = choiceFrontOfWork(operationsToInstall);
+
 			OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
 			frontOfWork.sort(sorter);
 
 			installOperationsAndReturnFutureDate(frontOfWork);
 		}
+
 	}
 
 	public static void installReverseOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate){
@@ -126,65 +117,6 @@ public class Main {
 
 
     public static void main(String[] args) {
-		//рабочий график 2 через 2
-		WorkingHours work = new WorkingHours("14-08-2021 09:00", "14-08-2021 13:00");
-		WorkingHours work2 = new WorkingHours("15-08-2021 10:00", "15-08-2021 16:00");
-		WorkingHours work3 = new WorkingHours("15-08-2021 17:00", "15-08-2021 23:00");
-		WorkingHours work4 = new WorkingHours("18-08-2021 10:00", "18-08-2021 18:00");
-		//рабочий график каждый день
-		WorkingHours work5 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
-		WorkingHours work6 = new WorkingHours("16-08-2021 09:00", "16-08-2021 15:00");
-
-
-		ArrayList<WorkingHours> arrayList = new ArrayList<>();
-		arrayList.add(work);
-		arrayList.add(work2);
-		arrayList.add(work3);
-		arrayList.add(work4);
-
-		ArrayList<WorkingHours> arrayList1 = new ArrayList<>();
-		arrayList1.add(work5);
-		arrayList1.add(work6);
-
-		//задаем 2 ресурса. 1 - график работы 2 через 2. 2 - работает каждый день
-		Recourse recourse = new Recourse(arrayList, "13-08-2021 00:00");
-		Recourse recourse1 = new Recourse(arrayList1, "13-08-2021 00:00");
-
-		//задаем группу ресурсов
-		ArrayList<Recourse> arrayOfRecourse = new ArrayList<>();
-		arrayOfRecourse.add(recourse);
-		arrayOfRecourse.add(recourse1);
-		Group mygroup = new Group(arrayOfRecourse);
-
-		//задаем 2 операции
-		Operation myoper = new Operation();
-		myoper.setResourceGroup(mygroup);
-		myoper.setDurationOfExecution(Duration.ofHours(2));
-		myoper.setOperatingMode(0);
-		Operation myoper2 = new Operation();
-		myoper2.setResourceGroup(mygroup);
-		myoper2.setDurationOfExecution(Duration.ofHours(10));
-		myoper2.setOperatingMode(1);
-
-		//задаем партию
-		ArrayList<Operation> arrayOfOperations = new ArrayList<>();
-		arrayOfOperations.add(myoper);
-		arrayOfOperations.add(myoper2);
-		Series mySeries = new Series(arrayOfOperations, "30-08-2021 00:00", "13-08-2021 00:00");
-		myoper.setSerialAffiliation(mySeries);
-		myoper2.setSerialAffiliation(mySeries);
-
-		myoper2.addFollowingOperation(myoper);
-
-		LocalDateTime tactDate = LocalDateTime.of(2021, 8, 15, 10, 00);
-		LocalDateTime futureDate;
-
-		ArrayList<Operation> frontOfWork = new ArrayList<>();
-
-		recourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
-		recourse1.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
-
-		installOperationsUntilDeadline(mySeries);
 
     }
 }

@@ -34,7 +34,7 @@ public class Main {
 		ArrayList<Operation> frontOfWork = new ArrayList<>();
 
 		for(int i = 0; i < operationsToCreate.size(); i++) {
-			if(operationsToCreate.get(i).allPreviousAssigned() && operationsToCreate.get(i).getCNumberOfAssignedRecourse() == null)
+			if(operationsToCreate.get(i).getCNumberOfAssignedRecourse() == null && operationsToCreate.get(i).allPreviousAssigned())
 			{
 				frontOfWork.add(operationsToCreate.get(i));
 			}
@@ -42,17 +42,52 @@ public class Main {
 		return frontOfWork;
 	}
 
+	public static ArrayList<Operation> choiceFrontOfWorkByWithTime(ArrayList<Operation> frontOfWorkByPrevious) {
+		ArrayList<Operation> frontOfWorkByTime = new ArrayList<>();
+		LocalDateTime minTime = LocalDateTime.MAX;
+
+		for(Operation currentOperation: frontOfWorkByPrevious) {
+			currentOperation.getLatestEndTimeOfPrevious();
+			if(currentOperation.getTactTime().isBefore(minTime)) {
+				minTime = currentOperation.getTactTime();
+			}
+		}
+
+		for (Operation currentOperation: frontOfWorkByPrevious) {
+			if(!currentOperation.getTactTime().isAfter(minTime)){
+				frontOfWorkByTime.add(currentOperation);
+			}
+		}
+		return  frontOfWorkByTime;
+	}
+
 
 
 	public static void installOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork) {
 
 		for(int i = 0; i < frontOfWork.size(); i++) {
-
+			if(frontOfWork.get(i) instanceof OperationWithPrioritiesByHeirs) {
+				((OperationWithPrioritiesByHeirs) frontOfWork.get(i)).setPrioritiesByHeirs();
+			}
 			frontOfWork.get(i).getLatestEndTimeOfPrevious();
+			frontOfWork.get(i).installOperation();
+		}
+	}
+
+
+	public static LocalDateTime earlierNextStartTime(Operation operationForFutureInstallation){
+		return null;
+	}
+
+	public static void installOperations(ArrayList<Operation> frontOfWork) {
+		for(int i = 0; i < frontOfWork.size(); i++) {
+
+			//frontOfWork.get(i).getLatestEndTimeOfPrevious();
 			frontOfWork.get(i).installOperation();
 
 		}
 	}
+
 
 	public static void installOperationsUntilDeadline(Series currentSeries) {
 		ArrayList<Operation> frontOfWork;
@@ -76,6 +111,8 @@ public class Main {
 		return true;
 	}
 
+
+
 	public static void takeSeriesToWork(Collection<Series> seriesForWork) {
 		ArrayList<Operation> operationsToInstall = new ArrayList<>();
 
@@ -89,15 +126,19 @@ public class Main {
 
 		}
 
-
 		while(!isAllOperationsInstall(operationsToInstall)) {
 
 			ArrayList frontOfWork = choiceFrontOfWork(operationsToInstall);
 
-			OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
-			frontOfWork.sort(sorter);
+			ArrayList frontOfWorkByTime = choiceFrontOfWorkByWithTime(frontOfWork);
 
-			installOperationsAndReturnFutureDate(frontOfWork);
+			OComparatorBasedOnPrioritiesByHeirs sorter = new OComparatorBasedOnPrioritiesByHeirs();
+			frontOfWorkByTime.sort(sorter);
+
+			/*OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
+			frontOfWorkByTime.sort(sorter);*/
+
+			installOperations(frontOfWork);
 		}
 
 	}

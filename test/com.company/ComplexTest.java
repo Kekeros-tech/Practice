@@ -31,17 +31,17 @@ public class ComplexTest {
         Group justSecondRecourse = new Group();
         justSecondRecourse.addRecourseInTheGroup(secondRecourse);
 
-        Operation first0 = new Operation();
+        Operation first0 = new OperationWithPrioritiesByHeirs();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
 
-        Operation second0 = new Operation();
+        Operation second0 = new OperationWithPrioritiesByHeirs();
         second0.setResourceGroup(justFirstRecourse);
         second0.setDurationOfExecution(Duration.ofHours(3));
         second0.setOperatingMode(0);
 
-        Operation third0 = new Operation();
+        Operation third0 = new OperationWithPrioritiesByHeirs();
         third0.setResourceGroup(justSecondRecourse);
         third0.setDurationOfExecution(Duration.ofHours(3));
         third0.setOperatingMode(0);
@@ -60,17 +60,17 @@ public class ComplexTest {
         second0.setSerialAffiliation(firstSeries);
         third0.setSerialAffiliation(firstSeries);
 
-        Operation first1 = new Operation();
+        Operation first1 = new OperationWithPrioritiesByHeirs();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        Operation second1 = new Operation();
+        Operation second1 = new OperationWithPrioritiesByHeirs();
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        Operation third1 = new Operation();
+        Operation third1 = new OperationWithPrioritiesByHeirs();
         third1.setResourceGroup(justSecondRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);

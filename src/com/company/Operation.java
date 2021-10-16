@@ -38,6 +38,19 @@ public class Operation {
         this.followingOperations = new ArrayList<>();
     }
 
+/*    Operation(Operation currentOperation) {
+        resourceGroup = currentOperation.resourceGroup;
+        serialAffiliation = currentOperation.serialAffiliation;
+        previousOperations = currentOperation.previousOperations;
+        followingOperations = currentOperation.followingOperations;
+        durationOfExecution = currentOperation.durationOfExecution;
+        currentOperatingMode = currentOperation.currentOperatingMode;
+        cNumberOfAssignedRecourse = currentOperation.
+        cWorkingInterval;
+        tactTime;
+        cEarlierStartTime;
+        cLateStartTime;
+    }*/
 
 
     public Group getResourceGroup() { return resourceGroup; }
@@ -59,6 +72,10 @@ public class Operation {
     public LocalDateTime getCLateStartTime() { return cLateStartTime; }
 
     public LocalDateTime getCEarlierStartTime() { return cEarlierStartTime; }
+
+    public LocalDateTime getTactTime() {
+        return tactTime;
+    }
 
     public void getLatestEndTimeOfPrevious() {
         if(tactTime != null) {
@@ -87,6 +104,12 @@ public class Operation {
                     tactTime = previousOperations.get(i).getCWorkingInterval().getEndTime();
                 }
             }
+        }
+    }
+
+    public void setTactTimeForFollowing() {
+        for(Operation currentFollowing: followingOperations){
+            currentFollowing.tactTime = this.getCWorkingInterval().getEndTime();
         }
     }
 
@@ -228,7 +251,43 @@ public class Operation {
         //return tactTime;
     }
 
-    public void getLatestEndTimeOfFollowing() {
+
+    //test
+    public boolean testInstallOperation(LocalDateTime tactDate) {
+        for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
+            switch (currentOperatingMode) {
+                case canBeInterrupted:{
+                    cNumberOfAssignedRecourse = currentRecourse.tackWhichCanNotBeInterrupted(durationOfExecution,tactDate);
+                    break;
+                }
+                case canNotBeInterrupted:{
+                    cNumberOfAssignedRecourse = currentRecourse.takeWhichCanBeInterrupted(durationOfExecution, tactDate);
+                }
+            }
+
+            if(cNumberOfAssignedRecourse != null) {
+                cWorkingInterval = new WorkingHours(tactDate, cNumberOfAssignedRecourse.getReleaseTime());
+                serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //test
+    public LocalDateTime returnNextTactTime(LocalDateTime tactTime) {
+        LocalDateTime nextStartTime = LocalDateTime.MAX;
+        for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
+            if(currentRecourse.getStartDateAfterReleaseDate(tactTime).isBefore(nextStartTime)){
+                nextStartTime = currentRecourse.getStartDateAfterReleaseDate(tactTime);
+            }
+        }
+        return nextStartTime;
+    }
+
+
+
+   public void getLatestEndTimeOfFollowing() {
         if(tactTime != null) {
             return;
         }
@@ -274,7 +333,6 @@ public class Operation {
         LocalDateTime localmax = LocalDateTime.MIN;
         for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup())
         {
-
             for(int i = currentRecourse.getSchedule().size() - 1; i > 0; i--) {
                 if (currentRecourse.getSchedule().get(i).getStartTime().isAfter(this.getEarliestStartTime()) && currentRecourse.getSchedule().get(i).getEndTime().isBefore(tactTime)) {
                     if(currentRecourse.getSchedule().get(i).getEndTime().isAfter(localmax)) {

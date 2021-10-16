@@ -203,7 +203,7 @@ public class Recourse {
     public WorkingHours getEndTimeBeforeTactDate( LocalDateTime tactDate, LocalDateTime maxStartTime){
         for(int i = schedule.size() - 1; i >= 0; i--) {
 
-            if(schedule.get(i).getStartTime().isAfter(maxStartTime) && !schedule.get(i).getEndTime().isAfter(tactDate)) {
+            if(!schedule.get(i).getStartTime().isBefore(maxStartTime) && !schedule.get(i).getEndTime().isAfter(tactDate)) {
                 return schedule.get(i);
             }
             else if(schedule.get(i).isWorkingTime(tactDate)) {

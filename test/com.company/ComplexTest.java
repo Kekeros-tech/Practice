@@ -111,10 +111,81 @@ public class ComplexTest {
                 System.out.println("Операция из 2 серии");
             }
             System.out.println(currentOperation.getCLateStartTime());
-            //System.out.println(currentOperation.getCNumberOfAssignedRecourse());
             System.out.println(currentOperation.getCWorkingInterval());
         }
+    }
 
+    @Test
+    public void resourceOccupancyTesting() {
+        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 15:00");
+        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 15:00");
+        WorkingHours workingHoursForFirst2 = new WorkingHours("20-08-2021 09:00", "20-08-2021 18:00");
+
+        Recourse firstRecourse = new Recourse("14-08-2021 09:00");
+        firstRecourse.addSchedule(workingHoursForFirst0);
+        firstRecourse.addSchedule(workingHoursForFirst1);
+        firstRecourse.addSchedule(workingHoursForFirst2);
+
+        Group justFirstRecourse = new Group();
+        justFirstRecourse.addRecourseInTheGroup(firstRecourse);
+
+        Operation first0 = new Operation();
+        first0.setResourceGroup(justFirstRecourse);
+        first0.setDurationOfExecution(Duration.ofHours(5));
+        first0.setOperatingMode(0);
+
+        Operation second0 = new Operation();
+        second0.setResourceGroup(justFirstRecourse);
+        second0.setDurationOfExecution(Duration.ofHours(5));
+        second0.setOperatingMode(0);
+
+
+        first0.addFollowingOperation(second0);
+
+        ArrayList<Operation> operations = new ArrayList<>();
+        operations.add(first0);
+        operations.add(second0);
+
+        Series firstSeries = new Series(operations, "15-09-2021 00:00", "13-08-2021 10:00");
+
+        first0.setSerialAffiliation(firstSeries);
+        second0.setSerialAffiliation(firstSeries);
+
+        Operation first1 = new Operation();
+        first1.setResourceGroup(justFirstRecourse);
+        first1.setDurationOfExecution(Duration.ofHours(9));
+        first1.setOperatingMode(0);
+
+        ArrayList<Operation> operations1 = new ArrayList<>();
+        operations1.add(first1);
+
+        Series secondSeries = new Series(operations1, "25-08-2021 00:00", "13-08-2021 10:00");
+
+        first1.setSerialAffiliation(secondSeries);
+
+        ArrayList<Series> seriesToWork = new ArrayList<>();
+        seriesToWork.add(firstSeries);
+        seriesToWork.add(secondSeries);
+
+        firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+
+        Main.takeSeriesToWork(seriesToWork);
+
+        operations.addAll(operations1);
+
+        OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
+        operations.sort(sorter);
+
+        for(Operation currentOperation: operations) {
+            if(currentOperation.getSerialAffiliation() == firstSeries){
+                System.out.println("Операция из 1 серии");
+            }
+            else {
+                System.out.println("Операция из 2 серии");
+            }
+            System.out.println(currentOperation.getCLateStartTime());
+            System.out.println(currentOperation.getCWorkingInterval());
+        }
     }
 
 }

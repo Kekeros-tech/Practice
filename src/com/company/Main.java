@@ -75,10 +75,6 @@ public class Main {
 	}
 
 
-	public static LocalDateTime earlierNextStartTime(Operation operationForFutureInstallation){
-		return null;
-	}
-
 	public static void installOperations(ArrayList<Operation> frontOfWork) {
 		for(int i = 0; i < frontOfWork.size(); i++) {
 
@@ -132,13 +128,13 @@ public class Main {
 
 			ArrayList frontOfWorkByTime = choiceFrontOfWorkByWithTime(frontOfWork);
 
-			OComparatorBasedOnPrioritiesByHeirs sorter = new OComparatorBasedOnPrioritiesByHeirs();
+			//OComparatorBasedOnPrioritiesByHeirs sorter = new OComparatorBasedOnPrioritiesByHeirs();
+			//frontOfWorkByTime.sort(sorter);
+
+			OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
 			frontOfWorkByTime.sort(sorter);
 
-			/*OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
-			frontOfWorkByTime.sort(sorter);*/
-
-			installOperations(frontOfWork);
+			installOperationsAndReturnFutureDate(frontOfWork);
 		}
 
 	}

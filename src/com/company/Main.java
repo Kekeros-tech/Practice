@@ -23,9 +23,12 @@ public class Main {
 
 		for(int i = 0; i < frontOfWork.size(); i++) {
 
+			if(frontOfWork.get(i) instanceof OperationWithPrioritiesByHeirs) {
+				((OperationWithPrioritiesByHeirs) frontOfWork.get(i)).setPrioritiesByHeirs();
+			}
+
 			frontOfWork.get(i).getLatestEndTimeOfFollowing();
 			frontOfWork.get(i).installReverseOperation();
-
 		}
 	}
 
@@ -45,6 +48,7 @@ public class Main {
 	public static ArrayList<Operation> choiceFrontOfWorkByWithTime(ArrayList<Operation> frontOfWorkByPrevious) {
 		ArrayList<Operation> frontOfWorkByTime = new ArrayList<>();
 		LocalDateTime minTime = LocalDateTime.MAX;
+		boolean flag = false;
 
 		for(Operation currentOperation: frontOfWorkByPrevious) {
 			currentOperation.getLatestEndTimeOfPrevious();
@@ -54,10 +58,24 @@ public class Main {
 		}
 
 		for (Operation currentOperation: frontOfWorkByPrevious) {
-			if(!currentOperation.getTactTime().isAfter(minTime)){
+			if(!currentOperation.getTactTime().isAfter(minTime)) {
+				if(currentOperation instanceof OperationWithPrioritiesByHeirs){
+					flag = true;
+				}
 				frontOfWorkByTime.add(currentOperation);
 			}
 		}
+
+		if(flag){
+			OComparatorBasedOnPrioritiesByHeirs sorter = new OComparatorBasedOnPrioritiesByHeirs();
+			frontOfWorkByTime.sort(sorter);
+		}
+		else
+		{
+			OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
+			frontOfWorkByTime.sort(sorter);
+		}
+
 		return  frontOfWorkByTime;
 	}
 
@@ -65,10 +83,8 @@ public class Main {
 
 	public static void installOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork) {
 
+
 		for(int i = 0; i < frontOfWork.size(); i++) {
-			if(frontOfWork.get(i) instanceof OperationWithPrioritiesByHeirs) {
-				((OperationWithPrioritiesByHeirs) frontOfWork.get(i)).setPrioritiesByHeirs();
-			}
 			frontOfWork.get(i).getLatestEndTimeOfPrevious();
 			frontOfWork.get(i).installOperation();
 		}
@@ -131,10 +147,10 @@ public class Main {
 			//OComparatorBasedOnPrioritiesByHeirs sorter = new OComparatorBasedOnPrioritiesByHeirs();
 			//frontOfWorkByTime.sort(sorter);
 
-			OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
-			frontOfWorkByTime.sort(sorter);
+			//OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
+			//frontOfWorkByTime.sort(sorter);
 
-			installOperationsAndReturnFutureDate(frontOfWork);
+			installOperationsAndReturnFutureDate(frontOfWorkByTime);
 		}
 
 	}

@@ -44,11 +44,11 @@ import java.util.Comparator;
         }
     }
 
-    class OComparatorBasedOnPrioritiesByHeirs implements Comparator<OperationWithPrioritiesByHeirs> {
+    class OComparatorBasedOnPrioritiesByHeirs implements Comparator<Operation> {
 
-        public int compare(OperationWithPrioritiesByHeirs a, OperationWithPrioritiesByHeirs b) {
-            if(a.getPrioritiesByHeirs() > b.getPrioritiesByHeirs())
-                return 1;
-            return -1;
+        public int compare(Operation a, Operation b) {
+            if(((OperationWithPrioritiesByHeirs) a).getPrioritiesByHeirs() > ((OperationWithPrioritiesByHeirs) b).getPrioritiesByHeirs())
+                return -1;
+            return 1;
         }
     }

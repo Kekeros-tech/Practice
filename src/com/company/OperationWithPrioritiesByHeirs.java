@@ -24,7 +24,13 @@ public class OperationWithPrioritiesByHeirs extends Operation{
     }
 
     public void setPrioritiesByHeirs() {
-        prioritiesByHeirs = 0;
+        if(super.getFollowingOperations().isEmpty()){
+            prioritiesByHeirs = 0;
+        }
+        else
+        {
+            prioritiesByHeirs = 1;
+        }
         for(Operation followingOperation: super.getFollowingOperations()) {
             OperationWithPrioritiesByHeirs following = (OperationWithPrioritiesByHeirs) followingOperation;
             prioritiesByHeirs += following.prioritiesByHeirs;

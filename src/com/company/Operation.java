@@ -354,5 +354,4 @@ public class Operation {
         cWorkingInterval = null;
         tactTime = null;
     }
-
 }

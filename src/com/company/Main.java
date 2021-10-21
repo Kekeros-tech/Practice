@@ -133,7 +133,7 @@ public class Main {
 			installOperationsUntilDeadline(currentSeries);
 			currentSeries.clean();
 
-			installReverseOperationsUntilDeadline(currentSeries, currentSeries.getDeadlineForCompletion());
+			installReverseOperationsUntilDeadline(currentSeries);
 			currentSeries.clean();
 
 		}
@@ -155,7 +155,7 @@ public class Main {
 
 	}
 
-	public static void installReverseOperationsUntilDeadline(Series currentSeries, LocalDateTime tactDate){
+	public static void installReverseOperationsUntilDeadline(Series currentSeries){
 		ArrayList<Operation> frontOfWork;
 
 		while (!currentSeries.allOperationsAssigned()) {

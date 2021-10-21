@@ -191,8 +191,6 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-        LocalDateTime tactDate = LocalDateTime.of(2021, 8, 15, 10, 00);
-
         Main.installOperationsUntilDeadline(mySeries);
 
         WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "17-08-2021 10:00");
@@ -288,15 +286,23 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-        LocalDateTime tactDate = LocalDateTime.of(2021, 8, 14, 10, 00);
-
         Main.installOperationsUntilDeadline(mySeries);
-
-        mySeries.setСNumberOfAssignedOperations(0);
 
         mySeries.clean();
 
-        Main.installReverseOperationsUntilDeadline(mySeries, mySeries.getDeadlineForCompletion());
+        Main.installReverseOperationsUntilDeadline(mySeries);
+
+        LocalDateTime expectation = LocalDateTime.of(2021,8,28,11,00);
+        assertEquals(expectation.toString(), firstOperation.getCLateStartTime().toString());
+
+        expectation = LocalDateTime.of(2021, 8,28,17,00);
+        assertEquals(expectation.toString(), secondOperation.getCLateStartTime().toString());
+
+        expectation = LocalDateTime.of(2021, 8,29,10,00);
+        assertEquals(expectation.toString(), thirdOperation.getCLateStartTime().toString());
+
+        expectation = LocalDateTime.of(2021, 8,29,9,00);
+        assertEquals(expectation.toString(), fourthOperation.getCLateStartTime().toString());
     }
 
     @Test
@@ -392,17 +398,27 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-        LocalDateTime tactDate = LocalDateTime.of(2021, 8, 14, 12, 00);
-
 
         Main.installOperationsUntilDeadline(mySeries);
 
-        mySeries.setСNumberOfAssignedOperations(0);
-
         mySeries.clean();
-        System.out.println();
 
-        Main.installReverseOperationsUntilDeadline(mySeries, mySeries.getDeadlineForCompletion());
+        Main.installReverseOperationsUntilDeadline(mySeries);
+
+        LocalDateTime expectation = LocalDateTime.of(2021,8,27,15,00);
+        assertEquals(expectation.toString(), firstOperation.getCLateStartTime().toString());
+
+        expectation = LocalDateTime.of(2021, 8,28,12,00);
+        assertEquals(expectation.toString(), secondOperation.getCLateStartTime().toString());
+
+        expectation = LocalDateTime.of(2021, 8,25,13,00);
+        assertEquals(expectation.toString(), thirdOperation.getCLateStartTime().toString());
+
+        expectation = LocalDateTime.of(2021, 8,26,10,00);
+        assertEquals(expectation.toString(), fourthOperation.getCLateStartTime().toString());
+
+        expectation = LocalDateTime.of(2021, 8,29,14,00);
+        assertEquals(expectation.toString(), fifthOperation.getCLateStartTime().toString());
     }
 
     @Test
@@ -483,7 +499,7 @@ public class MainTest {
 
         ArrayList<Operation> operationsForFirstSeries = new ArrayList<>();
         operationsForFirstSeries.add(specialOperation);
-        Series firstSeries = new Series(operationsForFirstSeries, "16-09-2021 00:00", "14-08-2021 12:00");
+        Series firstSeries = new Series(operationsForFirstSeries, "16-08-2021 00:00", "14-08-2021 12:00");
         specialOperation.setSerialAffiliation(firstSeries);
 
         firstOperation.addFollowingOperation(secondOperation);
@@ -509,28 +525,29 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-        LocalDateTime tactDate = LocalDateTime.of(2021, 8, 14, 12, 00);
-
         ArrayList<Series> seriesForWork = new ArrayList<>();
         seriesForWork.add(firstSeries);
         seriesForWork.add(mySeries);
-        //seriesForWork.add(firstSeries);
 
         Main.takeSeriesToWork(seriesForWork);
 
-        operations.add(specialOperation);
+        WorkingHours expectation = new WorkingHours("14-08-2021 12:00", "14-08-2021 16:00");
+        assertEquals(expectation.toString(), specialOperation.getCWorkingInterval().toString());
 
-        OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
-        operations.sort(sorter);
+        expectation = new WorkingHours("15-08-2021 12:00", "15-08-2021 17:00");
+        assertEquals(expectation.toString(), firstOperation.getCWorkingInterval().toString());
 
-        for(Operation currentOperation: operations) {
-            if(currentOperation.getDurationOfExecution().toNanos() == Duration.ofHours(4).toNanos()){
-                System.out.println("Особая операция");
-            }
-            //System.out.println(currentOperation.getDurationOfExecution());
-            System.out.println(currentOperation.getCNumberOfAssignedRecourse());
-            System.out.println(currentOperation.getCWorkingInterval());
-        }
+        expectation = new WorkingHours("15-08-2021 17:00", "17-08-2021 11:00");
+        assertEquals(expectation.toString(), secondOperation.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("15-08-2021 12:00", "15-08-2021 19:00");
+        assertEquals(expectation.toString(), thirdOperation.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("18-08-2021 10:00", "19-08-2021 16:00");
+        assertEquals(expectation.toString(), fourthOperation.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("20-08-2021 10:00", "20-08-2021 16:00");
+        assertEquals(expectation.toString(), fifthOperation.getCWorkingInterval().toString());
     }
 
     @Test

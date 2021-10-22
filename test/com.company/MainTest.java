@@ -681,20 +681,31 @@ public class MainTest {
 
         Main.takeSeriesToWork(seriesForWork);
 
-        operationsToCreate.addAll(otherOperationsToCreate);
+        WorkingHours expectation = new WorkingHours("14-08-2021 10:00","14-08-2021 11:00" );
+        assertEquals(expectation.toString(), firstOperation.getCWorkingInterval().toString());
 
-        OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
-        operationsToCreate.sort(sorter);
+        expectation = new WorkingHours("14-08-2021 11:00","14-08-2021 12:00" );
+        assertEquals(expectation.toString(), secondOperation.getCWorkingInterval().toString());
 
-        for(Operation currentOperation:  operationsToCreate) {
-            if(currentOperation.getSerialAffiliation() == firstSeries){
-                System.out.println("Операция из 1 серии");
-            }
-            else System.out.println("Операция из 2 серии");
-            //System.out.println(currentOperation.getDurationOfExecution());
-            System.out.println(currentOperation.getCNumberOfAssignedRecourse());
-            System.out.println(currentOperation.getCWorkingInterval());
-        }
+        expectation = new WorkingHours("14-08-2021 12:00","14-08-2021 13:00" );
+        assertEquals(expectation.toString(), thirdOperation.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("14-08-2021 13:00","14-08-2021 14:00" );
+        assertEquals(expectation.toString(), fourthOperation.getCWorkingInterval().toString());
+
+
+
+        expectation = new WorkingHours("14-08-2021 14:00","14-08-2021 15:00" );
+        assertEquals(expectation.toString(), otherFirstOperation.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("14-08-2021 15:00","14-08-2021 16:00" );
+        assertEquals(expectation.toString(), otherSecondOperation.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("14-08-2021 16:00","14-08-2021 17:00" );
+        assertEquals(expectation.toString(), otherThirdOperation.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("14-08-2021 17:00","14-08-2021 18:00" );
+        assertEquals(expectation.toString(), otherFourthOperation.getCWorkingInterval().toString());
 
     }
 

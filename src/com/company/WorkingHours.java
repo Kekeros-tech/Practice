@@ -63,4 +63,5 @@ public class WorkingHours {
     public boolean isReverseTime(LocalDateTime currentTime) {
         return false;
     }
+
 }

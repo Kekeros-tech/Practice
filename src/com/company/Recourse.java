@@ -216,6 +216,7 @@ public class Recourse {
     public LocalDateTime tackReverseWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate, LocalDateTime maxStartTime) {
         WorkingHours tactDate = getEndTimeBeforeTactDate(tackDate, maxStartTime);
         Duration resultDuration = Duration.between(tactDate.getStartTime(), tactDate.getEndTime());
+
         if(resultDuration.toNanos() >= durationOfExecution.toNanos()) {
             return tactDate.getEndTime().minusNanos(durationOfExecution.toNanos());
         }

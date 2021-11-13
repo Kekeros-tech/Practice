@@ -251,6 +251,30 @@ public class Operation {
         //return tactTime;
     }
 
+    public ArrayList<Recourse> getResourcesToBorrow () {
+        ArrayList<Recourse> recoursesToBorrow = new ArrayList<>();
+
+        for(Recourse candidateForAddition: resourceGroup.getRecoursesInTheGroup()) {
+            Recourse selectedResource = new Recourse();
+
+            switch (currentOperatingMode) {
+                case canNotBeInterrupted: {
+                    selectedResource = candidateForAddition.tackWhichCanNotBeInterrupted(durationOfExecution, tactTime);
+                    break;
+                }
+                case canBeInterrupted: {
+                    selectedResource = candidateForAddition.takeWhichCanBeInterrupted(durationOfExecution, tactTime);
+                    break;
+                }
+            }
+
+            if(selectedResource != null) {
+                recoursesToBorrow.add(selectedResource);
+            }
+        }
+        return recoursesToBorrow;
+    }
+
 
     //test
     public boolean testInstallOperation(LocalDateTime tactDate) {

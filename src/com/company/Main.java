@@ -66,7 +66,7 @@ public class Main {
 			}
 		}
 
-		if(flag){
+		if(flag) {
 			OComparatorBasedOnPrioritiesByHeirs sorter = new OComparatorBasedOnPrioritiesByHeirs();
 			frontOfWorkByTime.sort(sorter);
 		}
@@ -78,8 +78,6 @@ public class Main {
 
 		return  frontOfWorkByTime;
 	}
-
-
 
 	public static void installOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork) {
 

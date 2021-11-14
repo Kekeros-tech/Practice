@@ -251,6 +251,16 @@ public class Operation {
         //return tactTime;
     }
 
+    public void setNewTactTime() {
+        LocalDateTime startDate = LocalDateTime.MAX;
+        for(Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
+            if(tactRecourse.getStartDateAfterReleaseDate(tactTime).isBefore(startDate)) {
+                startDate = tactRecourse.getStartDateAfterReleaseDate(tactTime);
+            }
+        }
+        tactTime = startDate;
+    }
+
     public ArrayList<Recourse> getResourcesToBorrow () {
         ArrayList<Recourse> recoursesToBorrow = new ArrayList<>();
 
@@ -259,11 +269,11 @@ public class Operation {
 
             switch (currentOperatingMode) {
                 case canNotBeInterrupted: {
-                    selectedResource = candidateForAddition.tackWhichCanNotBeInterrupted(durationOfExecution, tactTime);
+                    selectedResource = candidateForAddition.takeWhichCanNotBeInterrupted(durationOfExecution, tactTime);
                     break;
                 }
                 case canBeInterrupted: {
-                    selectedResource = candidateForAddition.takeWhichCanBeInterrupted(durationOfExecution, tactTime);
+                    selectedResource = candidateForAddition.takeWhichCanBeInterruptedForMaxFlow(durationOfExecution, tactTime);
                     break;
                 }
             }
@@ -275,6 +285,23 @@ public class Operation {
         return recoursesToBorrow;
     }
 
+    public void installOperationForSpecificResource(Recourse currentRecourse) {
+
+        switch (currentOperatingMode) {
+            case canNotBeInterrupted: {
+                cNumberOfAssignedRecourse = currentRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tactTime);
+                break;
+            }
+            case canBeInterrupted: {
+                cNumberOfAssignedRecourse = currentRecourse.takeWhichCanBeInterrupted(durationOfExecution, tactTime);
+                break;
+            }
+        }
+
+        cWorkingInterval = new WorkingHours(tactTime, cNumberOfAssignedRecourse.getReleaseTime());
+        serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+        cEarlierStartTime = tactTime;
+    }
 
     //test
     public boolean testInstallOperation(LocalDateTime tactDate) {

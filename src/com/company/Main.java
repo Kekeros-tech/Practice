@@ -2,8 +2,7 @@ package com.company;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 public class Main {
 
@@ -81,30 +80,43 @@ public class Main {
 
 	public static void installOperationsAndReturnFutureDate (ArrayList<Operation> frontOfWork) {
 
-
 		for(int i = 0; i < frontOfWork.size(); i++) {
 			frontOfWork.get(i).getLatestEndTimeOfPrevious();
-			frontOfWork.get(i).installOperation();
 		}
-	}
 
+		HashMap<Operation, Recourse> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(frontOfWork);
 
-	public static void installOperations(ArrayList<Operation> frontOfWork) {
-		for(int i = 0; i < frontOfWork.size(); i++) {
-
-			//frontOfWork.get(i).getLatestEndTimeOfPrevious();
-			frontOfWork.get(i).installOperation();
-
+		if(installationSequence == null) {
+			for(int i = 0; i < frontOfWork.size(); i++) {
+				frontOfWork.get(i).setNewTactTime();
+			}
 		}
+		else
+		{
+			for(Map.Entry<Operation, Recourse> entry : installationSequence.entrySet()){
+				entry.getKey().installOperationForSpecificResource(entry.getValue());
+			}
+		}
+
+		/*for(Map.Entry<Operation, Recourse> entry : installationSequence.entrySet()){
+			entry.getKey().installOperationForSpecificResource(entry.getValue());
+		}*/
+
+		//for(int i = 0; i < frontOfWork.size(); i++) {
+		//	frontOfWork.get(i).installOperation();
+		//}
+
 	}
 
 
 	public static void installOperationsUntilDeadline(Series currentSeries) {
-		ArrayList<Operation> frontOfWork;
+		//ArrayList<Operation> frontOfWork;
 
 		while (!currentSeries.allOperationsAssigned()) {
 
-			frontOfWork = choiceFrontOfWork(currentSeries.getOperationsToCreate());
+			ArrayList <Operation> frontOfWork = choiceFrontOfWork(currentSeries.getOperationsToCreate());
+
+			//ArrayList<Operation> frontOfWorkByTime = choiceFrontOfWorkByWithTime(frontOfWork);
 
 			installOperationsAndReturnFutureDate(frontOfWork);
 

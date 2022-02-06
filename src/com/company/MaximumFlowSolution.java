@@ -66,6 +66,7 @@ public class MaximumFlowSolution {
                 adjacencyMatrix[0][i] = 1;
             }
         }
+
         for(int i = 0; i < frontOfWorkSortedByPriority.size(); i++) {
             ArrayList<Recourse> resourcesOfCurrentOperation = frontOfWorkSortedByPriority.get(i).getResourcesToBorrow();
             for(int j = 0, difference = frontOfWorkSortedByPriority.size() + 1; j < resourcesOfCurrentOperation.size(); j++){

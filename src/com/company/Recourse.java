@@ -38,7 +38,7 @@ public class Recourse {
         schedule.addAll(collectionWorkingHours);
     }
 
-    //задавать через правила, набор характеристик, как должен работать станок
+    //переписать метод задания через правила
     public void fillScheduleUsingPreviousData(LocalDateTime requiredDate)
     {
         if (!schedule.isEmpty()){

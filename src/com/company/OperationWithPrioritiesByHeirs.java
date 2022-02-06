@@ -8,13 +8,12 @@ public class OperationWithPrioritiesByHeirs extends Operation{
 
     private int prioritiesByHeirs;
 
-    public OperationWithPrioritiesByHeirs(Group resourceGroup, Series serialAffiliation, Collection<Operation> previousOperations, Collection<Operation> followingOperations,
-                                          Duration durationOfExecution, int currentOperatingMode){
-        super(resourceGroup,serialAffiliation, previousOperations, followingOperations, durationOfExecution, currentOperatingMode);
+    public OperationWithPrioritiesByHeirs(Operation operation) {
+        super(operation);
         prioritiesByHeirs = 0;
     }
 
-    public OperationWithPrioritiesByHeirs(){
+    public OperationWithPrioritiesByHeirs() {
         super();
         prioritiesByHeirs = 0;
     }
@@ -24,13 +23,14 @@ public class OperationWithPrioritiesByHeirs extends Operation{
     }
 
     public void setPrioritiesByHeirs() {
-        if(super.getFollowingOperations().isEmpty()){
+        if(super.getFollowingOperations().isEmpty()) {
             prioritiesByHeirs = 0;
         }
         else
         {
             prioritiesByHeirs = 1;
         }
+
         for(Operation followingOperation: super.getFollowingOperations()) {
             OperationWithPrioritiesByHeirs following = (OperationWithPrioritiesByHeirs) followingOperation;
             prioritiesByHeirs += following.prioritiesByHeirs;

@@ -44,7 +44,7 @@ public class WorkingHours {
         return startTime.format(formatter)+"--->"+ endTime.format(formatter);
     }
 
-    public Duration toDuration(){
+    public Duration toDuration() {
         Duration result = Duration.between(startTime, endTime);
         return result;
     }

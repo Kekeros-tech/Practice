@@ -38,19 +38,19 @@ public class Operation {
         this.followingOperations = new ArrayList<>();
     }
 
-/*    Operation(Operation currentOperation) {
+    Operation(Operation currentOperation) {
         resourceGroup = currentOperation.resourceGroup;
         serialAffiliation = currentOperation.serialAffiliation;
         previousOperations = currentOperation.previousOperations;
         followingOperations = currentOperation.followingOperations;
         durationOfExecution = currentOperation.durationOfExecution;
         currentOperatingMode = currentOperation.currentOperatingMode;
-        cNumberOfAssignedRecourse = currentOperation.
-        cWorkingInterval;
-        tactTime;
-        cEarlierStartTime;
-        cLateStartTime;
-    }*/
+        cNumberOfAssignedRecourse = currentOperation.cNumberOfAssignedRecourse;
+        cWorkingInterval = currentOperation.cWorkingInterval;
+        tactTime = currentOperation.tactTime;
+        cEarlierStartTime = currentOperation.cEarlierStartTime;
+        cLateStartTime = currentOperation.cLateStartTime;
+    }
 
 
     public Group getResourceGroup() { return resourceGroup; }
@@ -91,7 +91,7 @@ public class Operation {
                     tactTime = LocalDateTime.MAX;
                     LocalDateTime startDateAfterArrivalTime = currentRecourse.getStartDateAfterReleaseDate(serialAffiliation.getArrivalTime());
 
-                    if( startDateAfterArrivalTime.isBefore(tactTime)) {
+                    if(startDateAfterArrivalTime.isBefore(tactTime)) {
                         tactTime =  startDateAfterArrivalTime;
                     }
                 }
@@ -104,12 +104,6 @@ public class Operation {
                     tactTime = previousOperations.get(i).getCWorkingInterval().getEndTime();
                 }
             }
-        }
-    }
-
-    public void setTactTimeForFollowing() {
-        for(Operation currentFollowing: followingOperations){
-            currentFollowing.tactTime = this.getCWorkingInterval().getEndTime();
         }
     }
 

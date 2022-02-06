@@ -40,10 +40,10 @@ public class MaximumFlowSolutionTest {
 
 
 
-        Operation first0 = new Operation();
-        first0.setResourceGroup(firstAndSecondRecourse);
-        first0.setDurationOfExecution(Duration.ofHours(5));
-        first0.setOperatingMode(0);
+        Operation first = new Operation();
+        first.setResourceGroup(firstAndSecondRecourse);
+        first.setDurationOfExecution(Duration.ofHours(5));
+        first.setOperatingMode(0);
 
         Operation second0 = new Operation();
         second0.setResourceGroup(justFirstRecourse);
@@ -61,14 +61,14 @@ public class MaximumFlowSolutionTest {
         fourth0.setOperatingMode(0);
 
         ArrayList<Operation> operations = new ArrayList<>();
-        operations.add(first0);
+        operations.add(first);
         operations.add(second0);
         operations.add(third0);
         operations.add(fourth0);
 
         Series firstSeries = new Series(operations, "15-09-2021 00:00", "13-08-2021 10:00");
 
-        first0.setSerialAffiliation(firstSeries);
+        first.setSerialAffiliation(firstSeries);
         second0.setSerialAffiliation(firstSeries);
         third0.setSerialAffiliation(firstSeries);
         fourth0.setSerialAffiliation(firstSeries);
@@ -82,18 +82,13 @@ public class MaximumFlowSolutionTest {
 
         Main.takeSeriesToWork(seriesToWork);
 
-        OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
-        operations.sort(sorter);
+        assertEquals(new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00").toString(),first.getCWorkingInterval().toString());
+        assertEquals(secondRecourse, first.getCNumberOfAssignedRecourse());
 
-        for(Operation currentOperation: operations) {
-            if(currentOperation.getSerialAffiliation() == firstSeries){
-                System.out.println("Операция из 1 серии");
-            }
-            else {
-                System.out.println("Операция из 2 серии");
-            }
-            System.out.println(currentOperation.getCLateStartTime());
-            System.out.println(currentOperation.getCWorkingInterval());
-        }
+        assertEquals(new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00").toString(), second0.getCWorkingInterval().toString());
+        assertEquals(firstRecourse, second0.getCNumberOfAssignedRecourse());
+
+        assertEquals(new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00").toString(), third0.getCWorkingInterval().toString());
+        assertEquals(thirdRecourse, third0.getCNumberOfAssignedRecourse());
     }
 }

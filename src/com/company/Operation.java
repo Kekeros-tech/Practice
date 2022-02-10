@@ -207,44 +207,6 @@ public class Operation {
         return maxTime;
     }
 
-
-
-
-
-    public void installOperation() {
-
-        LocalDateTime startDate = LocalDateTime.MAX;
-
-        for ( Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup() ) {
-
-            switch (currentOperatingMode) {
-                case canNotBeInterrupted:{
-                    cNumberOfAssignedRecourse = tactRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tactTime);
-                    break;
-                }
-                case canBeInterrupted:{
-                    cNumberOfAssignedRecourse = tactRecourse.takeWhichCanBeInterrupted(durationOfExecution, tactTime);
-                    break;
-                }
-            }
-
-            if(cNumberOfAssignedRecourse != null) {
-                cWorkingInterval = new WorkingHours(tactTime, cNumberOfAssignedRecourse.getReleaseTime());
-                serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
-                cEarlierStartTime = tactTime;
-                break;
-            }
-            else
-            {
-                if(tactRecourse.getStartDateAfterReleaseDate(tactTime).isBefore(startDate)) {
-                    startDate = tactRecourse.getStartDateAfterReleaseDate(tactTime);
-                }
-            }
-        }
-        tactTime = startDate;
-        //return tactTime;
-    }
-
     public void setNewTactTime() {
         LocalDateTime startDate = LocalDateTime.MAX;
         for(Recourse tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
@@ -255,25 +217,25 @@ public class Operation {
         tactTime = startDate;
     }
 
+
     public ArrayList<Recourse> getResourcesToBorrow () {
         ArrayList<Recourse> recoursesToBorrow = new ArrayList<>();
 
         for(Recourse candidateForAddition: resourceGroup.getRecoursesInTheGroup()) {
-            Recourse selectedResource = new Recourse();
 
             switch (currentOperatingMode) {
                 case canNotBeInterrupted: {
-                    selectedResource = candidateForAddition.takeWhichCanNotBeInterrupted(durationOfExecution, tactTime);
+                    if(candidateForAddition.takeWhichCanNotBeInterrupted(durationOfExecution, tactTime) != null){
+                        recoursesToBorrow.add(candidateForAddition);
+                    }
                     break;
                 }
                 case canBeInterrupted: {
-                    selectedResource = candidateForAddition.takeWhichCanBeInterruptedForMaxFlow(durationOfExecution, tactTime);
+                    if(candidateForAddition.takeWhichCanBeInterrupted(durationOfExecution, tactTime) != null) {
+                        recoursesToBorrow.add(candidateForAddition);
+                    }
                     break;
                 }
-            }
-
-            if(selectedResource != null) {
-                recoursesToBorrow.add(selectedResource);
             }
         }
         return recoursesToBorrow;
@@ -283,54 +245,20 @@ public class Operation {
 
         switch (currentOperatingMode) {
             case canNotBeInterrupted: {
-                cNumberOfAssignedRecourse = currentRecourse.tackWhichCanNotBeInterrupted(durationOfExecution, tactTime);
+                currentRecourse.setReleaseTime(currentRecourse.takeWhichCanNotBeInterrupted(durationOfExecution, tactTime));
                 break;
             }
             case canBeInterrupted: {
-                cNumberOfAssignedRecourse = currentRecourse.takeWhichCanBeInterrupted(durationOfExecution, tactTime);
+                currentRecourse.setReleaseTime(currentRecourse.takeWhichCanBeInterrupted(durationOfExecution, tactTime));
                 break;
             }
         }
 
+        cNumberOfAssignedRecourse = currentRecourse;
         cWorkingInterval = new WorkingHours(tactTime, cNumberOfAssignedRecourse.getReleaseTime());
         serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
         cEarlierStartTime = tactTime;
     }
-
-    //test
-    public boolean testInstallOperation(LocalDateTime tactDate) {
-        for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
-            switch (currentOperatingMode) {
-                case canBeInterrupted:{
-                    cNumberOfAssignedRecourse = currentRecourse.tackWhichCanNotBeInterrupted(durationOfExecution,tactDate);
-                    break;
-                }
-                case canNotBeInterrupted:{
-                    cNumberOfAssignedRecourse = currentRecourse.takeWhichCanBeInterrupted(durationOfExecution, tactDate);
-                }
-            }
-
-            if(cNumberOfAssignedRecourse != null) {
-                cWorkingInterval = new WorkingHours(tactDate, cNumberOfAssignedRecourse.getReleaseTime());
-                serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    //test
-    public LocalDateTime returnNextTactTime(LocalDateTime tactTime) {
-        LocalDateTime nextStartTime = LocalDateTime.MAX;
-        for(Recourse currentRecourse: resourceGroup.getRecoursesInTheGroup()) {
-            if(currentRecourse.getStartDateAfterReleaseDate(tactTime).isBefore(nextStartTime)){
-                nextStartTime = currentRecourse.getStartDateAfterReleaseDate(tactTime);
-            }
-        }
-        return nextStartTime;
-    }
-
-
 
    public void getLatestEndTimeOfFollowing() {
         if(tactTime != null) {

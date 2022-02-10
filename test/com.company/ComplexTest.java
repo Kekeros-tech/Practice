@@ -31,17 +31,20 @@ public class ComplexTest {
         Group justSecondRecourse = new Group();
         justSecondRecourse.addRecourseInTheGroup(secondRecourse);
 
-        Operation first0 = new OperationWithPrioritiesByHeirs();
+        //Operation first0 = new OperationWithPrioritiesByHeirs();
+        Operation first0 = new Operation();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
 
-        Operation second0 = new OperationWithPrioritiesByHeirs();
+        //Operation second0 = new OperationWithPrioritiesByHeirs();
+        Operation second0 = new Operation();
         second0.setResourceGroup(justFirstRecourse);
         second0.setDurationOfExecution(Duration.ofHours(3));
         second0.setOperatingMode(0);
 
-        Operation third0 = new OperationWithPrioritiesByHeirs();
+        //Operation third0 = new OperationWithPrioritiesByHeirs();
+        Operation third0 = new Operation();
         third0.setResourceGroup(justSecondRecourse);
         third0.setDurationOfExecution(Duration.ofHours(3));
         third0.setOperatingMode(0);
@@ -60,17 +63,20 @@ public class ComplexTest {
         second0.setSerialAffiliation(firstSeries);
         third0.setSerialAffiliation(firstSeries);
 
-        Operation first1 = new OperationWithPrioritiesByHeirs();
+        //Operation first1 = new OperationWithPrioritiesByHeirs();
+        Operation first1 = new Operation();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        Operation second1 = new OperationWithPrioritiesByHeirs();
+        //Operation second1 = new OperationWithPrioritiesByHeirs();
+        Operation second1 = new Operation();
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        Operation third1 = new OperationWithPrioritiesByHeirs();
+        //Operation third1 = new OperationWithPrioritiesByHeirs();
+        Operation third1 = new Operation();
         third1.setResourceGroup(justSecondRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
@@ -96,7 +102,7 @@ public class ComplexTest {
         firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
         secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
-        Main.takeSeriesToWork(seriesToWork);
+        Main.takeSeriesToWorkExtended(seriesToWork, new ControlParameters(2,1,1));
 
         operations.addAll(operations1);
 
@@ -110,6 +116,7 @@ public class ComplexTest {
             else {
                 System.out.println("Операция из 2 серии");
             }
+            System.out.println(currentOperation.getCNumberOfAssignedRecourse());
             System.out.println(currentOperation.getCLateStartTime());
             System.out.println(currentOperation.getCWorkingInterval());
         }

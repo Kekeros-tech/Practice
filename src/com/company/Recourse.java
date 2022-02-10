@@ -78,6 +78,10 @@ public class Recourse {
         }
     }
 
+    public void fillScheduleUsingRules(LocalDateTime deadline) {
+
+    }
+
     public ArrayList<WorkingHours> getSchedule() { return schedule; }
 
     public LocalDateTime getArriveTime() { return arriveTime; }
@@ -90,6 +94,10 @@ public class Recourse {
 
     public void setArriveTime(LocalDateTime releaseDate) {
         this.arriveTime = releaseDate;
+    }
+
+    public void setReleaseTime(LocalDateTime releaseTime){
+        this.releaseTime = releaseTime;
     }
 
     public void setReleaseTime(String releaseDate) {
@@ -106,36 +114,16 @@ public class Recourse {
         return resultDuration;
     }
 
-    public Recourse takeWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
-        int iteration = 0;
-        while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
-            if (schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
-                //System.out.println("Ресурс" + this);
-                int numberOfNextWorkingInterval = iteration + 1;
-                durationOfExecution = this.takeRecourse(durationOfExecution, iteration, tackDate);
-                while (durationOfExecution.toNanos() > 0) {
-                    durationOfExecution = this.takeRecourse(durationOfExecution, numberOfNextWorkingInterval, schedule.get(numberOfNextWorkingInterval).getStartTime());
-                    numberOfNextWorkingInterval++;
-                }
-                releaseTime = schedule.get(numberOfNextWorkingInterval - 1).getEndTime().plusNanos(durationOfExecution.toNanos());
-                return this;
-            }
-            iteration++;
-        }
-        return null;
-    }
-
-    public Recourse tackWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
+    public LocalDateTime takeWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if(schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
 
                 Duration resultDuration = this.takeRecourse(durationOfExecution, iteration, tackDate);
+
                 if(resultDuration.toNanos() <= 0)
                 {
-                    //System.out.println("Ресурс" + this);
-                    releaseTime = tackDate.plusNanos(durationOfExecution.toNanos());
-                    return this;
+                    return tackDate.plusNanos(durationOfExecution.toNanos());
                 }
             }
             iteration++;
@@ -143,38 +131,20 @@ public class Recourse {
         return null;
     }
 
-    //maximumFlowSolution
-    public Recourse takeWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
-        int iteration = 0;
-        while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
-            if(schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
-
-                Duration resultDuration = this.takeRecourse(durationOfExecution, iteration, tackDate);
-                if(resultDuration.toNanos() <= 0)
-                {
-                    //System.out.println("Ресурс" + this);
-                    //releaseTime = tackDate.plusNanos(durationOfExecution.toNanos());
-                    return this;
-                }
-            }
-            iteration++;
-        }
-        return null;
-    }
-
-    //max flow
-    public Recourse takeWhichCanBeInterruptedForMaxFlow(Duration durationOfExecution, LocalDateTime tackDate) {
+    public LocalDateTime takeWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate) {
         int iteration = 0;
         while (iteration < schedule.size() && !schedule.get(iteration).getStartTime().isAfter(tackDate)) {
             if (schedule.get(iteration).isWorkingTime(tackDate) && this.isFree(tackDate)) {
+
                 int numberOfNextWorkingInterval = iteration + 1;
                 durationOfExecution = this.takeRecourse(durationOfExecution, iteration, tackDate);
+
                 while (durationOfExecution.toNanos() > 0) {
                     durationOfExecution = this.takeRecourse(durationOfExecution, numberOfNextWorkingInterval, schedule.get(numberOfNextWorkingInterval).getStartTime());
                     numberOfNextWorkingInterval++;
                 }
-                //releaseTime = schedule.get(numberOfNextWorkingInterval - 1).getEndTime().plusNanos(durationOfExecution.toNanos());
-                return this;
+
+                return schedule.get(numberOfNextWorkingInterval - 1).getEndTime().plusNanos(durationOfExecution.toNanos());
             }
             iteration++;
         }

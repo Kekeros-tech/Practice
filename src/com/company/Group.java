@@ -3,9 +3,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Group {
+    private StringBuffer nameOfGroup;
     private Collection<Recourse> recoursesInTheGroup;
 
     public Group() { //он ведь так по умолчанию формирует
+        nameOfGroup = Series.generateRandomHexString(8);
         recoursesInTheGroup = new ArrayList<>();
     }
 
@@ -33,9 +35,7 @@ public class Group {
         return recoursesArray[number];
     }
 
-    public Recourse getRecourseWithMaxOperation() {
-
-        return  null;
+    public StringBuffer getNameOfGroup() {
+        return nameOfGroup;
     }
-
 }

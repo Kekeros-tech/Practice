@@ -10,6 +10,13 @@ public class OperationWithPrioritiesByDuration extends Operation{
         prioritiesByDuration = Duration.ZERO;
     }
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer(super.toString());
+        sb.append(" приоритет, относительно времени последователей=").append(prioritiesByDuration);
+        return sb.toString();
+    }
+
     public Duration getPrioritiesByDuration() {
         return prioritiesByDuration;
     }

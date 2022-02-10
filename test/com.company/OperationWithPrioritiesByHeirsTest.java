@@ -108,17 +108,7 @@ public class OperationWithPrioritiesByHeirsTest {
         operations.sort(sorter);
 
         for(Operation currentOperation: operations) {
-            if(currentOperation.getSerialAffiliation() == firstSeries){
-                System.out.println("Операция из 1 серии");
-            }
-            else {
-                System.out.println("Операция из 2 серии");
-            }
-            //System.out.println(((OperationWithPrioritiesByHeirs) currentOperation).getPrioritiesByHeirs());
-            System.out.println(((OperationWithPrioritiesByDuration) currentOperation).getPrioritiesByDuration());
-            System.out.println(currentOperation.getCLateStartTime());
-            System.out.println(currentOperation.getCWorkingInterval());
-            System.out.println();
+            System.out.println(currentOperation);
         }
     }
 

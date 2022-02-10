@@ -94,8 +94,6 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-        LocalDateTime tactDate = LocalDateTime.of(2021, 8, 15, 10, 00);
-
         Main.installOperationsUntilDeadline(mySeries);
 
         WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "15-08-2021 13:00");

@@ -77,6 +77,16 @@ public class Operation {
         return tactTime;
     }
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Операция: ");
+        sb.append("Группа ресурсов=").append(resourceGroup.getNameOfGroup());
+        sb.append(", код серии=").append(serialAffiliation.getNameOfSeries());
+        sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse.getNameOfRecourse());
+        sb.append(", рабочий интервал=").append(cWorkingInterval);
+        return sb.toString();
+    }
+
     public void getLatestEndTimeOfPrevious() {
         if(tactTime != null) {
             return;

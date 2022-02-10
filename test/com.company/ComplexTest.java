@@ -109,17 +109,23 @@ public class ComplexTest {
         OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
         operations.sort(sorter);
 
-        for(Operation currentOperation: operations) {
-            if(currentOperation.getSerialAffiliation() == firstSeries){
-                System.out.println("Операция из 1 серии");
-            }
-            else {
-                System.out.println("Операция из 2 серии");
-            }
-            System.out.println(currentOperation.getCNumberOfAssignedRecourse());
-            System.out.println(currentOperation.getCLateStartTime());
-            System.out.println(currentOperation.getCWorkingInterval());
-        }
+        WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "15-08-2021 13:00");
+        assertEquals(expectation.toString(), first1.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("16-08-2021 09:00", "16-08-2021 12:00");
+        assertEquals(expectation.toString(), second1.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("17-08-2021 09:00", "17-08-2021 12:00");
+        assertEquals(expectation.toString(), third1.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("17-08-2021 09:00", "17-08-2021 12:00");
+        assertEquals(expectation.toString(), first0.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("18-08-2021 09:00", "18-08-2021 12:00");
+        assertEquals(expectation.toString(), second0.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("19-08-2021 09:00", "19-08-2021 12:00");
+        assertEquals(expectation.toString(), third0.getCWorkingInterval().toString());
     }
 
     @Test
@@ -183,16 +189,14 @@ public class ComplexTest {
         OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
         operations.sort(sorter);
 
-        for(Operation currentOperation: operations) {
-            if(currentOperation.getSerialAffiliation() == firstSeries){
-                System.out.println("Операция из 1 серии");
-            }
-            else {
-                System.out.println("Операция из 2 серии");
-            }
-            System.out.println(currentOperation.getCLateStartTime());
-            System.out.println(currentOperation.getCWorkingInterval());
-        }
+        WorkingHours expectation = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
+        assertEquals(expectation.toString(), first0.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+        assertEquals(expectation.toString(), second0.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("20-08-2021 09:00", "20-08-2021 18:00");
+        assertEquals(expectation.toString(), first1.getCWorkingInterval().toString());
     }
 
 

@@ -2,11 +2,11 @@ package com.company;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class Recourse {
+    private StringBuffer nameOfRecourse;
     private ArrayList<WorkingHours> schedule;
     private LocalDateTime arriveTime;
 
@@ -14,20 +14,17 @@ public class Recourse {
 
     Recourse(Collection<WorkingHours> schedule, String releaseDate)
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        nameOfRecourse = Series.generateRandomHexString(8);
         this.schedule = new ArrayList<>(schedule);
-        this.arriveTime = LocalDateTime.parse(releaseDate, formatter);
-        this.releaseTime = LocalDateTime.parse(releaseDate, formatter);
+        this.arriveTime = LocalDateTime.parse(releaseDate, WorkingHours.formatter);
+        this.releaseTime = LocalDateTime.parse(releaseDate, WorkingHours.formatter);
     }
 
     Recourse() {};
 
     Recourse(String releaseDate)
     {
-        schedule = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        this.arriveTime = LocalDateTime.parse(releaseDate, formatter);
-        this.releaseTime = LocalDateTime.parse(releaseDate, formatter);
+        this(new ArrayList<>(), releaseDate);
     }
 
     public void addSchedule(WorkingHours currentWorkingHours){
@@ -88,7 +85,9 @@ public class Recourse {
 
     public LocalDateTime getReleaseTime() { return  releaseTime; }
 
-
+    public StringBuffer getNameOfRecourse() {
+        return nameOfRecourse;
+    }
 
     public void setSchedule(Collection<WorkingHours> schedule) { this.schedule = new ArrayList<>(schedule); }
 
@@ -101,8 +100,7 @@ public class Recourse {
     }
 
     public void setReleaseTime(String releaseDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        this.releaseTime = LocalDateTime.parse(releaseDate, formatter);
+        this.releaseTime = LocalDateTime.parse(releaseDate, WorkingHours.formatter);
     }
 
 

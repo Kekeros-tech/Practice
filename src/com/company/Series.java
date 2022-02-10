@@ -1,12 +1,11 @@
 package com.company;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class Series {
+    private StringBuffer nameOfSeries;
     private ArrayList<Operation> operationsToCreate;
     private LocalDateTime deadlineForCompletion;
     private LocalDateTime arrivalTime;
@@ -16,6 +15,7 @@ public class Series {
 
     Series(Collection<Operation> operationsToCreate, LocalDateTime deadlineForCompletion, LocalDateTime arrivalTime)
     {
+        nameOfSeries = generateRandomHexString(8);
         this.operationsToCreate = new ArrayList<>(operationsToCreate);
         this.deadlineForCompletion = deadlineForCompletion;
         this.arrivalTime = arrivalTime;
@@ -23,12 +23,16 @@ public class Series {
 
     Series(Collection<Operation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        this.operationsToCreate = new ArrayList<>(operationsToCreate);
-        this.deadlineForCompletion = LocalDateTime.parse(deadlineForCompletion,formatter);
-        this.arrivalTime = LocalDateTime.parse(arrivalTime,formatter);
+        this(operationsToCreate, LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter), LocalDateTime.parse(arrivalTime, WorkingHours.formatter));
     }
 
+    Series(String nameOfOperation, Collection<Operation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
+    {
+        this(operationsToCreate, LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter), LocalDateTime.parse(arrivalTime, WorkingHours.formatter));
+        this.nameOfSeries = new StringBuffer(nameOfOperation);
+    }
+
+    public StringBuffer getNameOfSeries() { return nameOfSeries; }
 
     public ArrayList<Operation> getOperationsToCreate() { return operationsToCreate; }
 
@@ -74,6 +78,15 @@ public class Series {
             currentOperation.clean();
         }
         cNumberOfAssignedOperations = 0;
+    }
+
+    public static StringBuffer generateRandomHexString(int length){
+        Random r = new Random();
+        StringBuffer sb = new StringBuffer();
+        while(sb.length() < length){
+            sb.append(Integer.toHexString(r.nextInt()));
+        }
+        return sb.delete(length, sb.length());
     }
 
 }

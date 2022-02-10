@@ -18,6 +18,13 @@ public class OperationWithPrioritiesByHeirs extends Operation{
         prioritiesByHeirs = 0;
     }
 
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer(super.toString());
+        sb.append(" приоритет относительно количества последователей=").append(prioritiesByHeirs);
+        return sb.toString();
+    }
+
     public int getPrioritiesByHeirs() {
         return prioritiesByHeirs;
     }

@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 public class WorkingHours {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     WorkingHours(LocalDateTime startTime, LocalDateTime endTime){
         this.startTime = startTime;

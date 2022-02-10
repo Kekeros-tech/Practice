@@ -18,6 +18,13 @@ public class ComplexTest {
         firstRecourse.addSchedule(workingHoursForFirst0);
         firstRecourse.addSchedule(workingHoursForFirst1);
 
+
+        /*String[] startTime = {"13:00", "13:00", "13:00"};
+        Duration[] durations = {Duration.ofHours(3), Duration.ZERO, Duration.ofHours(1),
+                                Duration.ofHours(3), Duration.ZERO};
+        Schedule schedule = new Schedule(TypeOfWorkByDay.fiveByTwo, "09:00", "16:00", startTime, durations);
+        Recourse testRecourse = new Recourse("14-08-2021 09:00");*/
+
         WorkingHours workingHoursForSecond0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
         WorkingHours workingHoursForSecond1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
 

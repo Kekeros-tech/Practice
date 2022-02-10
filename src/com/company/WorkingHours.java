@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 public class WorkingHours {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     WorkingHours(LocalDateTime startTime, LocalDateTime endTime){
         this.startTime = startTime;
@@ -14,13 +15,22 @@ public class WorkingHours {
     }
 
     WorkingHours(String startTime, String endTime){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.startTime = LocalDateTime.parse(startTime,formatter);
         this.endTime = LocalDateTime.parse(endTime,formatter);
     }
 
+    WorkingHours(LocalDateTime arriveTime, String startTime, String endTime)
+    {
+        StringBuffer date = new StringBuffer(arriveTime.format(formatter));
+        String newStartDate = date.substring(0,9);
+        newStartDate += startTime;
+        String newEndDate = date.substring(0,9);
+        newEndDate += endTime;
+        this.startTime = LocalDateTime.parse(newStartDate, formatter);
+        this.endTime = LocalDateTime.parse(newEndDate, formatter);
+    }
+
     WorkingHours(String endTime){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.startTime = LocalDateTime.now();
         this.endTime = LocalDateTime.parse(endTime, formatter);
     }

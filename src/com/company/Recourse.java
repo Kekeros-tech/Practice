@@ -1,7 +1,9 @@
 package com.company;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,7 +80,67 @@ public class Recourse {
         }
     }
 
-    public void fillScheduleUsingRules(LocalDateTime deadline) {
+    //доработать
+    public void fillScheduleUsingRules(LocalDateTime deadline, Schedule rules) {
+        if(rules.getTypeOfWork() == TypeOfWorkByDay.fiveByTwo){
+            switch (arriveTime.getDayOfWeek()){
+                case SATURDAY: {
+                    arriveTime = arriveTime.plusDays(2);
+                    break;
+                }
+                case SUNDAY: {
+                    arriveTime = arriveTime.plusDays(1);
+                    break;
+                }
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        ArrayList<LocalTime> startDates = new ArrayList<>();
+        LocalTime startTime = LocalTime.parse(rules.getStartTime(),formatter);
+        startDates.add(startTime);
+        //startDates.add(LocalDateTime.parse(rules.getStartTimeOfBreaks()[0], formatter));
+        int k = 0;
+        for(int i = 0; i < rules.getDurationOfBreaks().length; i++) {
+            LocalTime firstDate = startDates.get(i+k);
+            LocalTime secondDate = LocalTime.parse(rules.getStartTimeOfBreaks()[i], formatter);
+            if(!secondDate.isAfter(firstDate)){
+                startDates.add(LocalTime.parse(rules.getEndTime(),formatter));
+                startDates.add(LocalTime.parse(rules.getStartTime(), formatter));
+                i--;
+                k+=2;
+            }
+            else{
+                startDates.add(secondDate);
+                startDates.add(secondDate.plusNanos(rules.getDurationOfBreaks()[i].toNanos()));
+            }
+        }
+        int iteration = 0;
+        int count = 0;
+        WorkingHours lastRecord = new WorkingHours(arriveTime, startDates.get(0).format(formatter), startDates.get(1).format(formatter));
+        LocalDateTime currentDate = arriveTime;
+        switch (rules.getTypeOfWork()){
+            case fiveByTwo:{
+                while (!lastRecord.getEndTime().isAfter(deadline)){
+                    while(currentDate.getDayOfWeek()!=DayOfWeek.FRIDAY) {
+                        while (lastRecord.getEndTime().format(formatter) != rules.getEndTime()){
+                            lastRecord = new WorkingHours(currentDate, startDates.get(iteration).format(formatter),
+                                    startDates.get(iteration+1).format(formatter));
+                            iteration += 2;
+                        }
+                        currentDate = lastRecord.getEndTime().plusDays(1);
+                    }
+                    currentDate = lastRecord.getEndTime();
+                    currentDate = currentDate.plusDays(2);
+                }
+                break;
+            }
+            case twoByTwo: {
+                break;
+            }
+        }
+
+
 
     }
 

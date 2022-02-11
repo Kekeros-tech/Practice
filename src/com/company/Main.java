@@ -53,6 +53,75 @@ public class Main {
 		return frontOfWork;
 	}
 
+	//Выбираем операции, которые поместились в "просвет"
+	public static ArrayList<Operation> choiceFutureFrontOfWork(ArrayList<Operation> operationsToCreate, Duration skylightWindowSize) {
+		ArrayList<Operation> frontOfWork = new ArrayList<>();
+
+		LocalDateTime minTime = minCEarlierStartTime(operationsToCreate);
+
+		for(Operation currentOperation: operationsToCreate) {
+			if(currentOperation.getCNumberOfAssignedRecourse() == null && !currentOperation.getCEarlierStartTime().isAfter(minTime.plusNanos(skylightWindowSize.toNanos()))) {
+				frontOfWork.add(currentOperation);
+			}
+		}
+
+		return frontOfWork;
+	}
+
+	public static LocalDateTime minCEarlierStartTime(ArrayList<Operation> operations) {
+		LocalDateTime minTime = LocalDateTime.MAX;
+
+		for(Operation currentOperation: operations){
+			if(currentOperation.getCNumberOfAssignedRecourse() == null && currentOperation.getCEarlierStartTime().isBefore(minTime)){
+				minTime = currentOperation.getCEarlierStartTime();
+			}
+		}
+		return minTime;
+	}
+
+	public static Operation findOperationWithMinTimeAndMinWindowSize(ArrayList<Operation> operations, LocalDateTime minTime){
+		LocalDateTime minLatestTime = LocalDateTime.MAX;
+		Operation result = new Operation();
+		for(Operation currentOperation: operations) {
+			LocalDateTime latestTime = currentOperation.getEarliestStartTime().plusNanos(currentOperation.getDurationOfExecution().toNanos());
+			if(currentOperation.getCNumberOfAssignedRecourse() == null &&
+					currentOperation.getCEarlierStartTime().isEqual(minTime) && latestTime.isBefore(minLatestTime)) {
+				result = currentOperation;
+			}
+		}
+		return result;
+	}
+
+	public static void installOperationUsingFutureFrontOfWork(Series currentSeries){
+		while(!isAllOperationsInstall(currentSeries.getOperationsToCreate())){
+			ArrayList<Operation> frontOfWorkWithFuture = choiceFutureFrontOfWork(currentSeries.getOperationsToCreate(), Duration.ofHours(3));
+
+			while (!isAllOperationsInstall(frontOfWorkWithFuture)) {
+
+				Operation mainOperation = findOperationWithMinTimeAndMinWindowSize(frontOfWorkWithFuture,
+						minCEarlierStartTime(currentSeries.getOperationsToCreate()));
+				//нужно это завернуть в цикл, а для этого надо вычислять минимальное время
+
+				LocalDateTime lateTime = mainOperation.getCEarlierStartTime().plusNanos(mainOperation.getDurationOfExecution().toNanos());
+
+				ArrayList<Operation> newFrontOfWork = new ArrayList<>();
+				for (Operation currentOperation : currentSeries.getOperationsToCreate()) {
+					if (currentOperation.getCEarlierStartTime().isBefore(lateTime)) {
+						newFrontOfWork.add(currentOperation);
+					}
+				}
+
+				//тут применятеся сортировка получившегося фронта
+				OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
+				newFrontOfWork.sort(sorter);
+
+				installOperationsAndReturnFutureDate(newFrontOfWork);
+			}
+
+		}
+	}
+
+
 	public static ArrayList<Operation> choiceFrontOfWorkByWithTime(ArrayList<Operation> frontOfWorkByPrevious) {
 		ArrayList<Operation> frontOfWorkByTime = new ArrayList<>();
 		LocalDateTime minTime = LocalDateTime.MAX;
@@ -102,9 +171,9 @@ public class Main {
 
 			ArrayList <Operation> frontOfWork = choiceFrontOfWork(currentSeries.getOperationsToCreate());
 
-			//ArrayList<Operation> frontOfWorkByTime = choiceFrontOfWorkByWithTime(frontOfWork);
+			ArrayList<Operation> frontOfWorkByTime = choiceFrontOfWorkByWithTime(frontOfWork);
 
-			installOperationsAndReturnFutureDate(frontOfWork);
+			installOperationsAndReturnFutureDate(frontOfWorkByTime);
 
 			frontOfWork.clear();
 		}

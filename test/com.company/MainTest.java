@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class MainTest {
 
@@ -737,6 +738,89 @@ public class MainTest {
         correctFrontOfWork.add(fourthOperation);
 
         assertEquals(Main.choiceReverseFrontOfWork(operationsToCreate),correctFrontOfWork);
+    }
 
+    //Тестирование работы фронта, который смотрит в будущее
+    @Test
+    public void minCEarlierStartTimeTest() {
+        Operation first = new Operation();
+        first.setCEarlierStartTime("10-08-2021 10:00");
+        Operation second = new Operation();
+        second.setCEarlierStartTime("10-08-2021 12:00");
+        Operation third = new Operation();
+        third.setCEarlierStartTime("12-08-2021 15:00");
+
+        ArrayList<Operation> operations = new ArrayList<>();
+        operations.add(first);
+        operations.add(second);
+        operations.add(third);
+
+        LocalDateTime minTime = Main.minCEarlierStartTime(operations);
+
+        assertEquals("10-08-2021 10:00",minTime.format(WorkingHours.formatter));
+    }
+
+    @Test
+    public void choiceFutureFrontOfWorkTest() {
+        Operation first = new Operation();
+        first.setCEarlierStartTime("10-08-2021 10:00");
+        Operation second = new Operation();
+        second.setCEarlierStartTime("10-08-2021 12:00");
+        Operation third = new Operation();
+        third.setCEarlierStartTime("12-08-2021 15:00");
+
+        ArrayList<Operation> operations = new ArrayList<>();
+        operations.add(first);
+        operations.add(second);
+        operations.add(third);
+
+        ArrayList<Operation> resultOfWork = Main.choiceFutureFrontOfWork(operations, Duration.ofHours(10));
+
+        ArrayList<Operation> expectation = new ArrayList<>();
+        expectation.add(first);
+        expectation.add(second);
+        assertEquals(expectation, resultOfWork);
+
+        third.setCEarlierStartTime("10-08-2021 15:00");
+        expectation.add(third);
+        assertEquals(expectation, Main.choiceFutureFrontOfWork(operations, Duration.ofHours(10)));
+
+        expectation = new ArrayList<>();
+        expectation.add(first);
+        assertEquals(1, Main.choiceFutureFrontOfWork(operations, Duration.ofHours(1)).size());
+    }
+
+    @Test
+    public void findOperationWithMinTimeAndMinWindowSizeTest() {
+        Operation first = new Operation();
+        first.setCEarlierStartTime("10-08-2021 10:00");
+        first.setDurationOfExecution(Duration.ofHours(5));
+        Operation second = new Operation();
+        second.setCEarlierStartTime("10-08-2021 10:00");
+        second.setDurationOfExecution(Duration.ofHours(3));
+        Operation third = new Operation();
+        third.setCEarlierStartTime("10-08-2021 15:00");
+        third.setDurationOfExecution(Duration.ofHours(5));
+
+        ArrayList<Operation> operations = new ArrayList<>();
+        operations.add(first);
+        operations.add(second);
+        operations.add(third);
+
+        ArrayList<Operation> futureFrontOfWork = Main.choiceFutureFrontOfWork(operations, Duration.ofHours(10));
+
+        LocalDateTime minTime = Main.minCEarlierStartTime(futureFrontOfWork);
+
+        Operation resultOfWork = Main.findOperationWithMinTimeAndMinWindowSize(futureFrontOfWork, minTime);
+
+        assertEquals(resultOfWork, second);
+
+
+        second.setCEarlierStartTime("10-08-2021 12:00");
+
+        ArrayList<Operation> futureFrontOfWork2 = Main.choiceFutureFrontOfWork(operations, Duration.ofHours(10));
+
+        assertEquals(first, Main.findOperationWithMinTimeAndMinWindowSize(futureFrontOfWork,
+                Main.minCEarlierStartTime(futureFrontOfWork2)));
     }
 }

@@ -77,6 +77,10 @@ public class Operation {
         return tactTime;
     }
 
+    public void setCEarlierStartTime(String cEarlierStartTime) {
+        this.cEarlierStartTime = LocalDateTime.parse(cEarlierStartTime, WorkingHours.formatter);
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Операция: ");
@@ -330,7 +334,7 @@ public class Operation {
     }
 
     public void clean() {
-        if(cNumberOfAssignedRecourse != null){
+        if(cNumberOfAssignedRecourse != null) {
             cNumberOfAssignedRecourse.clean();
         }
         cNumberOfAssignedRecourse = null;

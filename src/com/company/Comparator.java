@@ -47,6 +47,16 @@ import java.util.Comparator;
         }
     }
 
+    class OComparatorBasedOnCEarliestStartTime implements Comparator<Operation> {
+
+        public int compare(Operation a, Operation b) {
+            if (a.getCEarlierStartTime().isBefore(b.getCEarlierStartTime())) {
+                return -1;
+            }
+            return 1;
+        }
+    }
+
     class OComparatorBasedOnPrioritiesByHeirs implements Comparator<Operation> {
 
         public int compare(Operation a, Operation b) {

@@ -114,11 +114,22 @@ public class Operation {
         else {
             tactTime = LocalDateTime.MIN;
             for(int i = 0; i < previousOperations.size(); i++) {
-                if(previousOperations.get(i).getCWorkingInterval().getEndTime().isAfter(tactTime)) {
+                if(previousOperations.get(i).getCWorkingInterval() == null) {
+                    tactTime = null;
+                    return;
+                }
+                else if(previousOperations.get(i).getCWorkingInterval().getEndTime().isAfter(tactTime)) {
                     tactTime = previousOperations.get(i).getCWorkingInterval().getEndTime();
                 }
             }
         }
+    }
+
+    public boolean operationNotScheduled(){
+        if(cNumberOfAssignedRecourse == null && cWorkingInterval == null){
+            return true;
+        }
+        else return false;
     }
 
     public void setResourceGroup(Group resourceGroup) { this.resourceGroup = resourceGroup; }
@@ -135,8 +146,8 @@ public class Operation {
         this.currentOperatingMode = OperatingMode.modeSelection(currentOperatingMode);
     }
 
-    public void setTactTime(LocalDateTime tactTime) {
-        this.tactTime = tactTime;
+    public void setTactTime(String tactTime) {
+        this.tactTime = LocalDateTime.parse(tactTime, WorkingHours.formatter);
     }
 
     public void setCNumberOfAssignedRecourse(Recourse cNumberOfAssignedRecourse) {

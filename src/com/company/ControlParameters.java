@@ -22,8 +22,8 @@ public class ControlParameters {
     SequenceOfOperations sequenceOfOperations;
     UseAdvancedSorting useAdvancedSorting;
 
-    ControlParameters(int numberOfSortOperation, int numberOfSequenceOfOperation, int numberOfAdvancedSorting) {
-        switch (numberOfSortOperation) {
+    ControlParameters(int numberOfSortOperator, int numberOfSequenceOfOperation, int numberOfAdvancedSorting) {
+        switch (numberOfSortOperator) {
             case 0:
                 sortOperator = SortOperator.sortByPrioritiesByHeirs;
                 break;

@@ -823,4 +823,225 @@ public class MainTest {
         assertEquals(first, Main.findOperationWithMinTimeAndMinWindowSize(futureFrontOfWork,
                 Main.minCEarlierStartTime(futureFrontOfWork2)));
     }
+
+    @Test
+    public void findMinTactTimeTest() {
+        Operation first = new Operation();
+        first.setTactTime("10-08-2021 10:00");
+        Operation second = new Operation();
+        second.setTactTime("10-08-2021 12:00");
+        Operation third = new Operation();
+        third.setTactTime("10-08-2021 15:00");
+
+        ArrayList<Operation> operations = new ArrayList<>();
+        operations.add(first);
+        operations.add(second);
+        operations.add(third);
+
+        LocalDateTime minTime = Main.findMinTactTime(operations);
+
+        assertEquals("10-08-2021 10:00", minTime.format(WorkingHours.formatter));
+    }
+
+    @Test
+    public void choiceFutureFrontOfWork2Test(){
+        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
+        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+
+        Recourse firstRecourse = new Recourse("14-08-2021 09:00");
+        firstRecourse.addSchedule(workingHoursForFirst0);
+        firstRecourse.addSchedule(workingHoursForFirst1);
+
+        WorkingHours workingHoursForSecond0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
+        WorkingHours workingHoursForSecond1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+
+        Recourse secondRecourse = new Recourse("15-08-2021 09:00");
+        secondRecourse.addSchedule(workingHoursForSecond0);
+        secondRecourse.addSchedule(workingHoursForSecond1);
+
+        Group justFirstRecourse = new Group();
+        justFirstRecourse.addRecourseInTheGroup(firstRecourse);
+
+        Group justSecondRecourse = new Group();
+        justSecondRecourse.addRecourseInTheGroup(secondRecourse);
+
+        Operation first0 = new Operation();
+        first0.setResourceGroup(justFirstRecourse);
+        first0.setDurationOfExecution(Duration.ofHours(3));
+        first0.setOperatingMode(0);
+
+        //Operation second0 = new OperationWithPrioritiesByHeirs();
+        Operation second0 = new Operation();
+        second0.setResourceGroup(justSecondRecourse);
+        second0.setDurationOfExecution(Duration.ofHours(3));
+        second0.setOperatingMode(0);
+
+
+        ArrayList<Operation> operations = new ArrayList<>();
+        operations.add(first0);
+        operations.add(second0);
+
+        Series firstSeries = new Series(operations, "30-08-2021 00:00", "15-08-2021 10:00");
+        first0.setSerialAffiliation(firstSeries);
+        second0.setSerialAffiliation(firstSeries);
+
+        Operation first1 = new Operation();
+        first1.setResourceGroup(justSecondRecourse);
+        first1.setDurationOfExecution(Duration.ofHours(3));
+        first1.setOperatingMode(0);
+
+        ArrayList<Operation> operationsForSecondSeries = new ArrayList<>();
+        operations.add(first1);
+
+        Series secondSeries = new Series(operationsForSecondSeries, "17-08-2021 00:00", "18-08-2021 10:00");
+        first1.setSerialAffiliation(secondSeries);
+
+        firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+        secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+
+        ArrayList<Operation> operationsToInstall = new ArrayList<>();
+        operationsToInstall.add(first0);
+        operationsToInstall.add(second0);
+        operationsToInstall.add(first1);
+
+        ArrayList<Operation> result = Main.choiceFutureFrontOfWork2(operationsToInstall, Duration.ofDays(2));
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void installOperationsWithFutureFrontOfWork2Test() {
+        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
+        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+
+        Recourse firstRecourse = new Recourse("14-08-2021 09:00");
+        firstRecourse.addSchedule(workingHoursForFirst0);
+        firstRecourse.addSchedule(workingHoursForFirst1);
+
+        WorkingHours workingHoursForSecond0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
+        WorkingHours workingHoursForSecond1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+
+        Recourse secondRecourse = new Recourse("15-08-2021 09:00");
+        secondRecourse.addSchedule(workingHoursForSecond0);
+        secondRecourse.addSchedule(workingHoursForSecond1);
+
+        Group justFirstRecourse = new Group();
+        justFirstRecourse.addRecourseInTheGroup(firstRecourse);
+
+        Group justSecondRecourse = new Group();
+        justSecondRecourse.addRecourseInTheGroup(secondRecourse);
+
+        Operation first0 = new Operation();
+        first0.setResourceGroup(justFirstRecourse);
+        first0.setDurationOfExecution(Duration.ofHours(3));
+        first0.setOperatingMode(0);
+
+        //Operation second0 = new OperationWithPrioritiesByHeirs();
+        Operation second0 = new Operation();
+        second0.setResourceGroup(justSecondRecourse);
+        second0.setDurationOfExecution(Duration.ofHours(3));
+        second0.setOperatingMode(0);
+
+
+        ArrayList<Operation> operations = new ArrayList<>();
+        operations.add(first0);
+        operations.add(second0);
+
+        Series firstSeries = new Series(operations, "30-08-2021 00:00", "15-08-2021 10:00");
+        first0.setSerialAffiliation(firstSeries);
+        second0.setSerialAffiliation(firstSeries);
+
+        Operation first1 = new Operation();
+        first1.setResourceGroup(justSecondRecourse);
+        first1.setDurationOfExecution(Duration.ofHours(3));
+        first1.setOperatingMode(0);
+
+        ArrayList<Operation> operationsForSecondSeries = new ArrayList<>();
+        operations.add(first1);
+
+        Series secondSeries = new Series(operationsForSecondSeries, "17-08-2021 00:00", "18-08-2021 10:00");
+        first1.setSerialAffiliation(secondSeries);
+
+        firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+        secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+
+        ArrayList<Operation> operationsToInstall = new ArrayList<>();
+        operationsToInstall.add(first0);
+        operationsToInstall.add(second0);
+        operationsToInstall.add(first1);
+
+        Main.installOperationsWithFutureFrontOfWork2(operationsToInstall, Duration.ofHours(2));
+
+        WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "15-08-2021 13:00");
+        assertEquals(expectation.toString(), first0.getCWorkingInterval().toString());
+
+        expectation = new WorkingHours("15-08-2021 10:00", "15-08-2021 13:00");
+        assertEquals(expectation.toString(), second0.getCWorkingInterval().toString());
+    }
+
+    @Test
+    public void installOperationsTest() {
+        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
+        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+
+        Recourse firstRecourse = new Recourse("14-08-2021 09:00");
+        firstRecourse.addSchedule(workingHoursForFirst0);
+        firstRecourse.addSchedule(workingHoursForFirst1);
+
+        WorkingHours workingHoursForSecond0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
+        WorkingHours workingHoursForSecond1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+
+        Recourse secondRecourse = new Recourse("15-08-2021 09:00");
+        secondRecourse.addSchedule(workingHoursForSecond0);
+        secondRecourse.addSchedule(workingHoursForSecond1);
+
+        Group justFirstRecourse = new Group();
+        justFirstRecourse.addRecourseInTheGroup(firstRecourse);
+
+        Group justSecondRecourse = new Group();
+        justSecondRecourse.addRecourseInTheGroup(secondRecourse);
+
+        Operation first0 = new Operation();
+        first0.setResourceGroup(justFirstRecourse);
+        first0.setDurationOfExecution(Duration.ofHours(3));
+        first0.setOperatingMode(0);
+
+        //Operation second0 = new OperationWithPrioritiesByHeirs();
+        Operation second0 = new Operation();
+        second0.setResourceGroup(justSecondRecourse);
+        second0.setDurationOfExecution(Duration.ofHours(3));
+        second0.setOperatingMode(0);
+
+
+        ArrayList<Operation> operations = new ArrayList<>();
+        operations.add(first0);
+        operations.add(second0);
+
+        Series firstSeries = new Series(operations, "30-08-2021 00:00", "15-08-2021 10:00");
+        first0.setSerialAffiliation(firstSeries);
+        second0.setSerialAffiliation(firstSeries);
+
+        Operation first1 = new Operation();
+        first1.setResourceGroup(justSecondRecourse);
+        first1.setDurationOfExecution(Duration.ofHours(3));
+        first1.setOperatingMode(0);
+
+        ArrayList<Operation> operationsForSecondSeries = new ArrayList<>();
+        operations.add(first1);
+
+        Series secondSeries = new Series(operationsForSecondSeries, "17-08-2021 00:00", "18-08-2021 10:00");
+        first1.setSerialAffiliation(secondSeries);
+
+        firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+        secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+
+        ArrayList<Operation> operationsToInstall = new ArrayList<>();
+        operationsToInstall.add(first0);
+        operationsToInstall.add(second0);
+        operationsToInstall.add(first1);
+
+        ArrayList<Operation> frontOfWork = Main.choiceFutureFrontOfWork2(operationsToInstall, Duration.ofHours(3));
+
+        Main.installOperations(frontOfWork, Duration.ofHours(3), new ControlParameters(2,1,1));
+    }
 }

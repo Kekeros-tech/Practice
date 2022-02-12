@@ -102,7 +102,7 @@ public class ComplexTest {
         firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
         secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
-        Main.takeSeriesToWorkExtended(seriesToWork, new ControlParameters(2,1,1));
+        Main.takeSeriesToWorkExtended(seriesToWork, new ControlParameters(2,1,0));
 
         operations.addAll(operations1);
 

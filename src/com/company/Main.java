@@ -53,6 +53,74 @@ public class Main {
 		return frontOfWork;
 	}
 
+	//Вторая версия будущего фронта работы 2
+	public static ArrayList<Operation> choiceFutureFrontOfWork2(ArrayList<Operation> operationsToCreate, Duration selectionInterval){
+		ArrayList<Operation> frontOfWork = new ArrayList<>();
+
+		for(Operation operation: operationsToCreate) {
+			operation.getLatestEndTimeOfPrevious();
+			if(operation.getTactTime() != null && operation.operationNotScheduled()){
+				frontOfWork.add(operation);
+			}
+		}
+
+		LocalDateTime minTime = findMinTactTime(frontOfWork);
+
+		for(int i = 0; i < frontOfWork.size(); i++) {
+			Operation currentOperation = frontOfWork.get(i);
+			if(currentOperation.getTactTime().isAfter(minTime.plusNanos(selectionInterval.toNanos()))){
+				frontOfWork.remove(currentOperation);
+				i--;
+			}
+		}
+
+		return frontOfWork;
+	}
+
+	//2
+	public static LocalDateTime findMinTactTime(ArrayList<Operation> operationsToSelect){
+		LocalDateTime minTime = LocalDateTime.MAX;
+		for(Operation operation: operationsToSelect) {
+			LocalDateTime tactTimeOfCurrentOperation = operation.getTactTime();
+			if(tactTimeOfCurrentOperation != null && tactTimeOfCurrentOperation.isBefore(minTime)){
+				minTime = tactTimeOfCurrentOperation;
+			}
+		}
+		return minTime;
+	}
+
+	//2
+	public static void installOperationsWithFutureFrontOfWork2(ArrayList<Operation> operations, Duration selectionDuration) {
+		//ArrayList<Operation> frontOfWork = choiceFutureFrontOfWork2(operations, selectionDuration);
+
+		HashMap<Operation, Recourse> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(operations);
+
+		if(installationSequence != null){
+			for(Map.Entry<Operation, Recourse> entry : installationSequence.entrySet()){
+				entry.getKey().installOperationForSpecificResource(entry.getValue());
+			}
+		}
+
+		for(Operation operation: operations){
+			if(operation.operationNotScheduled()){
+				operation.setNewTactTime();
+			}
+		}
+	}
+
+	public static void installOperations(ArrayList<Operation> operationsToInstall, Duration selectionDuration, ControlParameters controlParameters){
+		while (!isAllOperationsInstall(operationsToInstall)) {
+
+			ArrayList<Operation> frontOfWork = choiceFutureFrontOfWork2(operationsToInstall, selectionDuration);
+
+			sortFrontOfWorkByControlParameters(frontOfWork, controlParameters.sortOperator);
+
+			advancedSorting(frontOfWork, controlParameters.useAdvancedSorting);
+
+			installOperationsWithFutureFrontOfWork2(frontOfWork, selectionDuration);
+		}
+	}
+
 	//Выбираем операции, которые поместились в "просвет"
 	public static ArrayList<Operation> choiceFutureFrontOfWork(ArrayList<Operation> operationsToCreate, Duration skylightWindowSize) {
 		ArrayList<Operation> frontOfWork = new ArrayList<>();
@@ -150,17 +218,19 @@ public class Main {
 
 		HashMap<Operation, Recourse> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(frontOfWork);
 
-		if(installationSequence == null) {
-			for(int i = 0; i < frontOfWork.size(); i++) {
-				frontOfWork.get(i).setNewTactTime();
-			}
-		}
-		else
-		{
+
+		if(installationSequence != null){
 			for(Map.Entry<Operation, Recourse> entry : installationSequence.entrySet()){
 				entry.getKey().installOperationForSpecificResource(entry.getValue());
 			}
 		}
+
+		for(Operation operation: frontOfWork){
+			if(operation.operationNotScheduled()){
+				operation.setNewTactTime();
+			}
+		}
+
 	}
 
 
@@ -179,9 +249,28 @@ public class Main {
 		}
 	}
 
+	public static void installOperationsUntilDeadline2(ArrayList<Operation> operationsToInstall, ControlParameters controlParameters) {
+		//ArrayList<Operation> frontOfWork;
+
+		while (!isAllOperationsInstall(operationsToInstall)) {
+
+			ArrayList <Operation> frontOfWork = choiceFrontOfWork(operationsToInstall);
+
+			ArrayList<Operation> frontOfWorkByTime = choiceFrontOfWorkByWithTime(frontOfWork);
+
+			sortFrontOfWorkByControlParameters(frontOfWorkByTime, controlParameters.sortOperator);
+
+			advancedSorting(frontOfWorkByTime, controlParameters.useAdvancedSorting);
+
+			installOperationsAndReturnFutureDate(frontOfWorkByTime);
+
+			frontOfWork.clear();
+		}
+	}
+
 	public static boolean isAllOperationsInstall(Collection<Operation> operationsToCreate){
 		for(Operation currentOperation: operationsToCreate){
-			if(currentOperation.getCNumberOfAssignedRecourse() == null){
+			if(currentOperation.operationNotScheduled()){
 				return false;
 			}
 		}
@@ -234,6 +323,7 @@ public class Main {
 
 		for(Series series: seriesForWork) {
 			installOperationsUntilDeadline(series);
+			//installOperationsUntilDeadline2(series.getOperationsToCreate(), controlParameters);
 			series.clean();
 
 			installReverseOperationsUntilDeadline(series);
@@ -250,7 +340,8 @@ public class Main {
 		}
 
 		for(Series series: seriesForWork) {
-			while(!isAllOperationsInstall(series.getOperationsToCreate()))
+			installOperationsUntilDeadline2(series.getOperationsToCreate(), controlParameters);
+			/*while(!isAllOperationsInstall(series.getOperationsToCreate()))
 			{
 				ArrayList<Operation> frontOfWork = choiceFrontOfWork(operationsToInstall);
 
@@ -261,7 +352,7 @@ public class Main {
 				advancedSorting(frontOfWorkByTime, controlParameters.useAdvancedSorting);
 
 				installOperationsAndReturnFutureDate(frontOfWorkByTime);
-			}
+			}*/
 		}
 	}
 

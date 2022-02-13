@@ -77,6 +77,33 @@ public class Main {
 		return frontOfWork;
 	}
 
+	public static ArrayList<Operation> formFutureFrontOfWork(ArrayList<Operation> operationsToChoose){
+		Operation operationWithMinTactTime = findOperationWithMinTactTime(operationsToChoose);
+
+		LocalDateTime endTime = operationWithMinTactTime.getTactTime().plusNanos(operationWithMinTactTime.getDurationOfExecution().toNanos());
+		ArrayList<Operation> futureFrontOfWork = new ArrayList<>();
+		for(Operation operation: operationsToChoose) {
+			if(operation.getTactTime().isBefore(endTime)) {
+				futureFrontOfWork.add(operation);
+			}
+		}
+		return futureFrontOfWork;
+	}
+
+	public static Operation findOperationWithMinTactTime(ArrayList<Operation> operationsToSelect){
+		if(operationsToSelect.isEmpty()){
+			return null;
+		}
+		LocalDateTime minTime = findMinTactTime(operationsToSelect);
+		Operation operationWithMinTactTime = operationsToSelect.get(0);
+		for(Operation operation: operationsToSelect) {
+			if(operation.getTactTime() == minTime){
+				operationWithMinTactTime = operation;
+			}
+		}
+		return operationWithMinTactTime;
+	}
+
 	//2
 	public static LocalDateTime findMinTactTime(ArrayList<Operation> operationsToSelect){
 		LocalDateTime minTime = LocalDateTime.MAX;
@@ -112,6 +139,8 @@ public class Main {
 		while (!isAllOperationsInstall(operationsToInstall)) {
 
 			ArrayList<Operation> frontOfWork = choiceFutureFrontOfWork2(operationsToInstall, selectionDuration);
+
+			frontOfWork = formFutureFrontOfWork(frontOfWork);
 
 			sortFrontOfWorkByControlParameters(frontOfWork, controlParameters.sortOperator);
 
@@ -340,19 +369,34 @@ public class Main {
 		}
 
 		for(Series series: seriesForWork) {
+
 			installOperationsUntilDeadline2(series.getOperationsToCreate(), controlParameters);
-			/*while(!isAllOperationsInstall(series.getOperationsToCreate()))
-			{
-				ArrayList<Operation> frontOfWork = choiceFrontOfWork(operationsToInstall);
+		}
+	}
 
-				ArrayList<Operation> frontOfWorkByTime = choiceFrontOfWorkByWithTime(frontOfWork);
+	public static void takeSeriesToWorkExtendedWithFutureFrontOfWork(Collection<Series> seriesForWork,Duration selectionDuration, ControlParameters controlParameters) {
+		ArrayList<Operation> operationsToInstall = new ArrayList<>();
 
-				sortFrontOfWorkByControlParameters(frontOfWorkByTime, controlParameters.sortOperator);
+		for(Series series: seriesForWork) {
+			installOperationsUntilDeadline(series);
+			//installOperationsUntilDeadline2(series.getOperationsToCreate(), controlParameters);
+			series.clean();
 
-				advancedSorting(frontOfWorkByTime, controlParameters.useAdvancedSorting);
+			installReverseOperationsUntilDeadline(series);
+			series.clean();
+		}
 
-				installOperationsAndReturnFutureDate(frontOfWorkByTime);
-			}*/
+		if(controlParameters.sequenceOfOperations == SequenceOfOperations.together) {
+			for(Series series : seriesForWork) {
+				operationsToInstall.addAll(series.getOperationsToCreate());
+			}
+			Series newCompleteSeries = new Series(operationsToInstall, findEarliestArrivalTime(seriesForWork), findLatestDeadlineTime(seriesForWork));
+			seriesForWork.clear();
+			seriesForWork.add(newCompleteSeries);
+		}
+
+		for(Series series: seriesForWork) {
+			installOperations(series.getOperationsToCreate(),selectionDuration, controlParameters);
 		}
 	}
 

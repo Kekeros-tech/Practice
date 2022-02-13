@@ -911,15 +911,15 @@ public class MainTest {
 
     @Test
     public void installOperationsWithFutureFrontOfWork2Test() {
-        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
-        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 18:00");
+        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 18:00");
 
         Recourse firstRecourse = new Recourse("14-08-2021 09:00");
         firstRecourse.addSchedule(workingHoursForFirst0);
         firstRecourse.addSchedule(workingHoursForFirst1);
 
-        WorkingHours workingHoursForSecond0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
-        WorkingHours workingHoursForSecond1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+        WorkingHours workingHoursForSecond0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 18:00");
+        WorkingHours workingHoursForSecond1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 18:00");
 
         Recourse secondRecourse = new Recourse("15-08-2021 09:00");
         secondRecourse.addSchedule(workingHoursForSecond0);
@@ -981,15 +981,15 @@ public class MainTest {
 
     @Test
     public void installOperationsTest() {
-        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
-        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 19:00");
+        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 19:00");
 
-        Recourse firstRecourse = new Recourse("14-08-2021 09:00");
+        Recourse firstRecourse = new Recourse("15-08-2021 09:00");
         firstRecourse.addSchedule(workingHoursForFirst0);
         firstRecourse.addSchedule(workingHoursForFirst1);
 
-        WorkingHours workingHoursForSecond0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 14:00");
-        WorkingHours workingHoursForSecond1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 14:00");
+        WorkingHours workingHoursForSecond0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 19:00");
+        WorkingHours workingHoursForSecond1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 19:00");
 
         Recourse secondRecourse = new Recourse("15-08-2021 09:00");
         secondRecourse.addSchedule(workingHoursForSecond0);
@@ -1001,47 +1001,70 @@ public class MainTest {
         Group justSecondRecourse = new Group();
         justSecondRecourse.addRecourseInTheGroup(secondRecourse);
 
+
         Operation first0 = new Operation();
-        first0.setResourceGroup(justFirstRecourse);
-        first0.setDurationOfExecution(Duration.ofHours(3));
+        first0.setResourceGroup(justSecondRecourse);
+        first0.setDurationOfExecution(Duration.ofHours(5));
         first0.setOperatingMode(0);
 
-        //Operation second0 = new OperationWithPrioritiesByHeirs();
         Operation second0 = new Operation();
         second0.setResourceGroup(justSecondRecourse);
         second0.setDurationOfExecution(Duration.ofHours(3));
         second0.setOperatingMode(0);
 
+        first0.addFollowingOperation(second0);
 
         ArrayList<Operation> operations = new ArrayList<>();
         operations.add(first0);
         operations.add(second0);
 
-        Series firstSeries = new Series(operations, "30-08-2021 00:00", "15-08-2021 10:00");
+        Series firstSeries = new Series(operations, "25-08-2021 00:00", "15-08-2021 10:00");
         first0.setSerialAffiliation(firstSeries);
         second0.setSerialAffiliation(firstSeries);
 
+
+
         Operation first1 = new Operation();
-        first1.setResourceGroup(justSecondRecourse);
-        first1.setDurationOfExecution(Duration.ofHours(3));
+        first1.setResourceGroup(justFirstRecourse);
+        first1.setDurationOfExecution(Duration.ofHours(7));
         first1.setOperatingMode(0);
 
         ArrayList<Operation> operationsForSecondSeries = new ArrayList<>();
-        operations.add(first1);
+        operationsForSecondSeries.add(first1);
 
-        Series secondSeries = new Series(operationsForSecondSeries, "17-08-2021 00:00", "18-08-2021 10:00");
+        Series secondSeries = new Series(operationsForSecondSeries, "17-08-2021 00:00", "15-08-2021 12:00");
         first1.setSerialAffiliation(secondSeries);
 
-        firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
-        secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
-        ArrayList<Operation> operationsToInstall = new ArrayList<>();
-        operationsToInstall.add(first0);
-        operationsToInstall.add(second0);
-        operationsToInstall.add(first1);
 
-        ArrayList<Operation> frontOfWork = Main.choiceFutureFrontOfWork2(operationsToInstall, Duration.ofHours(3));
+        Operation first2 = new Operation();
+        first2.setResourceGroup(justSecondRecourse);
+        first2.setDurationOfExecution(Duration.ofHours(2));
+        first2.setOperatingMode(0);
 
-        Main.installOperations(frontOfWork, Duration.ofHours(3), new ControlParameters(2,1,1));
+        ArrayList<Operation> operationsForThirdSeries = new ArrayList<>();
+        operationsForThirdSeries.add(first2);
+
+        Series thirdSeries = new Series(operationsForThirdSeries, "30-08-2021 00:00", "15-08-2021 11:00");
+        first2.setSerialAffiliation(thirdSeries);
+
+
+
+        firstRecourse.fillScheduleUsingPreviousData(thirdSeries.getDeadlineForCompletion());
+        secondRecourse.fillScheduleUsingPreviousData(thirdSeries.getDeadlineForCompletion());
+
+        ArrayList<Series> seriesToWork = new ArrayList<>();
+        seriesToWork.add(firstSeries);
+        seriesToWork.add(secondSeries);
+        seriesToWork.add(thirdSeries);
+
+        Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(4), new ControlParameters(2,1,0));
+
+        for(Series series: seriesToWork){
+            for(Operation operation: series.getOperationsToCreate()){
+                System.out.println(operation);
+            }
+        }
     }
+
 }

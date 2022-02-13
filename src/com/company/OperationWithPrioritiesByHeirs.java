@@ -30,13 +30,14 @@ public class OperationWithPrioritiesByHeirs extends Operation{
     }
 
     public void setPrioritiesByHeirs() {
-        if(super.getFollowingOperations().isEmpty()) {
+       /* if(super.getFollowingOperations().isEmpty()) {
             prioritiesByHeirs = 0;
         }
         else
         {
             prioritiesByHeirs = 1;
-        }
+        }*/
+        prioritiesByHeirs = 1;
 
         for(Operation followingOperation: super.getFollowingOperations()) {
             OperationWithPrioritiesByHeirs following = (OperationWithPrioritiesByHeirs) followingOperation;

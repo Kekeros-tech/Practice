@@ -1,10 +1,12 @@
 package com.company;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class Operation {
+    private StringBuffer nameOfOperation;
     private Group resourceGroup;
     private Series serialAffiliation;
     private ArrayList<Operation> previousOperations;
@@ -34,6 +36,7 @@ public class Operation {
     }
 
     Operation(){
+        nameOfOperation = Series.generateRandomHexString(8);
         this.previousOperations = new ArrayList<>();
         this.followingOperations = new ArrayList<>();
     }
@@ -83,8 +86,9 @@ public class Operation {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Операция: ");
-        sb.append("Группа ресурсов=").append(resourceGroup.getNameOfGroup());
+        final StringBuffer sb = new StringBuffer("Операция - ");
+        sb.append(nameOfOperation);
+        sb.append(" Группа ресурсов=").append(resourceGroup.getNameOfGroup());
         sb.append(", код серии=").append(serialAffiliation.getNameOfSeries());
         sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse.getNameOfRecourse());
         sb.append(", рабочий интервал=").append(cWorkingInterval);
@@ -160,7 +164,9 @@ public class Operation {
 
     public void setCLateStartTime(LocalDateTime cLateStartTime) { this.cLateStartTime = cLateStartTime; }
 
-
+    public void setNameOfOperation(String nameOfOperation) {
+        this.nameOfOperation = new StringBuffer(nameOfOperation);
+    }
 
     public void addFollowingOperation(Operation followingOperation) {
         if(this.followingOperations == null) {

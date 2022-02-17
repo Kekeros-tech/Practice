@@ -291,19 +291,19 @@ public class ComplexTest {
         Operation second0 = new Operation();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(allRecourses);
-        second0.setDurationOfExecution(Duration.ofHours(3));
+        second0.setDurationOfExecution(Duration.ofHours(7));
         second0.setOperatingMode(0);
 
         Operation third0 = new Operation();
         third0.setNameOfOperation("Третья операция, первой серии");
         third0.setResourceGroup(justFirstRecourse);
-        third0.setDurationOfExecution(Duration.ofHours(5));
+        third0.setDurationOfExecution(Duration.ofHours(7));
         third0.setOperatingMode(0);
 
         Operation fourth0 = new Operation();
         fourth0.setNameOfOperation("Четвертая операция, первой серии");
         fourth0.setResourceGroup(justSecondRecourse);
-        fourth0.setDurationOfExecution(Duration.ofHours(4));
+        fourth0.setDurationOfExecution(Duration.ofHours(7));
         fourth0.setOperatingMode(0);
 
         first0.addFollowingOperation(fourth0);
@@ -316,7 +316,7 @@ public class ComplexTest {
         operationsOfFirstSeries.add(third0);
         operationsOfFirstSeries.add(fourth0);
 
-        Series firstSeries = new Series(operationsOfFirstSeries, "10-09-2021 00:00", "15-08-2021 10:00");
+        Series firstSeries = new Series(operationsOfFirstSeries, "30-09-2021 00:00", "15-08-2021 10:00");
         first0.setSerialAffiliation(firstSeries);
         second0.setSerialAffiliation(firstSeries);
         third0.setSerialAffiliation(firstSeries);
@@ -359,7 +359,7 @@ public class ComplexTest {
         operationsOfSecondSeries.add(third1);
         operationsOfSecondSeries.add(fourth1);
 
-        Series secondSeries = new Series(operationsOfSecondSeries, "25-09-2021 00:00", "15-08-2021 15:00");
+        Series secondSeries = new Series(operationsOfSecondSeries, "01-09-2021 00:00", "15-08-2021 15:00");
         first1.setSerialAffiliation(secondSeries);
         second1.setSerialAffiliation(secondSeries);
         third1.setSerialAffiliation(secondSeries);
@@ -376,10 +376,10 @@ public class ComplexTest {
         seriesToWork.add(firstSeries);
         seriesToWork.add(secondSeries);
 
-        firstRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
-        secondRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
+        firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+        secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
-        Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(3), new ControlParameters(2,1,0));
+        Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(10), new ControlParameters(2,1,0));
 
         for(Series series: seriesToWork){
             for(Operation operation: series.getOperationsToCreate()){

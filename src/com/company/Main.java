@@ -140,7 +140,13 @@ public class Main {
 
 			ArrayList<Operation> frontOfWork = choiceFutureFrontOfWork2(operationsToInstall, selectionDuration);
 
+			System.out.println("Фронт работы");
+			System.out.println(frontOfWork);
+
 			frontOfWork = formFutureFrontOfWork(frontOfWork);
+
+			System.out.println("Фронт работы с учетом занимаемого ресурса");
+			System.out.println(frontOfWork);
 
 			sortFrontOfWorkByControlParameters(frontOfWork, controlParameters.sortOperator);
 

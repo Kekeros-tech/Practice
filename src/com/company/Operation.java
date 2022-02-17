@@ -88,9 +88,21 @@ public class Operation {
     public String toString() {
         final StringBuffer sb = new StringBuffer("Операция - ");
         sb.append(nameOfOperation);
-        sb.append(" Группа ресурсов=").append(resourceGroup.getNameOfGroup());
-        sb.append(", код серии=").append(serialAffiliation.getNameOfSeries());
-        sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse.getNameOfRecourse());
+        //sb.append(" Группа ресурсов=").append(resourceGroup.getNameOfGroup());
+        //sb.append(", код серии=").append(serialAffiliation.getNameOfSeries());
+        //sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse.getNameOfRecourse());
+        sb.append(cLateStartTime);
+        sb.append(", рабочий интервал=").append(cWorkingInterval);
+        return sb.toString();
+    }
+
+    public String print() {
+        final StringBuffer sb = new StringBuffer("Операция - ");
+        sb.append(nameOfOperation);
+        //sb.append(" Группа ресурсов=").append(resourceGroup.getNameOfGroup());
+        //sb.append(", код серии=").append(serialAffiliation.getNameOfSeries());
+        //sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse.getNameOfRecourse());
+        sb.append(cLateStartTime);
         sb.append(", рабочий интервал=").append(cWorkingInterval);
         return sb.toString();
     }

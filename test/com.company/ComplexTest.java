@@ -2,8 +2,15 @@ package com.company;
 
 import org.junit.Test;
 
+import javax.jnlp.FileContents;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
@@ -390,7 +397,7 @@ public class ComplexTest {
 
     @Test
     //Use early and late start dates
-    public void asymmetricSeriesWithDifferentArrivalTimesAndDeadlinesSecond() {
+    public void asymmetricSeriesWithDifferentArrivalTimesAndDeadlinesSecond() throws IOException, InterruptedException {
         WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 19:00");
         WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 19:00");
 
@@ -416,25 +423,25 @@ public class ComplexTest {
         allRecourses.addRecourseInTheGroup(secondRecourse);
 
 
-        Operation first0 = new OperationWithPrioritiesByHeirs();
+        Operation first0 = new OperationWithPriority();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(allRecourses);
         first0.setDurationOfExecution(Duration.ofHours(7));
         first0.setOperatingMode(0);
 
-        Operation second0 = new OperationWithPrioritiesByHeirs();
+        Operation second0 = new OperationWithPriority();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(allRecourses);
         second0.setDurationOfExecution(Duration.ofHours(3));
         second0.setOperatingMode(0);
 
-        Operation third0 = new OperationWithPrioritiesByHeirs();
+        Operation third0 = new OperationWithPriority();
         third0.setNameOfOperation("Третья операция, первой серии");
         third0.setResourceGroup(justFirstRecourse);
         third0.setDurationOfExecution(Duration.ofHours(5));
         third0.setOperatingMode(0);
 
-        Operation fourth0 = new OperationWithPrioritiesByHeirs();
+        Operation fourth0 = new OperationWithPriority();
         fourth0.setNameOfOperation("Четвертая операция, первой серии");
         fourth0.setResourceGroup(justSecondRecourse);
         fourth0.setDurationOfExecution(Duration.ofHours(4));
@@ -458,25 +465,25 @@ public class ComplexTest {
 
 
 
-        Operation first1 = new OperationWithPrioritiesByHeirs();
+        Operation first1 = new OperationWithPriority();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(allRecourses);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        Operation second1 = new OperationWithPrioritiesByHeirs();
+        Operation second1 = new OperationWithPriority();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justSecondRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        Operation third1 = new OperationWithPrioritiesByHeirs();
+        Operation third1 = new OperationWithPriority();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justFirstRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
 
-        Operation fourth1 = new OperationWithPrioritiesByHeirs();
+        Operation fourth1 = new OperationWithPriority();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justSecondRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(3));
@@ -513,13 +520,46 @@ public class ComplexTest {
         firstRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
         secondRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
 
-        Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(10), new ControlParameters(0,1,0));
-
-        for(Series series: seriesToWork){
-            for(Operation operation: series.getOperationsToCreate()){
-                System.out.println(operation);
+        for(int i = 0; i < 1; i++) {
+            String[] arguments = new String[] {"python","D:\\My_EGO_realization\\hello.py"};
+            try {
+                // выполняем код Python
+                Process process = Runtime.getRuntime().exec(arguments);
+                // Возвращает, успешно ли выполнено, 0 означает успех, 1 означает сбой
+                int re = process.waitFor();
+                // вывод результата выполнения
+                System.out.println(re);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            FileReader file = new FileReader("D:\\My_EGO_realization\\text.txt");
+            Scanner scanner = new Scanner(file);
+            String lastString = "";
+            ArrayList<Integer> controlParameterValues = new ArrayList<>();
+            while (scanner.hasNextLine()) {
+                lastString = scanner.nextLine();
+                i++;
+            }
+            for (String current : lastString.split(" ")) {
+                controlParameterValues.add(Integer.parseInt(current));
+            }
+            Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
+                    new ControlParameters(controlParameterValues.get(1), 1, 0));
+            for(Series series: seriesToWork){
+                for(Operation operation: series.getOperationsToCreate()) {
+                    System.out.println(operation);
+                }
             }
         }
-    }
 
+        //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(9), new ControlParameters(0,1,0));
+
+
+        //System.out.println(Duration.between(first0.getCWorkingInterval().getStartTime(), fourth1.getCWorkingInterval().getEndTime()));
+        /*for(Series series: seriesToWork){
+            for(Operation operation: series.getOperationsToCreate()) {
+                System.out.println(operation);
+            }
+        }*/
+    }
 }

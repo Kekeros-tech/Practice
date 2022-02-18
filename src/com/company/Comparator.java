@@ -59,23 +59,38 @@ import java.util.Comparator;
 
     class OComparatorBasedOnPrioritiesByHeirs implements Comparator<Operation> {
 
-        public int compare(Operation a, Operation b) {
+        /*public int compare(Operation a, Operation b) {
             if(((OperationWithPrioritiesByHeirs) a).getPrioritiesByHeirs() == ((OperationWithPrioritiesByHeirs) b).getPrioritiesByHeirs()){
                 return 0;
             }
             if(((OperationWithPrioritiesByHeirs) a).getPrioritiesByHeirs() > ((OperationWithPrioritiesByHeirs) b).getPrioritiesByHeirs())
                 return -1;
             return 1;
+        }*/
+        public int compare(Operation a, Operation b) {
+            if(((OperationWithPriority) a).getPrioritiesByHeirs() == ((OperationWithPriority) b).getPrioritiesByHeirs()){
+                return 0;
+            }
+            if(((OperationWithPriority) a).getPrioritiesByHeirs() > ((OperationWithPriority) b).getPrioritiesByHeirs())
+                return -1;
+            return 1;
         }
+
     }
 
     class OComparatorBasedOnPrioritiesByDuration implements Comparator<Operation> {
 
-        public int compare(Operation a, Operation b) {
+        /*public int compare(Operation a, Operation b) {
             if(((OperationWithPrioritiesByDuration) a).getPrioritiesByDuration().equals(((OperationWithPrioritiesByDuration) b).getPrioritiesByDuration())){
                 return 0;
             }
             return -((OperationWithPrioritiesByDuration) a).getPrioritiesByDuration().compareTo(((OperationWithPrioritiesByDuration) b).getPrioritiesByDuration());
+        }*/
+        public int compare(Operation a, Operation b) {
+            if(((OperationWithPriority) a).getPrioritiesByDuration().equals(((OperationWithPriority) b).getPrioritiesByDuration())){
+                return 0;
+            }
+            return -((OperationWithPriority) a).getPrioritiesByDuration().compareTo(((OperationWithPriority) b).getPrioritiesByDuration());
         }
     }
 

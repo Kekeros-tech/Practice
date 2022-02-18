@@ -34,6 +34,12 @@ public class Main {
 				((OperationWithPrioritiesByDuration) frontOfWork.get(i)).setPrioritiesByDuration();
 			}
 
+			//это временное решение
+			if(frontOfWork.get(i) instanceof OperationWithPriority) {
+				((OperationWithPriority) frontOfWork.get(i)).setPrioritiesByHeirs();
+				((OperationWithPriority) frontOfWork.get(i)).setPrioritiesByDuration();
+			}
+
 			frontOfWork.get(i).getLatestEndTimeOfFollowing();
 			frontOfWork.get(i).installReverseOperation();
 		}

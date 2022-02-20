@@ -80,6 +80,13 @@ public class Series {
         cNumberOfAssignedOperations = 0;
     }
 
+    public void fullClean() {
+        for(Operation currentOperation: operationsToCreate) {
+            currentOperation.fullClean();
+        }
+        cNumberOfAssignedOperations = 0;
+    }
+
     public static StringBuffer generateRandomHexString(int length){
         Random r = new Random();
         StringBuffer sb = new StringBuffer();

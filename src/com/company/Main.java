@@ -146,13 +146,13 @@ public class Main {
 
 			ArrayList<Operation> frontOfWork = choiceFutureFrontOfWork2(operationsToInstall, selectionDuration);
 
-			System.out.println("Фронт работы");
-			System.out.println(frontOfWork);
+			/*System.out.println("Фронт работы");
+			System.out.println(frontOfWork);*/
 
 			frontOfWork = formFutureFrontOfWork(frontOfWork);
 
-			System.out.println("Фронт работы с учетом занимаемого ресурса");
-			System.out.println(frontOfWork);
+			/*System.out.println("Фронт работы с учетом занимаемого ресурса");
+			System.out.println(frontOfWork);*/
 
 			sortFrontOfWorkByControlParameters(frontOfWork, controlParameters.sortOperator);
 
@@ -388,6 +388,7 @@ public class Main {
 
 	public static void takeSeriesToWorkExtendedWithFutureFrontOfWork(Collection<Series> seriesForWork,Duration selectionDuration, ControlParameters controlParameters) {
 		ArrayList<Operation> operationsToInstall = new ArrayList<>();
+		ArrayList<Series> workingListOfSeries = new ArrayList(seriesForWork);
 
 		for(Series series: seriesForWork) {
 			installOperationsUntilDeadline(series);
@@ -399,15 +400,15 @@ public class Main {
 		}
 
 		if(controlParameters.sequenceOfOperations == SequenceOfOperations.together) {
-			for(Series series : seriesForWork) {
+			for(Series series : workingListOfSeries) {
 				operationsToInstall.addAll(series.getOperationsToCreate());
 			}
 			Series newCompleteSeries = new Series(operationsToInstall, findEarliestArrivalTime(seriesForWork), findLatestDeadlineTime(seriesForWork));
-			seriesForWork.clear();
-			seriesForWork.add(newCompleteSeries);
+			workingListOfSeries.clear();
+			workingListOfSeries.add(newCompleteSeries);
 		}
 
-		for(Series series: seriesForWork) {
+		for(Series series: workingListOfSeries) {
 			installOperations(series.getOperationsToCreate(),selectionDuration, controlParameters);
 		}
 	}

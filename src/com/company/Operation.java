@@ -91,7 +91,7 @@ public class Operation {
         //sb.append(" Группа ресурсов=").append(resourceGroup.getNameOfGroup());
         //sb.append(", код серии=").append(serialAffiliation.getNameOfSeries());
         //sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse.getNameOfRecourse());
-        sb.append(cLateStartTime);
+        //sb.append(cLateStartTime);
         sb.append(", рабочий интервал=").append(cWorkingInterval);
         return sb.toString();
     }
@@ -369,5 +369,11 @@ public class Operation {
         cNumberOfAssignedRecourse = null;
         cWorkingInterval = null;
         tactTime = null;
+    }
+
+    public void fullClean() {
+        this.clean();
+        cEarlierStartTime = null;
+        cLateStartTime = null;
     }
 }

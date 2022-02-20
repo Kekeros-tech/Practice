@@ -50,4 +50,10 @@ public class OperationWithPriority extends Operation{
             prioritiesByDuration = prioritiesByDuration.plusNanos(((OperationWithPriority) followingOperation).getPrioritiesByDuration().toNanos());
         }
     }
+
+    public void fullClean() {
+        super.fullClean();
+        prioritiesByHeirs = 0;
+        prioritiesByDuration = Duration.ZERO;
+    }
 }

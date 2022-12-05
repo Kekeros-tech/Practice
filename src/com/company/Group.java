@@ -1,4 +1,5 @@
 package com.company;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -37,5 +38,21 @@ public class Group {
 
     public StringBuffer getNameOfGroup() {
         return nameOfGroup;
+    }
+
+    public LocalDateTime findTactTimeOfOperationAfterCurrentDate(LocalDateTime currentDate, Operation operation) {
+        LocalDateTime tactTime = LocalDateTime.MAX;
+        for(Recourse currentRecourse: recoursesInTheGroup) {
+            if(currentRecourse.isTactDateWorkingTime(currentDate, operation)) {
+                return currentDate;
+            }
+            else {
+                LocalDateTime startDateAfterArrivalTime = currentRecourse.getStartDateAfterReleaseDate(currentDate, operation);
+                if(startDateAfterArrivalTime.isBefore(tactTime)) {
+                    tactTime =  startDateAfterArrivalTime;
+                }
+            }
+        }
+        return tactTime;
     }
 }

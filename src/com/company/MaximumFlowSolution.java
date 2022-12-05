@@ -1,13 +1,10 @@
 package com.company;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class MaximumFlowSolution {
 
-    public static HashMap<Operation, Recourse> solveMaximumFlowProblem(ArrayList<Operation> frontOfWorkSortedByPriority) {
+    public static HashMap<Operation, Recourse> solveMaximumFlowProblem(Collection<Operation> frontOfWorkSortedByPriority) {
 
         ArrayList<Recourse> workResources = new ArrayList<>(formResourcesThatCanBeBorrowed(frontOfWorkSortedByPriority));
         if(workResources.isEmpty()) {
@@ -23,7 +20,7 @@ public class MaximumFlowSolution {
         return resultOfWork;
     }
 
-    public static HashSet<Recourse> formResourcesThatCanBeBorrowed(ArrayList<Operation> frontOfWorkSortedByPriority) {
+    public static HashSet<Recourse> formResourcesThatCanBeBorrowed(Collection<Operation> frontOfWorkSortedByPriority) {
         HashSet<Recourse> workResources = new HashSet<>();
 
         for(Operation operationInFrontOfWork : frontOfWorkSortedByPriority) {
@@ -43,23 +40,25 @@ public class MaximumFlowSolution {
         }
     }
 
-    public static HashMap<Operation, Recourse> formResultOfAlgorithm(int[][] adjacencyMatrix, ArrayList<Operation> frontOfWorkSortedByPriority,ArrayList<Recourse> workResources ) {
+    public static HashMap<Operation, Recourse> formResultOfAlgorithm(int[][] adjacencyMatrix, Collection<Operation> frontOfWorkSortedByPriority,ArrayList<Recourse> workResources ) {
         HashMap<Operation, Recourse> resultOfWork = new HashMap<>();
+        ArrayList<Operation> frontOfWork = new ArrayList<Operation>(frontOfWorkSortedByPriority);
 
-        for(int i = 1 + frontOfWorkSortedByPriority.size(); i < adjacencyMatrix.length - 1; i++) {
-            for(int j = 1; j < 1 + frontOfWorkSortedByPriority.size(); j++) {
+        for(int i = 1 + frontOfWork.size(); i < adjacencyMatrix.length - 1; i++) {
+            for(int j = 1; j < 1 + frontOfWork.size(); j++) {
 
                 if(adjacencyMatrix[i][j] == 1) {
-                    resultOfWork.put(frontOfWorkSortedByPriority.get(j - 1), workResources.get(i - 1 - frontOfWorkSortedByPriority.size()));
+                    resultOfWork.put(frontOfWork.get(j - 1), workResources.get(i - 1 - frontOfWorkSortedByPriority.size()));
                 }
             }
         }
         return resultOfWork;
     }
 
-    public static int[][] formAdjacencyMatrix(ArrayList<Operation> frontOfWorkSortedByPriority, ArrayList<Recourse> workResources) {
+    public static int[][] formAdjacencyMatrix(Collection<Operation> frontOfWorkSortedByPriority, ArrayList<Recourse> workResources) {
         int matrixSize = frontOfWorkSortedByPriority.size() + workResources.size() + 2;
         int[][] adjacencyMatrix = new int[matrixSize][matrixSize];
+        ArrayList<Operation> frontOfWork = new ArrayList<Operation>(frontOfWorkSortedByPriority);
 
         for(int i = 0; i < matrixSize; i++) {
             if(1 <= i && i <= frontOfWorkSortedByPriority.size()) {
@@ -67,9 +66,9 @@ public class MaximumFlowSolution {
             }
         }
 
-        for(int i = 0; i < frontOfWorkSortedByPriority.size(); i++) {
-            ArrayList<Recourse> resourcesOfCurrentOperation = frontOfWorkSortedByPriority.get(i).getResourcesToBorrow();
-            for(int j = 0, difference = frontOfWorkSortedByPriority.size() + 1; j < resourcesOfCurrentOperation.size(); j++){
+        for(int i = 0; i < frontOfWork.size(); i++) {
+            ArrayList<Recourse> resourcesOfCurrentOperation = frontOfWork.get(i).getResourcesToBorrow();
+            for(int j = 0, difference = frontOfWork.size() + 1; j < resourcesOfCurrentOperation.size(); j++){
                 adjacencyMatrix[i + 1][workResources.indexOf(resourcesOfCurrentOperation.get(j)) + difference] = 1;
             }
         }

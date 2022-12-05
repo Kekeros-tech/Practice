@@ -1,11 +1,5 @@
 package com.company;
 
-enum SortOperator {
-    sortByPrioritiesByHeirs,
-    sortByPrioritiesByDuration,
-    sortByEarlyAndLateStartDates;
-}
-
 enum SequenceOfOperations {
     successively,
     together;
@@ -18,21 +12,23 @@ enum UseAdvancedSorting {
 
 public class ControlParameters {
 
-    SortOperator sortOperator;
+    PriorityType sortOperator;
     SequenceOfOperations sequenceOfOperations;
     UseAdvancedSorting useAdvancedSorting;
 
     ControlParameters(int numberOfSortOperator, int numberOfSequenceOfOperation, int numberOfAdvancedSorting) {
         switch (numberOfSortOperator) {
             case 0:
-                sortOperator = SortOperator.sortByPrioritiesByHeirs;
+                sortOperator = PriorityType.priorityByHeirs;
                 break;
             case 1:
-                sortOperator = SortOperator.sortByPrioritiesByDuration;
+                sortOperator = PriorityType.priorityByDuration;
                 break;
             case 2:
-                sortOperator = SortOperator.sortByEarlyAndLateStartDates;
+                sortOperator = PriorityType.priorityByLastStartTime;
                 break;
+            case 3:
+                sortOperator = PriorityType.priorityByDurationBetweenEarliestStartTimeAndLatestStartTime;
         }
 
         switch (numberOfSequenceOfOperation) {
@@ -52,6 +48,5 @@ public class ControlParameters {
                 useAdvancedSorting = UseAdvancedSorting.use;
                 break;
         }
-
     }
 }

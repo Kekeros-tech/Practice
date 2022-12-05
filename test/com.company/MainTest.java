@@ -1,18 +1,15 @@
 package com.company;
 
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
-import jdk.nashorn.internal.runtime.OptimisticReturnFilters;
 import org.junit.Test;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 public class MainTest {
-
 
     @Test
     public void easyParallelTest() {
@@ -38,7 +35,6 @@ public class MainTest {
         thirdRecourse.addSchedule(workingHoursForThird1);
 
 
-
         Group firstAndSecond = new Group();
         firstAndSecond.addRecourseInTheGroup(firstRecourse);
         firstAndSecond.addRecourseInTheGroup(secondRecourse);
@@ -51,7 +47,6 @@ public class MainTest {
         allRecourses.addRecourseInTheGroup(firstRecourse);
         allRecourses.addRecourseInTheGroup(secondRecourse);
         allRecourses.addRecourseInTheGroup(thirdRecourse);
-
 
 
         Operation firstOperation = new Operation();
@@ -95,7 +90,14 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-        Main.installOperationsUntilDeadline(mySeries);
+        ArrayList<Series> seriesForWork = new ArrayList<>();
+        seriesForWork.add(mySeries);
+
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm(seriesForWork);
+        algo.takeSeriesToWork();
+
+        OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
+        operations.sort(sorter);
 
         WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "15-08-2021 13:00");
         assertEquals(expectation.toString(),firstOperation.getCWorkingInterval().toString());
@@ -109,7 +111,6 @@ public class MainTest {
         expectation = new WorkingHours("16-08-2021 12:00", "16-08-2021 14:00");
         assertEquals(expectation.toString(),fourthOperation.getCWorkingInterval().toString());
     }
-
 
     @Test
     public void easySequentialTest() {
@@ -190,7 +191,11 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-        Main.installOperationsUntilDeadline(mySeries);
+        ArrayList<Series> seriesToWork = new ArrayList<>();
+        seriesToWork.add(mySeries);
+
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm(seriesToWork);
+        algo.takeSeriesToWork();
 
         WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "17-08-2021 10:00");
         assertEquals(expectation.toString(), firstOperation.getCWorkingInterval().toString());
@@ -205,7 +210,7 @@ public class MainTest {
         assertEquals(expectation.toString(), fourthOperation.getCWorkingInterval().toString());
     }
 
-
+/*
     @Test
     public void reverseTest() {
         WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 10:00", "14-08-2021 19:00");
@@ -285,11 +290,12 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-        Main.installOperationsUntilDeadline(mySeries);
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm();
+        algo.installOperationsUntilDeadline(mySeries);
 
         mySeries.clean();
 
-        Main.installReverseOperationsUntilDeadline(mySeries);
+        algo.installReverseOperationsUntilDeadline(mySeries);
 
         LocalDateTime expectation = LocalDateTime.of(2021,8,28,11,00);
         assertEquals(expectation.toString(), firstOperation.getCLateStartTime().toString());
@@ -397,12 +403,12 @@ public class MainTest {
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
 
-
-        Main.installOperationsUntilDeadline(mySeries);
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm();
+        algo.installOperationsUntilDeadline(mySeries);
 
         mySeries.clean();
 
-        Main.installReverseOperationsUntilDeadline(mySeries);
+        algo.installReverseOperationsUntilDeadline(mySeries);
 
         LocalDateTime expectation = LocalDateTime.of(2021,8,27,15,00);
         assertEquals(expectation.toString(), firstOperation.getCLateStartTime().toString());
@@ -528,7 +534,8 @@ public class MainTest {
         seriesForWork.add(firstSeries);
         seriesForWork.add(mySeries);
 
-        Main.takeSeriesToWork(seriesForWork);
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm(seriesForWork);
+        algo.takeSeriesToWork();
 
         WorkingHours expectation = new WorkingHours("14-08-2021 12:00", "14-08-2021 16:00");
         assertEquals(expectation.toString(), specialOperation.getCWorkingInterval().toString());
@@ -549,7 +556,7 @@ public class MainTest {
         assertEquals(expectation.toString(), fifthOperation.getCWorkingInterval().toString());
     }
 
-    @Test
+*//*    @Test
     public void choiceFrontOfWork() {
         Operation firstOperation = new Operation();
         Operation secondOperation = new Operation();
@@ -568,7 +575,9 @@ public class MainTest {
         correctFrontOfWork.add(thirdOperation);
         correctFrontOfWork.add(fourthOperation);
 
-        assertEquals(Main.choiceFrontOfWork(operationsToCreate), correctFrontOfWork);
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm();
+
+        assertEquals(algo.choiceFrontOfWork(operationsToCreate), correctFrontOfWork);
 
 
         firstOperation.addFollowingOperation(fourthOperation);
@@ -579,8 +588,8 @@ public class MainTest {
         correctFrontOfWork.add(firstOperation);
         correctFrontOfWork.add(secondOperation);
         correctFrontOfWork.add(thirdOperation);
-        assertEquals(Main.choiceFrontOfWork(operationsToCreate),correctFrontOfWork);
 
+        assertEquals(algo.choiceFrontOfWork(operationsToCreate),correctFrontOfWork);
 
         firstOperation.addFollowingOperation(thirdOperation);
         secondOperation.addFollowingOperation(thirdOperation);
@@ -588,8 +597,9 @@ public class MainTest {
         correctFrontOfWork = new ArrayList();
         correctFrontOfWork.add(firstOperation);
         correctFrontOfWork.add(secondOperation);
-        assertEquals(Main.choiceFrontOfWork(operationsToCreate),correctFrontOfWork);
-    }
+
+        assertEquals(algo.choiceFrontOfWork(operationsToCreate),correctFrontOfWork);
+    }*//*
 
     @Test
     public void sortByLateStartTimeTest() {
@@ -678,7 +688,8 @@ public class MainTest {
         seriesForWork.add(firstSeries);
         seriesForWork.add(otherSeries);
 
-        Main.takeSeriesToWork(seriesForWork);
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm(seriesForWork);
+        algo.takeSeriesToWork();
 
         WorkingHours expectation = new WorkingHours("14-08-2021 10:00","14-08-2021 11:00" );
         assertEquals(expectation.toString(), firstOperation.getCWorkingInterval().toString());
@@ -727,7 +738,9 @@ public class MainTest {
         correctFrontOfWork.add(thirdOperation);
         correctFrontOfWork.add(fourthOperation);
 
-        assertEquals(Main.choiceReverseFrontOfWork(operationsToCreate), correctFrontOfWork);
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm();
+
+        assertEquals(algo.choiceReverseFrontOfWork(operationsToCreate), correctFrontOfWork);
 
         firstOperation.addFollowingOperation(secondOperation);
         secondOperation.addFollowingOperation(fourthOperation);
@@ -737,7 +750,7 @@ public class MainTest {
         correctFrontOfWork.add(thirdOperation);
         correctFrontOfWork.add(fourthOperation);
 
-        assertEquals(Main.choiceReverseFrontOfWork(operationsToCreate),correctFrontOfWork);
+        assertEquals(algo.choiceReverseFrontOfWork(operationsToCreate),correctFrontOfWork);
     }
 
     //Тестирование работы фронта, который смотрит в будущее
@@ -755,7 +768,8 @@ public class MainTest {
         operations.add(second);
         operations.add(third);
 
-        LocalDateTime minTime = Main.minCEarlierStartTime(operations);
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm();
+        LocalDateTime minTime = algo.findMinTactTime(operations);
 
         assertEquals("10-08-2021 10:00",minTime.format(WorkingHours.formatter));
     }
@@ -774,7 +788,8 @@ public class MainTest {
         operations.add(second);
         operations.add(third);
 
-        ArrayList<Operation> resultOfWork = Main.choiceFutureFrontOfWork(operations, Duration.ofHours(10));
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithmWithCPAndFutureFront(Duration.ofHours(10));
+        ArrayList<Operation> resultOfWork = algo.choiceFrontOfWork(operations);
 
         ArrayList<Operation> expectation = new ArrayList<>();
         expectation.add(first);
@@ -783,45 +798,12 @@ public class MainTest {
 
         third.setCEarlierStartTime("10-08-2021 15:00");
         expectation.add(third);
-        assertEquals(expectation, Main.choiceFutureFrontOfWork(operations, Duration.ofHours(10)));
+        assertEquals(expectation, algo.choiceFrontOfWork(operations));
 
         expectation = new ArrayList<>();
         expectation.add(first);
-        assertEquals(1, Main.choiceFutureFrontOfWork(operations, Duration.ofHours(1)).size());
-    }
-
-    @Test
-    public void findOperationWithMinTimeAndMinWindowSizeTest() {
-        Operation first = new Operation();
-        first.setCEarlierStartTime("10-08-2021 10:00");
-        first.setDurationOfExecution(Duration.ofHours(5));
-        Operation second = new Operation();
-        second.setCEarlierStartTime("10-08-2021 10:00");
-        second.setDurationOfExecution(Duration.ofHours(3));
-        Operation third = new Operation();
-        third.setCEarlierStartTime("10-08-2021 15:00");
-        third.setDurationOfExecution(Duration.ofHours(5));
-
-        ArrayList<Operation> operations = new ArrayList<>();
-        operations.add(first);
-        operations.add(second);
-        operations.add(third);
-
-        ArrayList<Operation> futureFrontOfWork = Main.choiceFutureFrontOfWork(operations, Duration.ofHours(10));
-
-        LocalDateTime minTime = Main.minCEarlierStartTime(futureFrontOfWork);
-
-        Operation resultOfWork = Main.findOperationWithMinTimeAndMinWindowSize(futureFrontOfWork, minTime);
-
-        assertEquals(resultOfWork, second);
-
-
-        second.setCEarlierStartTime("10-08-2021 12:00");
-
-        ArrayList<Operation> futureFrontOfWork2 = Main.choiceFutureFrontOfWork(operations, Duration.ofHours(10));
-
-        assertEquals(first, Main.findOperationWithMinTimeAndMinWindowSize(futureFrontOfWork,
-                Main.minCEarlierStartTime(futureFrontOfWork2)));
+        algo = new OperationsArrangementAlgorithmWithCPAndFutureFront(Duration.ofHours(1));
+        assertEquals(1, algo.choiceFrontOfWork(operations).size());
     }
 
     @Test
@@ -838,7 +820,8 @@ public class MainTest {
         operations.add(second);
         operations.add(third);
 
-        LocalDateTime minTime = Main.findMinTactTime(operations);
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm();
+        LocalDateTime minTime = algo.findMinTactTime(operations);
 
         assertEquals("10-08-2021 10:00", minTime.format(WorkingHours.formatter));
     }
@@ -904,7 +887,8 @@ public class MainTest {
         operationsToInstall.add(second0);
         operationsToInstall.add(first1);
 
-        ArrayList<Operation> result = Main.choiceFutureFrontOfWork2(operationsToInstall, Duration.ofDays(2));
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithmWithCPAndFutureFront(Duration.ofDays(2));
+        ArrayList<Operation> result =  algo.choiceFrontOfWork(operationsToInstall);
 
         assertEquals(2, result.size());
     }
@@ -970,7 +954,8 @@ public class MainTest {
         operationsToInstall.add(second0);
         operationsToInstall.add(first1);
 
-        Main.installOperationsWithFutureFrontOfWork2(operationsToInstall, Duration.ofHours(2));
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm();
+        algo.installOperationsAndReturnFutureDate(operationsToInstall);
 
         WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "15-08-2021 13:00");
         assertEquals(expectation.toString(), first0.getCWorkingInterval().toString());
@@ -1058,13 +1043,14 @@ public class MainTest {
         seriesToWork.add(secondSeries);
         seriesToWork.add(thirdSeries);
 
-        Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(4), new ControlParameters(2,1,0));
+        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithmWithCPAndFutureFront(seriesToWork, new ControlParameters(2,1,0), Duration.ofHours(4));
+        algo.takeSeriesToWork();
 
         for(Series series: seriesToWork){
             for(Operation operation: series.getOperationsToCreate()){
                 System.out.println(operation);
             }
         }
-    }
+    }*/
 
 }

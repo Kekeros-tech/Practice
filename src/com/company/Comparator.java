@@ -3,7 +3,7 @@ package com.company;
 import java.time.Duration;
 import java.util.Comparator;
 
-    class WHComparatorBasedOnDuration implements Comparator<WorkingHours> {
+/*    class WHComparatorBasedOnDuration implements Comparator<WorkingHours> {
 
         public int compare(WorkingHours a, WorkingHours b){
             Duration first = Duration.between(a.getStartTime(),a.getEndTime());
@@ -35,7 +35,7 @@ import java.util.Comparator;
             }
             return 1;
         }
-    }
+    }*/
 
     class OComparatorBasedOnWorkingInterval implements Comparator<Operation> {
 
@@ -47,7 +47,7 @@ import java.util.Comparator;
         }
     }
 
-    class OComparatorBasedOnCEarliestStartTime implements Comparator<Operation> {
+    /*class OComparatorBasedOnCEarliestStartTime implements Comparator<Operation> {
 
         public int compare(Operation a, Operation b) {
             if (a.getCEarlierStartTime().isBefore(b.getCEarlierStartTime())) {
@@ -59,14 +59,14 @@ import java.util.Comparator;
 
     class OComparatorBasedOnPrioritiesByHeirs implements Comparator<Operation> {
 
-        /*public int compare(Operation a, Operation b) {
+        *//*public int compare(Operation a, Operation b) {
             if(((OperationWithPrioritiesByHeirs) a).getPrioritiesByHeirs() == ((OperationWithPrioritiesByHeirs) b).getPrioritiesByHeirs()){
                 return 0;
             }
             if(((OperationWithPrioritiesByHeirs) a).getPrioritiesByHeirs() > ((OperationWithPrioritiesByHeirs) b).getPrioritiesByHeirs())
                 return -1;
             return 1;
-        }*/
+        }*//*
         public int compare(Operation a, Operation b) {
             if(((OperationWithPriority) a).getPrioritiesByHeirs() == ((OperationWithPriority) b).getPrioritiesByHeirs()){
                 return 0;
@@ -80,39 +80,25 @@ import java.util.Comparator;
 
     class OComparatorBasedOnPrioritiesByDuration implements Comparator<Operation> {
 
-        /*public int compare(Operation a, Operation b) {
+        *//*public int compare(Operation a, Operation b) {
             if(((OperationWithPrioritiesByDuration) a).getPrioritiesByDuration().equals(((OperationWithPrioritiesByDuration) b).getPrioritiesByDuration())){
                 return 0;
             }
             return -((OperationWithPrioritiesByDuration) a).getPrioritiesByDuration().compareTo(((OperationWithPrioritiesByDuration) b).getPrioritiesByDuration());
-        }*/
+        }*//*
         public int compare(Operation a, Operation b) {
             if(((OperationWithPriority) a).getPrioritiesByDuration().equals(((OperationWithPriority) b).getPrioritiesByDuration())){
                 return 0;
             }
             return -((OperationWithPriority) a).getPrioritiesByDuration().compareTo(((OperationWithPriority) b).getPrioritiesByDuration());
         }
-    }
+    }*/
 
     class OExtendedComparator implements Comparator<Operation> {
 
         public int compare(Operation a, Operation b) {
-            int resultOfSorter = Integer.MAX_VALUE;
-
-            switch (a.getClass().getSimpleName()) {
-                case "Operation":
-                    OComparatorBasedOnLateStartTime sorter = new OComparatorBasedOnLateStartTime();
-                    resultOfSorter = sorter.compare(a,b);
-                    break;
-                case "OperationWithPrioritiesByHeirs":
-                    OComparatorBasedOnPrioritiesByHeirs sorter1 = new OComparatorBasedOnPrioritiesByHeirs();
-                    resultOfSorter = sorter1.compare(a,b);
-                    break;
-                case  "OperationWithPrioritiesByDuration":
-                    OComparatorBasedOnPrioritiesByDuration sorter2 = new OComparatorBasedOnPrioritiesByDuration();
-                    resultOfSorter = sorter2.compare(a,b);
-                    break;
-            }
+            OPriorityComparator comparator = new OPriorityComparator();
+            int resultOfSorter = comparator.compare(a, b);
 
             if(resultOfSorter == 0) {
                 if(a.getOperatingMode() == OperatingMode.canNotBeInterrupted && b.getOperatingMode() == OperatingMode.canBeInterrupted){
@@ -123,5 +109,13 @@ import java.util.Comparator;
                 }
             }
             return 0;
+        }
+    }
+
+    class OPriorityComparator implements Comparator<Operation> {
+        public int compare(Operation a, Operation b) {
+            if(((OperationWithPriorityNew) a).getPriority() == ((OperationWithPriorityNew) b).getPriority()) return 0;
+            if(((OperationWithPriorityNew) a).getPriority() > ((OperationWithPriorityNew) b).getPriority()) return -1;
+            return 1;
         }
     }

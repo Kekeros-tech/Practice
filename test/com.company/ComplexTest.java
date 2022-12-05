@@ -37,19 +37,19 @@ public class ComplexTest {
         justSecondRecourse.addRecourseInTheGroup(secondRecourse);
 
         //Operation first0 = new OperationWithPrioritiesByHeirs();
-        Operation first0 = new Operation();
+        Operation first0 = new OperationWithPriorityNew();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
 
         //Operation second0 = new OperationWithPrioritiesByHeirs();
-        Operation second0 = new Operation();
+        Operation second0 = new OperationWithPriorityNew();
         second0.setResourceGroup(justFirstRecourse);
         second0.setDurationOfExecution(Duration.ofHours(3));
         second0.setOperatingMode(0);
 
         //Operation third0 = new OperationWithPrioritiesByHeirs();
-        Operation third0 = new Operation();
+        Operation third0 = new OperationWithPriorityNew();
         third0.setResourceGroup(justSecondRecourse);
         third0.setDurationOfExecution(Duration.ofHours(3));
         third0.setOperatingMode(0);
@@ -69,19 +69,19 @@ public class ComplexTest {
         third0.setSerialAffiliation(firstSeries);
 
         //Operation first1 = new OperationWithPrioritiesByHeirs();
-        Operation first1 = new Operation();
+        Operation first1 = new OperationWithPriorityNew();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
         //Operation second1 = new OperationWithPrioritiesByHeirs();
-        Operation second1 = new Operation();
+        Operation second1 = new OperationWithPriorityNew();
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
         //Operation third1 = new OperationWithPrioritiesByHeirs();
-        Operation third1 = new Operation();
+        Operation third1 = new OperationWithPriorityNew();
         third1.setResourceGroup(justSecondRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
@@ -107,7 +107,8 @@ public class ComplexTest {
         firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
         secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
-        Main.takeSeriesToWorkExtended(seriesToWork, new ControlParameters(2,1,0));
+        Main.testAlgo(seriesToWork, new ControlParameters(2, 1, 0));
+        //Main.takeSeriesToWorkExtended(seriesToWork, new ControlParameters(2,1,0));
 
         operations.addAll(operations1);
 
@@ -218,7 +219,7 @@ public class ComplexTest {
 
 
 
-        Operation first0 = new Operation();
+        Operation first0 = new OperationWithPriorityNew();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
@@ -231,7 +232,7 @@ public class ComplexTest {
 
 
 
-        Operation first1 = new Operation();
+        Operation first1 = new OperationWithPriorityNew();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(7));
         first1.setOperatingMode(0);
@@ -250,7 +251,8 @@ public class ComplexTest {
         seriesToWork.add(firstSeries);
         seriesToWork.add(secondSeries);
 
-        Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(5), new ControlParameters(2,1,0));
+        Main.testFutureAlgo(seriesToWork, Duration.ofHours(5), new ControlParameters(2, 1, 0));
+        //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(5), new ControlParameters(2,1,0));
 
         for(Series series: seriesToWork){
             for(Operation operation: series.getOperationsToCreate()){
@@ -287,25 +289,25 @@ public class ComplexTest {
         allRecourses.addRecourseInTheGroup(secondRecourse);
 
 
-        Operation first0 = new Operation();
+        Operation first0 = new OperationWithPriorityNew();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(allRecourses);
         first0.setDurationOfExecution(Duration.ofHours(7));
         first0.setOperatingMode(0);
 
-        Operation second0 = new Operation();
+        Operation second0 = new OperationWithPriorityNew();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(allRecourses);
         second0.setDurationOfExecution(Duration.ofHours(7));
         second0.setOperatingMode(0);
 
-        Operation third0 = new Operation();
+        Operation third0 = new OperationWithPriorityNew();
         third0.setNameOfOperation("Третья операция, первой серии");
         third0.setResourceGroup(justFirstRecourse);
         third0.setDurationOfExecution(Duration.ofHours(7));
         third0.setOperatingMode(0);
 
-        Operation fourth0 = new Operation();
+        Operation fourth0 = new OperationWithPriorityNew();
         fourth0.setNameOfOperation("Четвертая операция, первой серии");
         fourth0.setResourceGroup(justSecondRecourse);
         fourth0.setDurationOfExecution(Duration.ofHours(7));
@@ -329,25 +331,25 @@ public class ComplexTest {
 
 
 
-        Operation first1 = new Operation();
+        Operation first1 = new OperationWithPriorityNew();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(allRecourses);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        Operation second1 = new Operation();
+        Operation second1 = new OperationWithPriorityNew();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justSecondRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        Operation third1 = new Operation();
+        Operation third1 = new OperationWithPriorityNew();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justFirstRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
 
-        Operation fourth1 = new Operation();
+        Operation fourth1 = new OperationWithPriorityNew();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justSecondRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(3));
@@ -384,7 +386,8 @@ public class ComplexTest {
         firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
         secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
-        Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(10), new ControlParameters(2,1,0));
+        Main.testFutureAlgo(seriesToWork, Duration.ofHours(10), new ControlParameters(2, 1, 0));
+        //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(10), new ControlParameters(2,1,0));
 
         for(Series series: seriesToWork){
             for(Operation operation: series.getOperationsToCreate()){
@@ -443,37 +446,37 @@ public class ComplexTest {
         firstAndThird.addRecourseInTheGroup(thirdRecourse);
 
 
-        Operation first0 = new OperationWithPriority();
+        Operation first0 = new OperationWithPriorityNew();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(secondAndThird);
         first0.setDurationOfExecution(Duration.ofHours(5));
         first0.setOperatingMode(0);
 
-        Operation second0 = new OperationWithPriority();
+        Operation second0 = new OperationWithPriorityNew();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(firstAndThird);
         second0.setDurationOfExecution(Duration.ofHours(6));
         second0.setOperatingMode(0);
 
-        Operation third0 = new OperationWithPriority();
+        Operation third0 = new OperationWithPriorityNew();
         third0.setNameOfOperation("Третья операция, первой серии");
         third0.setResourceGroup(firstAndSecond);
         third0.setDurationOfExecution(Duration.ofHours(7));
         third0.setOperatingMode(0);
 
-        Operation fourth0 = new OperationWithPriority();
+        Operation fourth0 = new OperationWithPriorityNew();
         fourth0.setNameOfOperation("Четвертая операция, первой серии");
         fourth0.setResourceGroup(allRecourses);
         fourth0.setDurationOfExecution(Duration.ofHours(5));
         fourth0.setOperatingMode(0);
 
-        Operation fifth0 = new OperationWithPriority();
+        Operation fifth0 = new OperationWithPriorityNew();
         fifth0.setNameOfOperation("Пятая операция, первой серии");
         fifth0.setResourceGroup(allRecourses);
         fifth0.setDurationOfExecution(Duration.ofHours(4));
         fifth0.setOperatingMode(0);
 
-        Operation sixth0 = new OperationWithPriority();
+        Operation sixth0 = new OperationWithPriorityNew();
         sixth0.setNameOfOperation("Шестая операция, первой серии");
         sixth0.setResourceGroup(firstAndSecond);
         sixth0.setDurationOfExecution(Duration.ofHours(3));
@@ -503,37 +506,37 @@ public class ComplexTest {
 
 
 
-        Operation first1 = new OperationWithPriority();
+        Operation first1 = new OperationWithPriorityNew();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(allRecourses);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        Operation second1 = new OperationWithPriority();
+        Operation second1 = new OperationWithPriorityNew();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        Operation third1 = new OperationWithPriority();
+        Operation third1 = new OperationWithPriorityNew();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justSecondRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
 
-        Operation fourth1 = new OperationWithPriority();
+        Operation fourth1 = new OperationWithPriorityNew();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justThirdRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(3));
         fourth1.setOperatingMode(0);
 
-        Operation fifth1 = new OperationWithPriority();
+        Operation fifth1 = new OperationWithPriorityNew();
         fifth1.setNameOfOperation("Пятая операция, второй сериии");
         fifth1.setResourceGroup(justFirstRecourse);
         fifth1.setDurationOfExecution(Duration.ofHours(3));
         fifth1.setOperatingMode(0);
 
-        Operation sixth1 = new OperationWithPriority();
+        Operation sixth1 = new OperationWithPriorityNew();
         sixth1.setNameOfOperation("Шестая операция, второй серии");
         sixth1.setResourceGroup(justSecondRecourse);
         sixth1.setDurationOfExecution(Duration.ofHours(3));
@@ -564,19 +567,19 @@ public class ComplexTest {
 
 
 
-        Operation first2 = new OperationWithPriority();
+        Operation first2 = new OperationWithPriorityNew();
         first2.setNameOfOperation("Первая операция, третья серия");
         first2.setResourceGroup(allRecourses);
         first2.setDurationOfExecution(Duration.ofHours(2));
         first2.setOperatingMode(0);
 
-        Operation second2 = new OperationWithPriority();
+        Operation second2 = new OperationWithPriorityNew();
         second2.setNameOfOperation("Вторая операция, третья серия");
         second2.setResourceGroup(justFirstRecourse);
         second2.setDurationOfExecution(Duration.ofHours(9));
         second2.setOperatingMode(0);
 
-        Operation third2 = new OperationWithPriority();
+        Operation third2 = new OperationWithPriorityNew();
         third2.setNameOfOperation("Третья операция, третья серия");
         third2.setResourceGroup(justSecondRecourse);
         third2.setDurationOfExecution(Duration.ofHours(9));
@@ -605,7 +608,11 @@ public class ComplexTest {
         secondRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
 
-        for(int i = 0; i < 4; i++) {
+        PrintWriter writer = new PrintWriter("D:\\My_EGO_realization\\text.txt");
+        writer.print("0 86400\n0 3\n36000 1\n284400\n10800 0\n288000");
+        writer.close();
+
+        for(int i = 0; i < 10; i++) {
             String[] arguments = new String[] {"python","D:\\My_EGO_realization\\hello.py"};
             try {
                 // выполняем код Python
@@ -627,19 +634,213 @@ public class ComplexTest {
             for (String current : lastString.split(" ")) {
                 controlParameterValues.add(Integer.parseInt(current));
             }
-            Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
+            
+            Main.testFutureAlgo(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
                     new ControlParameters(controlParameterValues.get(1), 1, 0));
-            //LocalDateTime earliestTime = findTimeOfFirstOperation(seriesToWork);
+            //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
+                    //new ControlParameters(controlParameterValues.get(1), 1, 0));
+
             LocalDateTime latestTime = findTimeOfLatestOperation(seriesToWork);
             long resultDuration = Duration.between(firstSeries.getArrivalTime(), latestTime).getSeconds();
+            //Печать значения целевой функции
             System.out.println(Duration.between(firstSeries.getArrivalTime(), findTimeOfLatestOperation(seriesToWork)));
 
-            try(FileWriter writer = new FileWriter("D:\\My_EGO_realization\\text.txt", true))
+            try(FileWriter writer2 = new FileWriter("D:\\My_EGO_realization\\text.txt", true))
             {
-                writer.append('\n');
-                writer.write(Long.toString(resultDuration));
+                writer2.append('\n');
+                writer2.write(Long.toString(resultDuration));
 
-                writer.flush();
+                writer2.flush();
+            }
+            catch(IOException ex){
+
+                System.out.println(ex.getMessage());
+            }
+
+            System.out.println("Отсечка");
+            for(Series series: seriesToWork) {
+                for(Operation operation: series.getOperationsToCreate()) {
+                    System.out.println(operation);
+                }
+                series.fullClean();
+            }
+        }
+
+        writer = new PrintWriter("D:\\My_EGO_realization\\text.txt");
+        writer.print("0 86400\n0 3\n36000 1\n284400\n10800 0\n288000");
+        writer.close();
+    }
+
+    private LocalDateTime findTimeOfLatestOperation(ArrayList<Series> seriesForWork) {
+        LocalDateTime maxTime = LocalDateTime.MIN;
+        for(Series currentSeries: seriesForWork) {
+            for (Operation currentOperationOfCurrentSeries: currentSeries.getOperationsToCreate()){
+                if(currentOperationOfCurrentSeries.getCWorkingInterval().getEndTime().isAfter(maxTime)){
+                    maxTime = currentOperationOfCurrentSeries.getCWorkingInterval().getEndTime();
+                }
+            }
+        }
+        return maxTime;
+    }
+
+    @Test
+    //Use early and late start dates
+    public void testWhereSecondSortingReturnBestResult() throws IOException, InterruptedException {
+        WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 15:00");
+        WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 15:00");
+
+        Recourse firstRecourse = new Recourse("15-08-2021 09:00");
+        firstRecourse.addSchedule(workingHoursForFirst0);
+        firstRecourse.addSchedule(workingHoursForFirst1);
+
+        WorkingHours workingHoursForSecond0 = new WorkingHours("18-08-2021 09:00", "18-08-2021 16:00");
+        WorkingHours workingHoursForSecond1 = new WorkingHours("19-08-2021 09:00", "19-08-2021 16:00");
+
+        Recourse secondRecourse = new Recourse("16-08-2021 09:00");
+        secondRecourse.addSchedule(workingHoursForSecond0);
+        secondRecourse.addSchedule(workingHoursForSecond1);
+
+        Group justFirstRecourse = new Group();
+        justFirstRecourse.addRecourseInTheGroup(firstRecourse);
+
+        Group allRecourses = new Group();
+        allRecourses.addRecourseInTheGroup(firstRecourse);
+        allRecourses.addRecourseInTheGroup(secondRecourse);
+
+        Operation first0 = new OperationWithPriorityNew();
+        first0.setNameOfOperation("Первая операция, первой серии");
+        first0.setResourceGroup(allRecourses);
+        first0.setDurationOfExecution(Duration.ofHours(3));
+        first0.setOperatingMode(0);
+
+        Operation second0 = new OperationWithPriorityNew();
+        second0.setNameOfOperation("Вторая операция, первой серии");
+        second0.setResourceGroup(allRecourses);
+        second0.setDurationOfExecution(Duration.ofHours(4));
+        second0.setOperatingMode(0);
+
+
+        ArrayList<Operation> operationsOfFirstSeries = new ArrayList<>();
+        operationsOfFirstSeries.add(first0);
+        operationsOfFirstSeries.add(second0);
+
+        Series firstSeries = new Series(operationsOfFirstSeries, "01-09-2021 00:00", "15-08-2021 09:00");
+        first0.setSerialAffiliation(firstSeries);
+        second0.setSerialAffiliation(firstSeries);
+
+
+        Operation first1 = new OperationWithPriorityNew();
+        first1.setNameOfOperation("Первая операция, второй серии");
+        first1.setResourceGroup(justFirstRecourse);
+        first1.setDurationOfExecution(Duration.ofHours(4));
+        first1.setOperatingMode(0);
+
+        Operation second1 = new OperationWithPriorityNew();
+        second1.setNameOfOperation("Вторая операция, второй серии");
+        second1.setResourceGroup(justFirstRecourse);
+        second1.setDurationOfExecution(Duration.ofHours(6));
+        second1.setOperatingMode(0);
+
+        Operation third1 = new OperationWithPriorityNew();
+        third1.setNameOfOperation("Третья операция, второй серии");
+        third1.setResourceGroup(justFirstRecourse);
+        third1.setDurationOfExecution(Duration.ofHours(6));
+        third1.setOperatingMode(0);
+
+        Operation fourth1 = new OperationWithPriorityNew();
+        fourth1.setNameOfOperation("Четвертая операция, второй серии");
+        fourth1.setResourceGroup(justFirstRecourse);
+        fourth1.setDurationOfExecution(Duration.ofHours(6));
+        fourth1.setOperatingMode(0);
+
+        Operation fifth1 = new OperationWithPriorityNew();
+        fifth1.setNameOfOperation("Пятая операция, второй серии");
+        fifth1.setResourceGroup(justFirstRecourse);
+        fifth1.setDurationOfExecution(Duration.ofHours(6));
+        fifth1.setOperatingMode(0);
+
+        Operation sixth1 = new OperationWithPriorityNew();
+        sixth1.setNameOfOperation("Шестая операция, второй серии");
+        sixth1.setResourceGroup(justFirstRecourse);
+        sixth1.setDurationOfExecution(Duration.ofHours(6));
+        sixth1.setOperatingMode(0);
+
+        first1.addFollowingOperation(second1);
+        first1.addFollowingOperation(third1);
+        first1.addFollowingOperation(fourth1);
+        first1.addFollowingOperation(fifth1);
+        first1.addFollowingOperation(sixth1);
+
+
+        ArrayList<Operation> operationsOfSecondSeries = new ArrayList<>();
+        operationsOfSecondSeries.add(first1);
+        operationsOfSecondSeries.add(second1);
+        operationsOfSecondSeries.add(third1);
+        operationsOfSecondSeries.add(fourth1);
+        operationsOfSecondSeries.add(fifth1);
+        operationsOfSecondSeries.add(sixth1);
+
+        Series secondSeries = new Series(operationsOfSecondSeries, "25-09-2021 00:00", "15-08-2021 11:00");
+        first1.setSerialAffiliation(secondSeries);
+        second1.setSerialAffiliation(secondSeries);
+        third1.setSerialAffiliation(secondSeries);
+        fourth1.setSerialAffiliation(secondSeries);
+        fifth1.setSerialAffiliation(secondSeries);
+        sixth1.setSerialAffiliation(secondSeries);
+
+        ArrayList<Series> seriesToWork = new ArrayList<>();
+        seriesToWork.add(firstSeries);
+        seriesToWork.add(secondSeries);
+
+        firstRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
+
+        PrintWriter writer = new PrintWriter("D:\\My_EGO_realization\\text.txt");
+        writer.print("0 86400\n" +
+                "0 3\n" +
+                "3600 1\n" +
+                "540000\n" +
+                "36000 2\n" +
+                "626400");
+        writer.close();
+
+        for(int i = 0; i < 5; i++) {
+            String[] arguments = new String[] {"python","D:\\My_EGO_realization\\hello.py"};
+            try {
+                // выполняем код Python
+                Process process = Runtime.getRuntime().exec(arguments);
+                // Возвращает, успешно ли выполнено, 0 означает успех, 1 означает сбой
+                int re = process.waitFor();
+                // вывод результата выполнения
+                System.out.println(re);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            FileReader file = new FileReader("D:\\My_EGO_realization\\text.txt");
+            Scanner scanner = new Scanner(file);
+            String lastString = "";
+            ArrayList<Integer> controlParameterValues = new ArrayList<>();
+            while (scanner.hasNextLine()) {
+                lastString = scanner.nextLine();
+            }
+            for (String current : lastString.split(" ")) {
+                controlParameterValues.add(Integer.parseInt(current));
+            }
+            Main.testFutureAlgo(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
+                    new ControlParameters(controlParameterValues.get(1), 1, 0));
+            //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
+                    //new ControlParameters(controlParameterValues.get(1), 1, 0));
+
+            LocalDateTime latestTime = findTimeOfLatestOperation(seriesToWork);
+            long resultDuration = Duration.between(firstSeries.getArrivalTime(), latestTime).getSeconds();
+            //Печать значения целевой функции
+            System.out.println(Duration.between(firstSeries.getArrivalTime(), findTimeOfLatestOperation(seriesToWork)));
+
+            try(FileWriter writer2 = new FileWriter("D:\\My_EGO_realization\\text.txt", true))
+            {
+                writer2.append('\n');
+                writer2.write(Long.toString(resultDuration));
+
+                writer2.flush();
             }
             catch(IOException ex){
 
@@ -655,39 +856,54 @@ public class ComplexTest {
             }
         }
 
-        /*Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(3), new ControlParameters(0,1,0));
+        writer = new PrintWriter("D:\\My_EGO_realization\\text.txt");
+        writer.print("0 86400\n" +
+                "0 3\n" +
+                "3600 1\n" +
+                "540000\n" +
+                "36000 2\n" +
+                "626400");
+        writer.close();
 
-        *//*LocalDateTime earliestTime = findTimeOfFirstOperation(seriesToWork);
-        LocalDateTime latestTime = findTimeOfLatestOperation(seriesToWork);*//*
+        /*
+Первые 5 строчек для задания.
+0 86400
+0 2
+3600 1
+540000
+36000 2
+626400
+18000 0
+540000
+80345 0
+626400
+9799 1
+453600
+56396 1
+453600
+53488 0
+626400
+59666 1
+453600
+16461 1
+453600
+72091 1
+453600
+78596 1
+453600
+14202 1
+453600
+25692 1
+453600
+         */
+
+        /*Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofSeconds(3600), new ControlParameters(1,1,0));
+
         System.out.println(Duration.between(firstSeries.getArrivalTime(), findTimeOfLatestOperation(seriesToWork)));
         for(Series series: seriesToWork){
             for(Operation operation: series.getOperationsToCreate()) {
                 System.out.println(operation);
             }
         }*/
-    }
-
-    private LocalDateTime findTimeOfFirstOperation(ArrayList<Series> seriesForWork){
-        LocalDateTime minTime = LocalDateTime.MAX;
-        for (Series currentSeries: seriesForWork) {
-            for (Operation currentOperationOfCurrentSeries: currentSeries.getOperationsToCreate()){
-                if(currentOperationOfCurrentSeries.getCWorkingInterval().getStartTime().isBefore(minTime)){
-                    minTime = currentOperationOfCurrentSeries.getCWorkingInterval().getStartTime();
-                }
-            }
-        }
-        return minTime;
-    }
-
-    private LocalDateTime findTimeOfLatestOperation(ArrayList<Series> seriesForWork) {
-        LocalDateTime maxTime = LocalDateTime.MIN;
-        for(Series currentSeries: seriesForWork) {
-            for (Operation currentOperationOfCurrentSeries: currentSeries.getOperationsToCreate()){
-                if(currentOperationOfCurrentSeries.getCWorkingInterval().getEndTime().isAfter(maxTime)){
-                    maxTime = currentOperationOfCurrentSeries.getCWorkingInterval().getEndTime();
-                }
-            }
-        }
-        return maxTime;
     }
 }

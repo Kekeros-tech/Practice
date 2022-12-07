@@ -43,10 +43,10 @@ public class O_OperationWithPriorityAndQuantity extends OperationWithPriorityNew
     public void setRequiredVoltage(double requiredVoltage) { this.requiredVoltage = requiredVoltage; }
 
     @Override
-    public ArrayList<Recourse> getResourcesToBorrow() {
-        ArrayList<Recourse> recoursesToBorrow = new ArrayList<>();
+    public ArrayList<IResource> getResourcesToBorrow() {
+        ArrayList<IResource> recoursesToBorrow = new ArrayList<>();
 
-        for(Recourse recourse: resourceGroup.getRecoursesInTheGroup()) {
+        for(IResource recourse: resourceGroup.getRecoursesInTheGroup()) {
             switch (currentOperatingMode) {
                 case canNotBeInterrupted: {
                     if(recourse.takeWhichCanNotBeInterrupted(this) != null){

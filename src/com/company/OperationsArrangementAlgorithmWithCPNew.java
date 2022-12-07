@@ -74,10 +74,13 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
     }
 
     protected void installReverseOperationsAndReturnFutureDate (Collection<Operation> frontOfWork) {
-
         for(Operation operation: frontOfWork) {
             operation.getLatestEndTimeOfFollowing();
-            operation.setPriority();
+
+            if(controlParameters.sortOperator == PriorityType.priorityByDuration || controlParameters.sortOperator == PriorityType.priorityByHeirs){
+                operation.setPriority();
+            }
+
             operation.installReverseOperation();
         }
     }
@@ -119,10 +122,10 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
     @Override
     protected void installOperationsAndReturnFutureDate(Collection<Operation> frontOfWork) {
 
-        HashMap<Operation, Recourse> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(frontOfWork);
+        HashMap<Operation, IResource> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(frontOfWork);
 
         if(installationSequence != null) {
-            for(Map.Entry<Operation, Recourse> entry : installationSequence.entrySet()){
+            for(Map.Entry<Operation, IResource> entry : installationSequence.entrySet()){
                 entry.getKey().installOperationForSpecificResource(entry.getValue());
             }
         }

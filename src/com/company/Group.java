@@ -5,7 +5,7 @@ import java.util.Collection;
 
 public class Group {
     private StringBuffer nameOfGroup;
-    private Collection<Recourse> recoursesInTheGroup;
+    private Collection<IResource> recoursesInTheGroup;
 
     public Group() { //он ведь так по умолчанию формирует
         nameOfGroup = Series.generateRandomHexString(8);
@@ -23,13 +23,13 @@ public class Group {
         recoursesInTheGroup.add(recourse);
     }
 
-    public void addRecourseInTheGroup(Recourse recourse) { recoursesInTheGroup.add(recourse); }
+    public void addRecourseInTheGroup(IResource recourse) { recoursesInTheGroup.add(recourse); }
 
     public void addRecourseCollectionInTheGroup(Collection<Recourse> recoursesInTheGroup) {
         this.recoursesInTheGroup.addAll(recoursesInTheGroup);
     }
 
-    public Collection<Recourse>  getRecoursesInTheGroup() { return recoursesInTheGroup; }
+    public Collection<IResource> getRecoursesInTheGroup() { return recoursesInTheGroup; }
 
     public Recourse get(int number){
         Recourse[] recoursesArray = recoursesInTheGroup.toArray(new Recourse[recoursesInTheGroup.size()]);
@@ -38,21 +38,5 @@ public class Group {
 
     public StringBuffer getNameOfGroup() {
         return nameOfGroup;
-    }
-
-    public LocalDateTime findTactTimeOfOperationAfterCurrentDate(LocalDateTime currentDate, Operation operation) {
-        LocalDateTime tactTime = LocalDateTime.MAX;
-        for(Recourse currentRecourse: recoursesInTheGroup) {
-            if(currentRecourse.isTactDateWorkingTime(currentDate, operation)) {
-                return currentDate;
-            }
-            else {
-                LocalDateTime startDateAfterArrivalTime = currentRecourse.getStartDateAfterReleaseDate(currentDate, operation);
-                if(startDateAfterArrivalTime.isBefore(tactTime)) {
-                    tactTime =  startDateAfterArrivalTime;
-                }
-            }
-        }
-        return tactTime;
     }
 }

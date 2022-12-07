@@ -1,6 +1,5 @@
 package com.company;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 //------------------
@@ -57,8 +56,8 @@ public class OperationsArrangementAlgorithm {
         Collection<Operation> frontOfWork = new ArrayList<>();
 
         for(Operation operation: operationCollection) {
-            if(operation.getCNumberOfAssignedRecourse() == null && operation.allPreviousAssigned()){
-                operation.getLatestEndTimeOfPrevious();
+            if(operation.isСanBePlacedInFront()) {
+                operation.setTactTime();
                 frontOfWork.add(operation);
             }
         }

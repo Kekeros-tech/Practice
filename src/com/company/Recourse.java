@@ -186,14 +186,12 @@ public class Recourse implements IResource{
     @Override
     public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tackDate, Operation operation) {
         for (WorkingHours currentWorkingHours: schedule) {
-
             if(currentWorkingHours.getStartTime().isAfter(tackDate) && this.isFree(currentWorkingHours.getStartTime())) {
                 return currentWorkingHours.getStartTime();
             }
             else if(currentWorkingHours.isWorkingTime(releaseTime) && tackDate.isBefore(releaseTime)) {
                 return releaseTime;
             }
-
         }
         return null;
     }

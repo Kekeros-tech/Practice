@@ -197,6 +197,51 @@ public class R_ElectricFurnace implements IResource {
         return false;
     }
 
+    public boolean takeResWhichCanNotBeInterrupted(Operation operation) {
+        double requiredTemperature = ((O_OperationWithQuantity) operation).getRequiredTemperature();
+        double requiredVoltage = ((O_OperationWithQuantity) operation).getRequiredVoltage();
+        int iteration = 0;
+        boolean operationFit = false;
+        while(iteration < schedule.size()) {
+            if(schedule.get(iteration).isWorkingTime(operation.tactTime)) {
+                for(CellElectricFurnace currentCellOfFurnace: cellsOfElectricFurnace) {
+                    if(requiredTemperature == currentCellOfFurnace.getTemperature()) {
+                        for(CellWithVoltage currentCellWithVoltage: currentCellOfFurnace.getCellsWithVoltage()) {
+                            if(requiredVoltage == currentCellWithVoltage.getVoltage() &&
+                                    currentCellWithVoltage.isFree(operation.tactTime)) {
+                                Duration resultDuration = takeRecourse(operation.durationOfExecution, iteration, operation.tactTime);
+
+                                if(resultDuration.toNanos() <= 0) {
+                                    int placedDimension = currentCellWithVoltage.takeСell(((O_OperationWithQuantity) operation).getCountOfPartsToProcess());
+                                    ((O_OperationWithQuantity) operation).handleDetails(placedDimension);
+                                    currentCellWithVoltage.setReleaseTime(operation.tactTime.plusNanos(operation.getDurationOfExecution().toNanos()));
+                                    operationFit = true;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            if(schedule.get(iteration).getStartTime().isAfter(operation.getTactTime())){
+                break;
+            }
+            iteration++;
+        }
+        if(operationFit) {
+            ((O_OperationWithQuantity) operation).addAssignedResource(this);
+            WorkingHours workingHours = new WorkingHours(operation.tactTime, operation.tactTime.plusNanos(operation.getDurationOfExecution().toNanos()));
+            ((O_OperationWithQuantity) operation).addWorkingInterval(workingHours);
+            operation.serialAffiliation.setСNumberOfAssignedOperations(operation.serialAffiliation.getСNumberOfAssignedOperations() + 1);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean takeResWhichCanBeInterrupted(Operation operation) {
+        return false;
+    }
+
     @Override
     public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tactTime, Operation operation) {
         double requiredTemperature = ((O_OperationWithPriorityAndQuantity) operation).getRequiredTemperature();

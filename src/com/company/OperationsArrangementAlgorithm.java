@@ -18,32 +18,32 @@ public class OperationsArrangementAlgorithm {
 
     public void takeSeriesToWork() {
 
-        Collection<Operation> operationsToInstall = mergeOperations();
+        Collection<IOperation> operationsToInstall = mergeOperations();
 
         while(!isAllOperationsInstall(operationsToInstall)) {
 
-            ArrayList<Operation> frontOfWork = choiceFrontOfWork(operationsToInstall);
+            ArrayList<IOperation> frontOfWork = choiceFrontOfWork(operationsToInstall);
 
             installOperations(frontOfWork);
         }
     }
 
-    protected Collection<Operation> mergeOperations() {
-        ArrayList<Operation> operationsToInstall = new ArrayList<>();
+    protected Collection<IOperation> mergeOperations() {
+        ArrayList<IOperation> operationsToInstall = new ArrayList<>();
         for(Series series: seriesForWork) {
             operationsToInstall.addAll(series.getOperationsToCreate());
         }
         return operationsToInstall;
     }
 
-    protected ArrayList<Operation> choiceFrontOfWork(Collection<Operation> operationsToCreate) {
-        Collection<Operation> frontOfWorkByPrevious = choiceCollectionOfOperationsWhichСanBePlacedInFront(operationsToCreate);
+    protected ArrayList<IOperation> choiceFrontOfWork(Collection<IOperation> operationsToCreate) {
+        Collection<IOperation> frontOfWorkByPrevious = choiceCollectionOfOperationsWhichСanBePlacedInFront(operationsToCreate);
 
         LocalDateTime minTime = findMinTactTime(frontOfWorkByPrevious);
 
-        ArrayList<Operation> frontOfWork = new ArrayList<>();
+        ArrayList<IOperation> frontOfWork = new ArrayList<>();
 
-        for (Operation currentOperation: frontOfWorkByPrevious) {
+        for (IOperation currentOperation: frontOfWorkByPrevious) {
             if(!currentOperation.getTactTime().isAfter(minTime)) {
                 frontOfWork.add(currentOperation);
             }
@@ -52,10 +52,10 @@ public class OperationsArrangementAlgorithm {
         return frontOfWork;
     }
 
-    protected Collection<Operation> choiceCollectionOfOperationsWhichСanBePlacedInFront(Collection<Operation> operationCollection){
-        Collection<Operation> frontOfWork = new ArrayList<>();
+    protected Collection<IOperation> choiceCollectionOfOperationsWhichСanBePlacedInFront(Collection<IOperation> operationCollection){
+        Collection<IOperation> frontOfWork = new ArrayList<>();
 
-        for(Operation operation: operationCollection) {
+        for(IOperation operation: operationCollection) {
             if(operation.isСanBePlacedInFront()) {
                 operation.setTactTime();
                 frontOfWork.add(operation);
@@ -65,13 +65,13 @@ public class OperationsArrangementAlgorithm {
         return frontOfWork;
     }
 
-    protected void installOperations(Collection<Operation> operationsToInstall) {
+    protected void installOperations(Collection<IOperation> operationsToInstall) {
         installOperationsAndReturnFutureDate(operationsToInstall);
     }
 
-    protected LocalDateTime findMinTactTime(Collection<Operation> operationsToSelect){
+    protected LocalDateTime findMinTactTime(Collection<IOperation> operationsToSelect){
         LocalDateTime minTime = LocalDateTime.MAX;
-        for(Operation operation: operationsToSelect) {
+        for(IOperation operation: operationsToSelect) {
             LocalDateTime tactTimeOfCurrentOperation = operation.getTactTime();
             if(tactTimeOfCurrentOperation != null && tactTimeOfCurrentOperation.isBefore(minTime)){
                 minTime = tactTimeOfCurrentOperation;
@@ -80,23 +80,23 @@ public class OperationsArrangementAlgorithm {
         return minTime;
     }
 
-    protected void installOperationsAndReturnFutureDate(Collection<Operation> frontOfWork) {
+    protected void installOperationsAndReturnFutureDate(Collection<IOperation> frontOfWork) {
 
-        for(Operation operation: frontOfWork) {
+        for(IOperation operation: frontOfWork) {
             operation.installOperation();
         }
 
         for(Series series: seriesForWork) {
-            for(Operation operation: series.getOperationsToCreate()){
-                if(operation.operationNotScheduled() && operation.tactTime != null) {
+            for(IOperation operation: series.getOperationsToCreate()){
+                if(operation.operationNotScheduled() && operation.getTactTime() != null) {
                     operation.setNewTactTime();
                 }
             }
         }
     }
 
-    protected boolean isAllOperationsInstall(Collection<Operation> operationsToCreate){
-        for(Operation currentOperation: operationsToCreate){
+    protected boolean isAllOperationsInstall(Collection<IOperation> operationsToCreate){
+        for(IOperation currentOperation: operationsToCreate){
             if(currentOperation.operationNotScheduled()){
                 return false;
             }

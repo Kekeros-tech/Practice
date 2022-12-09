@@ -18,7 +18,7 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
 
     public void setSortMethodToOperations() {
         for(Series series: seriesForWork) {
-            for(Operation operation: series.getOperationsToCreate()) {
+            for(IOperation operation: series.getOperationsToCreate()) {
                 ((OperationWithPriorityNew) operation).installPriority(controlParameters.sortOperator);
             }
         }
@@ -33,7 +33,7 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
 
         if(controlParameters.sequenceOfOperations == SequenceOfOperations.together) {
 
-            Collection<Operation> operationToInstall = mergeOperations();
+            Collection<IOperation> operationToInstall = mergeOperations();
 
             Series newCompleteSeries = new Series(operationToInstall, findEarliestArrivalTime(seriesForWork), findLatestDeadlineTime(seriesForWork));
             workingSeries.clear();
@@ -56,32 +56,65 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
     protected void installReverseOperationsUntilDeadline(Series currentSeries){
 
         while (!currentSeries.allOperationsAssigned()) {
-            Collection<Operation> frontOfWork = choiceReverseFrontOfWork(currentSeries.getOperationsToCreate());
+            Collection<IOperation> frontOfWork = choiceReverseFrontOfWork(currentSeries.getOperationsToCreate());
 
             installReverseOperationsAndReturnFutureDate(frontOfWork);
         }
     }
 
-    protected ArrayList<Operation> choiceReverseFrontOfWork(ArrayList<Operation> operationsToCreate) {
-        ArrayList<Operation> frontOfWork = new ArrayList<>();
+    protected Collection<IOperation> choiceReverseCollectionOfOperationsWhichСanBePlacedInFront(Collection<IOperation> operationCollection) {
+        ArrayList<IOperation> frontOfWork = new ArrayList<>();
 
-        for(Operation operation: operationsToCreate) {
-            if(operation.getCLateStartTime() == null && operation.allPreviousAssignedReverse() && operation.allFollowingAssignedReverse()) {
+        for(IOperation operation: operationCollection) {
+            if(operation.isCanBePlacedInReverseFront()) {
+                ((OperationWithPriorityNew) operation).setReverseTactTime();
                 frontOfWork.add(operation);
             }
         }
         return frontOfWork;
     }
 
-    protected void installReverseOperationsAndReturnFutureDate (Collection<Operation> frontOfWork) {
-        for(Operation operation: frontOfWork) {
-            operation.getLatestEndTimeOfFollowing();
+    private LocalDateTime findMaxTactTime(Collection<IOperation> operations) {
+        LocalDateTime maxTime = LocalDateTime.MIN;
+        for(IOperation currentOperation: operations) {
+            if(currentOperation.getTactTime().isAfter(maxTime)){
+                maxTime = currentOperation.getTactTime();
+            }
+        }
+        return maxTime;
+    }
+
+    protected ArrayList<IOperation> choiceReverseFrontOfWork(ArrayList<IOperation> operationsToCreate) {
+        Collection<IOperation> frontOfWorkByFollowing = choiceReverseCollectionOfOperationsWhichСanBePlacedInFront(operationsToCreate);
+
+        LocalDateTime minTime = findMaxTactTime(frontOfWorkByFollowing);
+
+        ArrayList<IOperation> frontOfWork = new ArrayList<>();
+
+        for (IOperation currentOperation: frontOfWorkByFollowing) {
+            if(currentOperation.getTactTime().isEqual(minTime)) {
+                frontOfWork.add(currentOperation);
+            }
+        }
+
+        return frontOfWork;
+    }
+
+    protected void installReverseOperationsAndReturnFutureDate (Collection<IOperation> frontOfWork) {
+
+        for(IOperation operation: frontOfWork) {
 
             if(controlParameters.sortOperator == PriorityType.priorityByDuration || controlParameters.sortOperator == PriorityType.priorityByHeirs){
-                operation.setPriority();
+                ((OperationWithPriorityNew) operation).setPriority();
             }
 
             operation.installReverseOperation();
+        }
+
+        for(IOperation operation: frontOfWork) {
+            if(operation.operationNotScheduled()){
+                ((OperationWithPriorityNew) operation).setNewReverseTactTime();
+            }
         }
     }
 
@@ -89,7 +122,7 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
 
         while (!currentSeries.allOperationsAssigned()) {
 
-            ArrayList <Operation> frontOfWork = choiceFrontOfWork(currentSeries.getOperationsToCreate());
+            ArrayList <IOperation> frontOfWork = choiceFrontOfWork(currentSeries.getOperationsToCreate());
 
             installOperationsAndReturnFutureDate(frontOfWork);
         }
@@ -105,11 +138,11 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
     }
 
     @Override
-    protected void installOperations(Collection<Operation> operationsToInstall) {
+    protected void installOperations(Collection<IOperation> operationsToInstall) {
 
         while (!isAllOperationsInstall(operationsToInstall)) {
 
-            ArrayList<Operation> frontOfWork = choiceFrontOfWork(operationsToInstall);
+            ArrayList<IOperation> frontOfWork = choiceFrontOfWork(operationsToInstall);
 
             sortFrontOfWorkByControlParameters(frontOfWork);
 
@@ -120,33 +153,33 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
     }
 
     @Override
-    protected void installOperationsAndReturnFutureDate(Collection<Operation> frontOfWork) {
+    protected void installOperationsAndReturnFutureDate(Collection<IOperation> frontOfWork) {
 
-        HashMap<Operation, IResource> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(frontOfWork);
+        HashMap<IOperation, IResource> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(frontOfWork);
 
         if(installationSequence != null) {
-            for(Map.Entry<Operation, IResource> entry : installationSequence.entrySet()){
+            for(Map.Entry<IOperation, IResource> entry : installationSequence.entrySet()){
                 entry.getKey().installOperationForSpecificResource(entry.getValue());
             }
         }
 
-        for(Operation operation: frontOfWork){
-            if(operation.operationNotScheduled()){
+        for(IOperation operation: frontOfWork) {
+            if(operation.operationNotScheduled()) {
                 operation.setNewTactTime();
             }
         }
     }
 
-    protected void sortFrontOfWorkByControlParameters(ArrayList<Operation> frontOfWork) {
-        for(Operation operation: frontOfWork) {
-            operation.setPriority();
+    protected void sortFrontOfWorkByControlParameters(ArrayList<IOperation> frontOfWork) {
+        for(IOperation operation: frontOfWork) {
+            ((OperationWithPriorityNew) operation).setPriority();
         }
 
-        Comparator<Operation> sorter = new OPriorityComparator();
+        Comparator<IOperation> sorter = new OPriorityComparator();
         frontOfWork.sort(sorter);
     }
 
-    protected void advancedSorting(ArrayList<Operation> frontOfWork, UseAdvancedSorting sorting) {
+    protected void advancedSorting(ArrayList<IOperation> frontOfWork, UseAdvancedSorting sorting) {
         switch (sorting) {
             case doNotUse:
                 break;

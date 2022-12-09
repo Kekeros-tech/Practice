@@ -32,13 +32,13 @@ public class OperationsArrangementAlgorithmWithCPAndFutureFrontNew extends Opera
     }
 
     @Override
-    protected ArrayList<Operation> choiceFrontOfWork(Collection<Operation> operationsToCreate) {
-        Collection<Operation> buffer = choiceCollectionOfOperationsWhichСanBePlacedInFront(operationsToCreate);
+    protected ArrayList<IOperation> choiceFrontOfWork(Collection<IOperation> operationsToCreate) {
+        Collection<IOperation> buffer = choiceCollectionOfOperationsWhichСanBePlacedInFront(operationsToCreate);
 
         LocalDateTime minTime = findMinTactTime(buffer);
 
-        ArrayList<Operation> frontOfWork = new ArrayList<>();
-        for(Operation operation: buffer){
+        ArrayList<IOperation> frontOfWork = new ArrayList<>();
+        for(IOperation operation: buffer){
             if(!operation.getTactTime().isAfter(minTime.plusNanos(selectedDuration.toNanos()))){
                 frontOfWork.add(operation);
             }

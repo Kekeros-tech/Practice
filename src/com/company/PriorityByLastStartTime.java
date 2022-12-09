@@ -10,9 +10,9 @@ public class PriorityByLastStartTime implements IPriority{
     }
 
     @Override
-    public void setPriority(Operation operation) {
-        if(operation.getCLateStartTime() != null && operation.getTactTime() != null){
-            priority = Duration.between(operation.getTactTime(), operation.getCLateStartTime());
+    public void setPriority(IOperation operation) {
+        if(((OperationWithPriorityNew) operation).getCLateStartTime() != null && operation.getTactTime() != null){
+            priority = Duration.between(operation.getTactTime(), ((OperationWithPriorityNew) operation).getCLateStartTime());
         }
     }
 

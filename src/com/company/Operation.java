@@ -5,52 +5,25 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Operation {
+public class Operation implements IOperation{
     private StringBuffer nameOfOperation;
     protected Group resourceGroup;
     protected Series serialAffiliation;
-    protected ArrayList<Operation> previousOperations;
-    protected ArrayList<Operation> followingOperations;
-    protected Duration durationOfExecution;
-    protected OperatingMode currentOperatingMode;
+    private Duration durationOfExecution;
+    protected ArrayList<IOperation> previousOperations;
+    protected ArrayList<IOperation> followingOperations;
+    protected IOperationMode currentOperatingMode;
 
-    private IResource cNumberOfAssignedRecourse;
-    private WorkingHours cWorkingInterval;
+    private ArrayList<IResource> cNumberOfAssignedRecourse;
+    private ArrayList<WorkingHours> cWorkingInterval;
     protected LocalDateTime tactTime;
-
-    Operation(Group resourceGroup, Series serialAffiliation, Collection<Operation> previousOperations, Collection<Operation> followingOperations,
-                     Duration durationOfExecution, int currentOperatingMode) {
-        this.resourceGroup = resourceGroup;
-        this.serialAffiliation = serialAffiliation;
-        this.previousOperations = new ArrayList<>(previousOperations);
-        this.followingOperations = new ArrayList<>(followingOperations);
-        this.durationOfExecution = durationOfExecution;
-        this.currentOperatingMode = OperatingMode.modeSelection(currentOperatingMode);
-    }
-
-    Operation(Group resourceGroup,Series serialAffiliation, ArrayList<Operation> previousOperations,
-                     ArrayList<Operation> followingOperations, Duration durationOfExecution) {
-        this(resourceGroup, serialAffiliation, previousOperations, followingOperations, durationOfExecution, 0);
-    }
 
     Operation() {
         nameOfOperation = Series.generateRandomHexString(8);
         this.previousOperations = new ArrayList<>();
         this.followingOperations = new ArrayList<>();
-    }
-
-    Operation(Operation currentOperation) {
-        resourceGroup = currentOperation.resourceGroup;
-        serialAffiliation = currentOperation.serialAffiliation;
-        previousOperations = currentOperation.previousOperations;
-        followingOperations = currentOperation.followingOperations;
-        durationOfExecution = currentOperation.durationOfExecution;
-        currentOperatingMode = currentOperation.currentOperatingMode;
-        cNumberOfAssignedRecourse = currentOperation.cNumberOfAssignedRecourse;
-        cWorkingInterval = currentOperation.cWorkingInterval;
-        tactTime = currentOperation.tactTime;
-        //cEarlierStartTime = currentOperation.cEarlierStartTime;
-        //cLateStartTime = currentOperation.cLateStartTime;
+        this.cNumberOfAssignedRecourse = new ArrayList<>();
+        this.cWorkingInterval = new ArrayList<>();
     }
 
     protected void setPriority() {
@@ -59,15 +32,30 @@ public class Operation {
 
     public Group getResourceGroup() { return resourceGroup; }
     public Series getSerialAffiliation() { return serialAffiliation; }
-    public ArrayList<Operation> getPreviousOperations() { return previousOperations; }
-    public ArrayList<Operation> getFollowingOperations() { return followingOperations; }
-    public Duration getDurationOfExecution() { return durationOfExecution; }
-    public OperatingMode getOperatingMode() { return currentOperatingMode; }
-    public IResource getCNumberOfAssignedRecourse() { return cNumberOfAssignedRecourse; }
-    public WorkingHours getCWorkingInterval() { return cWorkingInterval; }
+    public ArrayList<IOperation> getPreviousOperations() { return previousOperations; }
+    public ArrayList<IOperation> getFollowingOperations() { return followingOperations; }
+    public Duration getInitDurationOfExecution() { return durationOfExecution; }
+    public Duration getDurationOfExecution() { return currentOperatingMode.getDurationOfExecution(); }
+    public IOperationMode getOperationMode() { return currentOperatingMode; }
+    public Collection<IResource> getCNumberOfAssignedRecourse() { return cNumberOfAssignedRecourse; }
+    public ArrayList<WorkingHours> getCWorkingInterval() { return cWorkingInterval; }
     public LocalDateTime getCLateStartTime() { return null; }
     public LocalDateTime getCEarlierStartTime() { return null; }
     public LocalDateTime getTactTime() { return tactTime; }
+
+    @Override
+    public int getNumberOfOperationMode() {
+        switch (currentOperatingMode.getClass().getSimpleName()) {
+            case("MO_CanNotBeInterrupted"):
+                return 1;
+            case("MO_CanBeInterrupted"):
+                return 0;
+        }
+        return 0;
+    }
+
+    //Можно будет удалить потом
+    public boolean isCanBePlacedInReverseFront() { return false; }
 
     @Override
     public String toString() {
@@ -99,6 +87,10 @@ public class Operation {
         return false;
     }
 
+    @Override
+    public void setPreviousOperation(ArrayList<IOperation> previousOperation) {
+        this.previousOperations = previousOperation;
+    }
 
     //Задать время такта
     public void setTactTime() {
@@ -108,10 +100,7 @@ public class Operation {
     }
 
     public boolean operationNotScheduled() {
-        if(cNumberOfAssignedRecourse == null) {
-            return true;
-        }
-        else return false;
+        return currentOperatingMode.operationNotScheduled();
     }
 
     public void setResourceGroup(Group resourceGroup) { this.resourceGroup = resourceGroup; }
@@ -123,32 +112,42 @@ public class Operation {
     public void setFollowingOperations(Collection<Operation> followingOperations) { this.followingOperations = new ArrayList<>(followingOperations); }
 
     public void setDurationOfExecution(Duration durationOfExecution) { this.durationOfExecution = durationOfExecution; }
+    //public void setDurationOfExecution(Duration durationOfExecution) { currentOperatingMode.setDurationOfExecution(durationOfExecution); }
 
-    public  void setOperatingMode(int currentOperatingMode) {
-        this.currentOperatingMode = OperatingMode.modeSelection(currentOperatingMode);
+    public void setOperatingMode(int currentOperatingMode) {
+        switch (currentOperatingMode) {
+            case 0:
+                this.currentOperatingMode = new MO_CanNotBeInterrupted();
+                this.currentOperatingMode.setDurationOfExecution(durationOfExecution);
+                break;
+            case 1:
+                this.currentOperatingMode = new MO_CanBeInterrupted();
+                this.currentOperatingMode.setDurationOfExecution(durationOfExecution);
+                break;
+        }
     }
 
-    public void setCNumberOfAssignedRecourse(Recourse cNumberOfAssignedRecourse) {
-        this.cNumberOfAssignedRecourse = cNumberOfAssignedRecourse;
+    public void addCNumberOfAssignedRecourse(IResource cNumberOfAssignedRecourse) {
+        this.cNumberOfAssignedRecourse.add(cNumberOfAssignedRecourse);
     }
 
-    public void setCWorkingInterval(WorkingHours cWorkingInterval) {
-        this.cWorkingInterval = cWorkingInterval;
+    public void addCWorkingInterval(WorkingHours cWorkingInterval) {
+        this.cWorkingInterval.add(cWorkingInterval);
     }
 
     public void setNameOfOperation(String nameOfOperation) {
         this.nameOfOperation = new StringBuffer(nameOfOperation);
     }
 
-    public void addFollowingOperation(Operation followingOperation) {
+    public void addFollowingOperation(IOperation followingOperation) {
         if(this.followingOperations == null) {
             this.followingOperations = new ArrayList<>();
         }
         this.followingOperations.add(followingOperation);
-        if(followingOperation.previousOperations == null){
-            followingOperation.previousOperations = new ArrayList<>();
+        if(followingOperation.getPreviousOperations() == null){
+            followingOperation.setPreviousOperation(new ArrayList<IOperation>());
         }
-        followingOperation.previousOperations.add(this);
+        followingOperation.getPreviousOperations().add(this);
     }
 
     public void addFollowingOperation(Collection<Operation> followingOperation) {
@@ -175,113 +174,63 @@ public class Operation {
         return true;
     }
 
-    //Reverse
-    public boolean allFollowingAssignedReverse() {
-        return false;
-    }
-
-    public boolean allPreviousAssignedReverse() {
-        return false;
-    }
-
-    //Reverse
-    public LocalDateTime getEarliestStartTime() {
-        return null;
+    public boolean allFollowingAssigned() {
+        for (int i = 0; i < followingOperations.size(); i++) {
+            if (followingOperations.get(i).operationNotScheduled()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void setNewTactTime() {
-        LocalDateTime startDate = LocalDateTime.MAX;
-        for(IResource tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
-            LocalDateTime futureTactTime = tactRecourse.getStartDateAfterReleaseDate(tactTime, this);
-            if(futureTactTime.isBefore(startDate)) {
-                startDate = futureTactTime;
-            }
-        }
-        tactTime = startDate;
+        currentOperatingMode.setNewTactTime(this);
     }
 
     //В операции с преоритетом не переопределяется
     public ArrayList<IResource> getResourcesToBorrow () {
         ArrayList<IResource> recoursesToBorrow = new ArrayList<>();
-
-        for(IResource candidateForAddition: resourceGroup.getRecoursesInTheGroup()) {
-
-            switch (currentOperatingMode) {
-                case canNotBeInterrupted: {
-                    if(candidateForAddition.takeWhichCanNotBeInterrupted(this) != null){
-                        recoursesToBorrow.add(candidateForAddition);
-                    }
-                    break;
-                }
-                case canBeInterrupted: {
-                    if(candidateForAddition.takeWhichCanBeInterrupted(this) != null) {
-                        recoursesToBorrow.add(candidateForAddition);
-                    }
-                    break;
-                }
+        for(IResource recourse: resourceGroup.getRecoursesInTheGroup()) {
+            if(currentOperatingMode.isResourcesCanToBorrow(this, recourse)) {
+                recoursesToBorrow.add(recourse);
             }
         }
+
         return recoursesToBorrow;
     }
 
     //Перенесено
     public void installOperation() {
-        IResource currentRecourse = null;
-        switch (currentOperatingMode) {
-            case canNotBeInterrupted: {
-                for(IResource recourse: resourceGroup.getRecoursesInTheGroup()) {
-                    if(recourse.takeResWhichCanNotBeInterrupted(this) == true) {
-                        currentRecourse = recourse;
-                        break;
-                    }
-                }
+        boolean operationSuccessfullyInstalled = false;
+        for (IResource resource: resourceGroup.getRecoursesInTheGroup())
+        {
+            operationSuccessfullyInstalled = currentOperatingMode.installOperation(this, resource);
+            if(operationSuccessfullyInstalled)
+            {
+
+                break;
             }
-            case canBeInterrupted: {
-                for(IResource recourse: resourceGroup.getRecoursesInTheGroup()) {
-                    if(recourse.takeResWhichCanBeInterrupted(this) == true) {
-                        currentRecourse = recourse;
-                        break;
-                    }
-                }
-            }
-        }
-        if(currentRecourse != null) {
-            cNumberOfAssignedRecourse = currentRecourse;
-            cWorkingInterval = new WorkingHours(tactTime, cNumberOfAssignedRecourse.getReleaseTime());
-            serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
-            //cEarlierStartTime = tactTime;
         }
     }
 
     //Перенес в операцию с преоритетом
     public void installOperationForSpecificResource(IResource currentRecourse) {
-
-        switch (currentOperatingMode) {
-            case canNotBeInterrupted: {
-                currentRecourse.setReleaseTime(currentRecourse.takeWhichCanNotBeInterrupted(this));
-                break;
-            }
-            case canBeInterrupted: {
-                currentRecourse.setReleaseTime(currentRecourse.takeWhichCanBeInterrupted(this));
-                break;
-            }
-        }
-
-        cNumberOfAssignedRecourse = currentRecourse;
-        cWorkingInterval = new WorkingHours(tactTime, cNumberOfAssignedRecourse.getReleaseTime());
-        serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
-        //cEarlierStartTime = tactTime;
+        currentOperatingMode.installOperation(this, currentRecourse);
     }
 
     public void setTactTimeByEndTimeOfPrevious() {
         tactTime = LocalDateTime.MIN;
         for(int i = 0; i < previousOperations.size(); i++) {
-            if(previousOperations.get(i).getCWorkingInterval() == null) {
+            if(previousOperations.get(i).operationNotScheduled()) {
                 tactTime = null;
                 return;
             }
-            else if(previousOperations.get(i).getCWorkingInterval().getEndTime().isAfter(tactTime)) {
-                tactTime = previousOperations.get(i).getCWorkingInterval().getEndTime();
+            else {
+                for(WorkingHours currentWH: previousOperations.get(i).getCWorkingInterval()) {
+                    if(currentWH.getEndTime().isAfter(tactTime)) {
+                        tactTime = currentWH.getEndTime();
+                    }
+                }
             }
         }
     }
@@ -311,11 +260,15 @@ public class Operation {
 
     public void clean() {
         if(cNumberOfAssignedRecourse != null) {
-            cNumberOfAssignedRecourse.clean();
+            //cNumberOfAssignedRecourse.clean();
+            for(IResource resource: cNumberOfAssignedRecourse) {
+                resource.clean();
+            }
         }
-        cNumberOfAssignedRecourse = null;
-        cWorkingInterval = null;
+        cNumberOfAssignedRecourse = new ArrayList<>();
+        cWorkingInterval = new ArrayList<>();
         tactTime = null;
+        currentOperatingMode.setDurationOfExecution(durationOfExecution);
     }
 
     public void fullClean() {

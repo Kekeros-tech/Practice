@@ -8,17 +8,10 @@ public interface IResource {
     //Задать через правила работы станка 5-2 2-2 и тд
     void fillScheduleUsingPreviousData(LocalDateTime requiredDate);
     void addSchedule(WorkingHours currentWorkingHours);
-    LocalDateTime takeWhichCanNotBeInterrupted(Operation operation);
-    LocalDateTime takeWhichCanBeInterrupted(Operation operation);
-    boolean isTactDateWorkingTime(LocalDateTime tactTime, Operation operation);
+    Duration putOperationOnResource(Operation operation);
+    Duration putReverseOperationOnResource(Operation operation);
     LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tactTime, Operation operation);
-    boolean takeResWhichCanNotBeInterrupted(Operation operation);
-    boolean takeResWhichCanBeInterrupted(Operation operation);
-    ArrayList<WorkingHours> getSchedule();
-    LocalDateTime takeReverseWhichCanBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate, LocalDateTime maxStartTime);
-    LocalDateTime tackReverseWhichCanNotBeInterrupted(Duration durationOfExecution, LocalDateTime tackDate, LocalDateTime maxStartTime);
-
-    LocalDateTime getReleaseTime();
+    LocalDateTime getReverseStartDateAfterTactTime(LocalDateTime tackTime, OperationWithPriorityNew operation);
     void setReleaseTime(LocalDateTime releaseTime);
     void clean();
 }

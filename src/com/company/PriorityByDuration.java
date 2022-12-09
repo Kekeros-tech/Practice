@@ -10,13 +10,13 @@ public class PriorityByDuration implements IPriority {
     }
 
     @Override
-    public void setPriority(Operation operationToSetPriority) {
+    public void setPriority(IOperation operationToSetPriority) {
         if(priorityByDuration != Duration.ZERO) {
             return;
         }
         priorityByDuration = operationToSetPriority.getDurationOfExecution();
 
-        for(Operation followingOperation: operationToSetPriority.getFollowingOperations()) {
+        for(IOperation followingOperation: operationToSetPriority.getFollowingOperations()) {
             priorityByDuration = priorityByDuration.plusMinutes(((OperationWithPriorityNew) followingOperation).getPriority());
         }
     }

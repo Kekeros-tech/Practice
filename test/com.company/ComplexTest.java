@@ -37,27 +37,27 @@ public class ComplexTest {
         justSecondRecourse.addRecourseInTheGroup(secondRecourse);
 
         //Operation first0 = new OperationWithPrioritiesByHeirs();
-        Operation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new OperationWithPriorityNew();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
 
         //Operation second0 = new OperationWithPrioritiesByHeirs();
-        Operation second0 = new OperationWithPriorityNew();
+        IOperation second0 = new OperationWithPriorityNew();
         second0.setResourceGroup(justFirstRecourse);
         second0.setDurationOfExecution(Duration.ofHours(3));
-        second0.setOperatingMode(0);
+        second0.setOperatingMode(1);
 
         //Operation third0 = new OperationWithPrioritiesByHeirs();
-        Operation third0 = new OperationWithPriorityNew();
+        IOperation third0 = new OperationWithPriorityNew();
         third0.setResourceGroup(justSecondRecourse);
         third0.setDurationOfExecution(Duration.ofHours(3));
-        third0.setOperatingMode(0);
+        third0.setOperatingMode(1);
 
         first0.addFollowingOperation(third0);
         second0.addFollowingOperation(third0);
 
-        ArrayList<Operation> operations = new ArrayList<>();
+        ArrayList<IOperation> operations = new ArrayList<>();
         operations.add(first0);
         operations.add(second0);
         operations.add(third0);
@@ -69,19 +69,19 @@ public class ComplexTest {
         third0.setSerialAffiliation(firstSeries);
 
         //Operation first1 = new OperationWithPrioritiesByHeirs();
-        Operation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new OperationWithPriorityNew();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
         //Operation second1 = new OperationWithPrioritiesByHeirs();
-        Operation second1 = new OperationWithPriorityNew();
+        IOperation second1 = new OperationWithPriorityNew();
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
         //Operation third1 = new OperationWithPrioritiesByHeirs();
-        Operation third1 = new OperationWithPriorityNew();
+        IOperation third1 = new OperationWithPriorityNew();
         third1.setResourceGroup(justSecondRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
@@ -89,7 +89,7 @@ public class ComplexTest {
         first1.addFollowingOperation(second1);
         second1.addFollowingOperation(third1);
 
-        ArrayList<Operation> operations1 = new ArrayList<>();
+        ArrayList<IOperation> operations1 = new ArrayList<>();
         operations1.add(first1);
         operations1.add(second1);
         operations1.add(third1);
@@ -104,34 +104,40 @@ public class ComplexTest {
         seriesToWork.add(firstSeries);
         seriesToWork.add(secondSeries);
 
-        firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
-        secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
+        firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion().plusDays(2));
+        secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion().plusDays(2));
 
         Main.testAlgo(seriesToWork, new ControlParameters(2, 1, 0));
         //Main.takeSeriesToWorkExtended(seriesToWork, new ControlParameters(2,1,0));
 
         operations.addAll(operations1);
 
+        for(Series series: seriesToWork){
+            for(IOperation operation: series.getOperationsToCreate()){
+                System.out.println(operation.getCWorkingInterval());
+            }
+        }
+
         OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
         operations.sort(sorter);
 
         WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "15-08-2021 13:00");
-        assertEquals(expectation.toString(), first1.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), first1.getCWorkingInterval().get(0).toString());
 
         expectation = new WorkingHours("16-08-2021 09:00", "16-08-2021 12:00");
-        assertEquals(expectation.toString(), second1.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), second1.getCWorkingInterval().get(0).toString());
 
         expectation = new WorkingHours("17-08-2021 09:00", "17-08-2021 12:00");
-        assertEquals(expectation.toString(), third1.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), third1.getCWorkingInterval().get(0).toString());
 
         expectation = new WorkingHours("17-08-2021 09:00", "17-08-2021 12:00");
-        assertEquals(expectation.toString(), first0.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), first0.getCWorkingInterval().get(0).toString());
 
         expectation = new WorkingHours("18-08-2021 09:00", "18-08-2021 12:00");
-        assertEquals(expectation.toString(), second0.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), second0.getCWorkingInterval().get(0).toString());
 
         expectation = new WorkingHours("19-08-2021 09:00", "19-08-2021 12:00");
-        assertEquals(expectation.toString(), third0.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), third0.getCWorkingInterval().get(0).toString());
     }
 
     @Test
@@ -161,7 +167,7 @@ public class ComplexTest {
 
         first0.addFollowingOperation(second0);
 
-        ArrayList<Operation> operations = new ArrayList<>();
+        ArrayList<IOperation> operations = new ArrayList<>();
         operations.add(first0);
         operations.add(second0);
 
@@ -175,11 +181,10 @@ public class ComplexTest {
         first1.setDurationOfExecution(Duration.ofHours(9));
         first1.setOperatingMode(0);
 
-        ArrayList<Operation> operations1 = new ArrayList<>();
+        ArrayList<IOperation> operations1 = new ArrayList<>();
         operations1.add(first1);
 
         Series secondSeries = new Series(operations1, "25-08-2021 00:00", "13-08-2021 10:00");
-
         first1.setSerialAffiliation(secondSeries);
 
         ArrayList<Series> seriesToWork = new ArrayList<>();
@@ -219,12 +224,12 @@ public class ComplexTest {
 
 
 
-        Operation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new OperationWithPriorityNew();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
 
-        ArrayList<Operation> operations = new ArrayList<>();
+        ArrayList<IOperation> operations = new ArrayList<>();
         operations.add(first0);
 
         Series firstSeries = new Series(operations, "25-08-2021 00:00", "15-08-2021 09:00");
@@ -232,18 +237,16 @@ public class ComplexTest {
 
 
 
-        Operation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new OperationWithPriorityNew();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(7));
         first1.setOperatingMode(0);
 
-        ArrayList<Operation> operationsForSecondSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsForSecondSeries = new ArrayList<>();
         operationsForSecondSeries.add(first1);
 
         Series secondSeries = new Series(operationsForSecondSeries, "17-08-2021 00:00", "15-08-2021 12:00");
         first1.setSerialAffiliation(secondSeries);
-
-
 
         firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
@@ -255,7 +258,7 @@ public class ComplexTest {
         //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(5), new ControlParameters(2,1,0));
 
         for(Series series: seriesToWork){
-            for(Operation operation: series.getOperationsToCreate()){
+            for(IOperation operation: series.getOperationsToCreate()){
                 System.out.println(operation);
             }
         }
@@ -289,25 +292,25 @@ public class ComplexTest {
         allRecourses.addRecourseInTheGroup(secondRecourse);
 
 
-        Operation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new OperationWithPriorityNew();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(allRecourses);
         first0.setDurationOfExecution(Duration.ofHours(7));
         first0.setOperatingMode(0);
 
-        Operation second0 = new OperationWithPriorityNew();
+        IOperation second0 = new OperationWithPriorityNew();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(allRecourses);
         second0.setDurationOfExecution(Duration.ofHours(7));
         second0.setOperatingMode(0);
 
-        Operation third0 = new OperationWithPriorityNew();
+        IOperation third0 = new OperationWithPriorityNew();
         third0.setNameOfOperation("Третья операция, первой серии");
         third0.setResourceGroup(justFirstRecourse);
         third0.setDurationOfExecution(Duration.ofHours(7));
         third0.setOperatingMode(0);
 
-        Operation fourth0 = new OperationWithPriorityNew();
+        IOperation fourth0 = new OperationWithPriorityNew();
         fourth0.setNameOfOperation("Четвертая операция, первой серии");
         fourth0.setResourceGroup(justSecondRecourse);
         fourth0.setDurationOfExecution(Duration.ofHours(7));
@@ -317,7 +320,7 @@ public class ComplexTest {
         second0.addFollowingOperation(fourth0);
         third0.addFollowingOperation(fourth0);
 
-        ArrayList<Operation> operationsOfFirstSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsOfFirstSeries = new ArrayList<>();
         operationsOfFirstSeries.add(first0);
         operationsOfFirstSeries.add(second0);
         operationsOfFirstSeries.add(third0);
@@ -331,25 +334,25 @@ public class ComplexTest {
 
 
 
-        Operation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new OperationWithPriorityNew();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(allRecourses);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        Operation second1 = new OperationWithPriorityNew();
+        IOperation second1 = new OperationWithPriorityNew();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justSecondRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        Operation third1 = new OperationWithPriorityNew();
+        IOperation third1 = new OperationWithPriorityNew();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justFirstRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
 
-        Operation fourth1 = new OperationWithPriorityNew();
+        IOperation fourth1 = new OperationWithPriorityNew();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justSecondRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(3));
@@ -360,7 +363,7 @@ public class ComplexTest {
         first1.addFollowingOperation(fourth1);
 
 
-        ArrayList<Operation> operationsOfSecondSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsOfSecondSeries = new ArrayList<>();
         operationsOfSecondSeries.add(first1);
         operationsOfSecondSeries.add(second1);
         operationsOfSecondSeries.add(third1);
@@ -372,7 +375,7 @@ public class ComplexTest {
         third1.setSerialAffiliation(secondSeries);
         fourth1.setSerialAffiliation(secondSeries);
 
-        ArrayList<Operation> operationsForSecondSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsForSecondSeries = new ArrayList<>();
         operationsForSecondSeries.add(first1);
         operationsForSecondSeries.add(second1);
         operationsForSecondSeries.add(third1);
@@ -390,7 +393,7 @@ public class ComplexTest {
         //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(10), new ControlParameters(2,1,0));
 
         for(Series series: seriesToWork){
-            for(Operation operation: series.getOperationsToCreate()){
+            for(IOperation operation: series.getOperationsToCreate()) {
                 System.out.println(operation);
             }
         }
@@ -446,37 +449,37 @@ public class ComplexTest {
         firstAndThird.addRecourseInTheGroup(thirdRecourse);
 
 
-        Operation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new OperationWithPriorityNew();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(secondAndThird);
         first0.setDurationOfExecution(Duration.ofHours(5));
         first0.setOperatingMode(0);
 
-        Operation second0 = new OperationWithPriorityNew();
+        IOperation second0 = new OperationWithPriorityNew();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(firstAndThird);
         second0.setDurationOfExecution(Duration.ofHours(6));
         second0.setOperatingMode(0);
 
-        Operation third0 = new OperationWithPriorityNew();
+        IOperation third0 = new OperationWithPriorityNew();
         third0.setNameOfOperation("Третья операция, первой серии");
         third0.setResourceGroup(firstAndSecond);
         third0.setDurationOfExecution(Duration.ofHours(7));
         third0.setOperatingMode(0);
 
-        Operation fourth0 = new OperationWithPriorityNew();
+        IOperation fourth0 = new OperationWithPriorityNew();
         fourth0.setNameOfOperation("Четвертая операция, первой серии");
         fourth0.setResourceGroup(allRecourses);
         fourth0.setDurationOfExecution(Duration.ofHours(5));
         fourth0.setOperatingMode(0);
 
-        Operation fifth0 = new OperationWithPriorityNew();
+        IOperation fifth0 = new OperationWithPriorityNew();
         fifth0.setNameOfOperation("Пятая операция, первой серии");
         fifth0.setResourceGroup(allRecourses);
         fifth0.setDurationOfExecution(Duration.ofHours(4));
         fifth0.setOperatingMode(0);
 
-        Operation sixth0 = new OperationWithPriorityNew();
+        IOperation sixth0 = new OperationWithPriorityNew();
         sixth0.setNameOfOperation("Шестая операция, первой серии");
         sixth0.setResourceGroup(firstAndSecond);
         sixth0.setDurationOfExecution(Duration.ofHours(3));
@@ -488,7 +491,7 @@ public class ComplexTest {
         fourth0.addFollowingOperation(sixth0);
         fifth0.addFollowingOperation(sixth0);
 
-        ArrayList<Operation> operationsOfFirstSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsOfFirstSeries = new ArrayList<>();
         operationsOfFirstSeries.add(first0);
         operationsOfFirstSeries.add(second0);
         operationsOfFirstSeries.add(third0);
@@ -506,37 +509,37 @@ public class ComplexTest {
 
 
 
-        Operation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new OperationWithPriorityNew();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(allRecourses);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        Operation second1 = new OperationWithPriorityNew();
+        IOperation second1 = new OperationWithPriorityNew();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        Operation third1 = new OperationWithPriorityNew();
+        IOperation third1 = new OperationWithPriorityNew();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justSecondRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
 
-        Operation fourth1 = new OperationWithPriorityNew();
+        IOperation fourth1 = new OperationWithPriorityNew();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justThirdRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(3));
         fourth1.setOperatingMode(0);
 
-        Operation fifth1 = new OperationWithPriorityNew();
+        IOperation fifth1 = new OperationWithPriorityNew();
         fifth1.setNameOfOperation("Пятая операция, второй сериии");
         fifth1.setResourceGroup(justFirstRecourse);
         fifth1.setDurationOfExecution(Duration.ofHours(3));
         fifth1.setOperatingMode(0);
 
-        Operation sixth1 = new OperationWithPriorityNew();
+        IOperation sixth1 = new OperationWithPriorityNew();
         sixth1.setNameOfOperation("Шестая операция, второй серии");
         sixth1.setResourceGroup(justSecondRecourse);
         sixth1.setDurationOfExecution(Duration.ofHours(3));
@@ -549,7 +552,7 @@ public class ComplexTest {
         first1.addFollowingOperation(sixth1);
 
 
-        ArrayList<Operation> operationsOfSecondSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsOfSecondSeries = new ArrayList<>();
         operationsOfSecondSeries.add(first1);
         operationsOfSecondSeries.add(second1);
         operationsOfSecondSeries.add(third1);
@@ -567,19 +570,19 @@ public class ComplexTest {
 
 
 
-        Operation first2 = new OperationWithPriorityNew();
+        IOperation first2 = new OperationWithPriorityNew();
         first2.setNameOfOperation("Первая операция, третья серия");
         first2.setResourceGroup(allRecourses);
         first2.setDurationOfExecution(Duration.ofHours(2));
         first2.setOperatingMode(0);
 
-        Operation second2 = new OperationWithPriorityNew();
+        IOperation second2 = new OperationWithPriorityNew();
         second2.setNameOfOperation("Вторая операция, третья серия");
         second2.setResourceGroup(justFirstRecourse);
         second2.setDurationOfExecution(Duration.ofHours(9));
         second2.setOperatingMode(0);
 
-        Operation third2 = new OperationWithPriorityNew();
+        IOperation third2 = new OperationWithPriorityNew();
         third2.setNameOfOperation("Третья операция, третья серия");
         third2.setResourceGroup(justSecondRecourse);
         third2.setDurationOfExecution(Duration.ofHours(9));
@@ -588,7 +591,7 @@ public class ComplexTest {
         first2.addFollowingOperation(second2);
         first2.addFollowingOperation(third2);
 
-        ArrayList<Operation> operationsForThirdSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsForThirdSeries = new ArrayList<>();
         operationsForThirdSeries.add(first2);
         operationsForThirdSeries.add(second2);
         operationsForThirdSeries.add(third2);
@@ -659,7 +662,7 @@ public class ComplexTest {
 
             System.out.println("Отсечка");
             for(Series series: seriesToWork) {
-                for(Operation operation: series.getOperationsToCreate()) {
+                for(IOperation operation: series.getOperationsToCreate()) {
                     System.out.println(operation);
                 }
                 series.fullClean();
@@ -674,10 +677,22 @@ public class ComplexTest {
     private LocalDateTime findTimeOfLatestOperation(ArrayList<Series> seriesForWork) {
         LocalDateTime maxTime = LocalDateTime.MIN;
         for(Series currentSeries: seriesForWork) {
-            for (Operation currentOperationOfCurrentSeries: currentSeries.getOperationsToCreate()){
-                if(currentOperationOfCurrentSeries.getCWorkingInterval().getEndTime().isAfter(maxTime)){
-                    maxTime = currentOperationOfCurrentSeries.getCWorkingInterval().getEndTime();
+            for (IOperation currentOperationOfCurrentSeries: currentSeries.getOperationsToCreate()){
+                if(findTimeOfLatestOfWorkingInterval(currentOperationOfCurrentSeries).isAfter(maxTime)){
+                    maxTime = findTimeOfLatestOfWorkingInterval(currentOperationOfCurrentSeries);
                 }
+            }
+        }
+        return maxTime;
+    }
+
+
+    //перенести куда-нибудь
+    private LocalDateTime findTimeOfLatestOfWorkingInterval( IOperation operation) {
+        LocalDateTime maxTime = LocalDateTime.MIN;
+        for(WorkingHours wh: operation.getCWorkingInterval()){
+            if(wh.getEndTime().isAfter(maxTime)){
+                maxTime = wh.getEndTime();
             }
         }
         return maxTime;
@@ -707,20 +722,20 @@ public class ComplexTest {
         allRecourses.addRecourseInTheGroup(firstRecourse);
         allRecourses.addRecourseInTheGroup(secondRecourse);
 
-        Operation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new OperationWithPriorityNew();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(allRecourses);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
 
-        Operation second0 = new OperationWithPriorityNew();
+        IOperation second0 = new OperationWithPriorityNew();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(allRecourses);
         second0.setDurationOfExecution(Duration.ofHours(4));
         second0.setOperatingMode(0);
 
 
-        ArrayList<Operation> operationsOfFirstSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsOfFirstSeries = new ArrayList<>();
         operationsOfFirstSeries.add(first0);
         operationsOfFirstSeries.add(second0);
 
@@ -729,37 +744,37 @@ public class ComplexTest {
         second0.setSerialAffiliation(firstSeries);
 
 
-        Operation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new OperationWithPriorityNew();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(4));
         first1.setOperatingMode(0);
 
-        Operation second1 = new OperationWithPriorityNew();
+        IOperation second1 = new OperationWithPriorityNew();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(6));
         second1.setOperatingMode(0);
 
-        Operation third1 = new OperationWithPriorityNew();
+        IOperation third1 = new OperationWithPriorityNew();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justFirstRecourse);
         third1.setDurationOfExecution(Duration.ofHours(6));
         third1.setOperatingMode(0);
 
-        Operation fourth1 = new OperationWithPriorityNew();
+        IOperation fourth1 = new OperationWithPriorityNew();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justFirstRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(6));
         fourth1.setOperatingMode(0);
 
-        Operation fifth1 = new OperationWithPriorityNew();
+        IOperation fifth1 = new OperationWithPriorityNew();
         fifth1.setNameOfOperation("Пятая операция, второй серии");
         fifth1.setResourceGroup(justFirstRecourse);
         fifth1.setDurationOfExecution(Duration.ofHours(6));
         fifth1.setOperatingMode(0);
 
-        Operation sixth1 = new OperationWithPriorityNew();
+        IOperation sixth1 = new OperationWithPriorityNew();
         sixth1.setNameOfOperation("Шестая операция, второй серии");
         sixth1.setResourceGroup(justFirstRecourse);
         sixth1.setDurationOfExecution(Duration.ofHours(6));
@@ -772,7 +787,7 @@ public class ComplexTest {
         first1.addFollowingOperation(sixth1);
 
 
-        ArrayList<Operation> operationsOfSecondSeries = new ArrayList<>();
+        ArrayList<IOperation> operationsOfSecondSeries = new ArrayList<>();
         operationsOfSecondSeries.add(first1);
         operationsOfSecondSeries.add(second1);
         operationsOfSecondSeries.add(third1);
@@ -849,7 +864,7 @@ public class ComplexTest {
 
             System.out.println("Отсечка");
             for(Series series: seriesToWork){
-                for(Operation operation: series.getOperationsToCreate()) {
+                for(IOperation operation: series.getOperationsToCreate()) {
                     System.out.println(operation);
                 }
                 series.fullClean();
@@ -865,8 +880,7 @@ public class ComplexTest {
                 "626400");
         writer.close();
 
-        /*
-Первые 5 строчек для задания.
+/*Первые 5 строчек для задания.
 0 86400
 0 2
 3600 1
@@ -894,16 +908,6 @@ public class ComplexTest {
 14202 1
 453600
 25692 1
-453600
-         */
-
-        /*Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofSeconds(3600), new ControlParameters(1,1,0));
-
-        System.out.println(Duration.between(firstSeries.getArrivalTime(), findTimeOfLatestOperation(seriesToWork)));
-        for(Series series: seriesToWork){
-            for(Operation operation: series.getOperationsToCreate()) {
-                System.out.println(operation);
-            }
-        }*/
+453600*/
     }
 }

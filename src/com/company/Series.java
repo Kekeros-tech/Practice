@@ -6,14 +6,14 @@ import java.util.*;
 
 public class Series {
     private StringBuffer nameOfSeries;
-    private ArrayList<Operation> operationsToCreate;
+    private ArrayList<IOperation> operationsToCreate;
     private LocalDateTime deadlineForCompletion;
     private LocalDateTime arrivalTime;
 
     private int cNumberOfAssignedOperations;
 
 
-    Series(Collection<Operation> operationsToCreate, LocalDateTime deadlineForCompletion, LocalDateTime arrivalTime)
+    Series(Collection<IOperation> operationsToCreate, LocalDateTime deadlineForCompletion, LocalDateTime arrivalTime)
     {
         nameOfSeries = generateRandomHexString(8);
         this.operationsToCreate = new ArrayList<>(operationsToCreate);
@@ -21,12 +21,12 @@ public class Series {
         this.arrivalTime = arrivalTime;
     }
 
-    Series(Collection<Operation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
+    Series(Collection<IOperation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
     {
         this(operationsToCreate, LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter), LocalDateTime.parse(arrivalTime, WorkingHours.formatter));
     }
 
-    Series(String nameOfOperation, Collection<Operation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
+    Series(String nameOfOperation, Collection<IOperation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
     {
         this(operationsToCreate, LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter), LocalDateTime.parse(arrivalTime, WorkingHours.formatter));
         this.nameOfSeries = new StringBuffer(nameOfOperation);
@@ -34,7 +34,7 @@ public class Series {
 
     public StringBuffer getNameOfSeries() { return nameOfSeries; }
 
-    public ArrayList<Operation> getOperationsToCreate() { return operationsToCreate; }
+    public ArrayList<IOperation> getOperationsToCreate() { return operationsToCreate; }
 
     public LocalDateTime getDeadlineForCompletion() { return deadlineForCompletion; }
 
@@ -58,14 +58,6 @@ public class Series {
 
     public void addOperationCollectionToCreate(Collection<Operation> operationsToCreate) { this.operationsToCreate.addAll(operationsToCreate); }
 
-    public void removePreviousOperations(Operation requiredOperation){
-        for (Operation operation: operationsToCreate) {
-            if(operation.getPreviousOperations().contains(requiredOperation)){
-                operation.getPreviousOperations().remove(requiredOperation);
-            }
-        }
-    }
-
     public boolean allOperationsAssigned() {
         if(cNumberOfAssignedOperations == operationsToCreate.size()) {
             return true;
@@ -74,14 +66,14 @@ public class Series {
     }
 
     public void clean() {
-        for(Operation currentOperation: operationsToCreate){
+        for(IOperation currentOperation: operationsToCreate){
             currentOperation.clean();
         }
         cNumberOfAssignedOperations = 0;
     }
 
     public void fullClean() {
-        for(Operation currentOperation: operationsToCreate) {
+        for(IOperation currentOperation: operationsToCreate) {
             currentOperation.fullClean();
         }
         cNumberOfAssignedOperations = 0;

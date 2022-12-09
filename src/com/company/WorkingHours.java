@@ -55,7 +55,7 @@ public class WorkingHours {
     }
 
     public boolean isWorkingTime(LocalDateTime currentDate) {
-        if(!startTime.isAfter(currentDate) && endTime.isAfter(currentDate)) {
+        if(!startTime.isAfter(currentDate) && !endTime.isBefore(currentDate)) {
             return true;
         }
         return false;

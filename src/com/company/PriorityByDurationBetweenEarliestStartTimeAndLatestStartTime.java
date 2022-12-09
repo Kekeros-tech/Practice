@@ -11,10 +11,12 @@ public class PriorityByDurationBetweenEarliestStartTimeAndLatestStartTime implem
     }
 
     @Override
-    public void setPriority(Operation operation)
+    public void setPriority(IOperation operation)
     {
-        if(operation.getCEarlierStartTime() != null && operation.getCLateStartTime() != null){
-            priority = Duration.between(operation.getCEarlierStartTime(), operation.getCLateStartTime());
+        if(((OperationWithPriorityNew) operation).getCEarlierStartTime() != null
+                && ((OperationWithPriorityNew) operation).getCLateStartTime() != null) {
+            priority = Duration.between(((OperationWithPriorityNew) operation).getCEarlierStartTime(),
+                                        ((OperationWithPriorityNew) operation).getCLateStartTime());
         }
     }
 

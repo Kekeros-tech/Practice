@@ -8,13 +8,13 @@ public class PriorityByHeirs implements IPriority {
     }
 
     @Override
-    public void setPriority(Operation operationToSetPriority) {
+    public void setPriority(IOperation operationToSetPriority) {
         if(priorityByHeirs != 0) {
             return;
         }
         priorityByHeirs = 1;
 
-        for(Operation followingOperation: operationToSetPriority.getFollowingOperations()) {
+        for(IOperation followingOperation: operationToSetPriority.getFollowingOperations()) {
             priorityByHeirs += ((OperationWithPriorityNew) followingOperation).getPriority();
         }
     }

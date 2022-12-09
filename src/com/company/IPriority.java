@@ -1,7 +1,7 @@
 package com.company;
 
 public interface IPriority {
-    public void setPriority(Operation operationToSetPriority);
+    void setPriority(IOperation operationToSetPriority);
     long getPriority();
     void clean();
 }

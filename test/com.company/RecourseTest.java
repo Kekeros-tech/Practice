@@ -1,3 +1,4 @@
+/*
 package com.company;
 
 import org.junit.After;
@@ -59,7 +60,7 @@ public class RecourseTest {
     public void tackWhichCanNotBeInterrupted() {
     }
 
-/*    @Test
+    @Test
     public void getStartDateAfterReleaseDate() {
         WorkingHours work0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 15:00");
         WorkingHours work1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 15:00");
@@ -73,5 +74,5 @@ public class RecourseTest {
         recourse.fillScheduleUsingPreviousData(time);
         assertEquals(recourse.getStartDateAfterReleaseDate(tackDate), LocalDateTime.of(2021, 8,16,9,00));
 
-    }*/
-}
+    }
+}*/

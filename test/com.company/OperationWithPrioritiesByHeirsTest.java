@@ -1,3 +1,4 @@
+/*
 package com.company;
 
 import org.junit.Test;
@@ -11,7 +12,7 @@ public class OperationWithPrioritiesByHeirsTest {
 
     @Test
     public void testOfPriorities() {
-        /*WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 15:00");
+WorkingHours workingHoursForFirst0 = new WorkingHours("14-08-2021 09:00", "14-08-2021 15:00");
         WorkingHours workingHoursForFirst1 = new WorkingHours("15-08-2021 09:00", "15-08-2021 15:00");
 
         Recourse firstRecourse = new Recourse("14-08-2021 09:00");
@@ -109,7 +110,8 @@ public class OperationWithPrioritiesByHeirsTest {
 
         for(Operation currentOperation: operations) {
             System.out.println(currentOperation);
-        }*/
+        }
+
     }
 
     @Test
@@ -216,3 +218,4 @@ public class OperationWithPrioritiesByHeirsTest {
     }
 
 }
+*/

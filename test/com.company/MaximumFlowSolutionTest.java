@@ -60,7 +60,7 @@ public class MaximumFlowSolutionTest {
         fourth0.setDurationOfExecution(Duration.ofHours(5));
         fourth0.setOperatingMode(0);
 
-        ArrayList<Operation> operations = new ArrayList<>();
+        ArrayList<IOperation> operations = new ArrayList<>();
         operations.add(first);
         operations.add(second0);
         operations.add(third0);

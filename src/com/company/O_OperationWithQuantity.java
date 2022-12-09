@@ -28,7 +28,7 @@ public class O_OperationWithQuantity extends Operation {
     public void setCAssignedResources(Collection<IResource> resources) { this.CAssignedResources = resources; }
     public void setCWorkingIntervals(Collection<WorkingHours> CWorkingIntervals) { this.CWorkingIntervals = CWorkingIntervals; }
 
-    O_OperationWithQuantity(Group                 resourceGroup,
+    /*O_OperationWithQuantity(Group                 resourceGroup,
                             Series                serialAffiliation,
                             Collection<Operation> previousOperations,
                             Collection<Operation> followingOperations,
@@ -40,7 +40,7 @@ public class O_OperationWithQuantity extends Operation {
         CNumberOfProcessedParts = 0;
         CAssignedResources = new ArrayList<>();
         CWorkingIntervals = new ArrayList<>();
-    }
+    }*/
 
     O_OperationWithQuantity() {
         super();
@@ -82,7 +82,7 @@ public class O_OperationWithQuantity extends Operation {
     }
 
     public void installOperation() {
-        switch (currentOperatingMode) {
+        /*switch (currentOperatingMode) {
             case canNotBeInterrupted: {
                 for(IResource recourse: resourceGroup.getRecoursesInTheGroup()) {
                     recourse.takeResWhichCanNotBeInterrupted(this);
@@ -91,6 +91,6 @@ public class O_OperationWithQuantity extends Operation {
             case canBeInterrupted: {
 
             }
-        }
+        }*/
     }
 }

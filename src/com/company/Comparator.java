@@ -37,12 +37,12 @@ import java.util.Comparator;
         }
     }*/
 
-    class OComparatorBasedOnWorkingInterval implements Comparator<Operation> {
+    class OComparatorBasedOnWorkingInterval implements Comparator<IOperation> {
 
-        public int compare(Operation a, Operation b) {
-            if(a.getCWorkingInterval().getStartTime().isBefore(b.getCWorkingInterval().getStartTime())) {
+        public int compare(IOperation a, IOperation b) {
+            /*if(a.getCWorkingInterval().getStartTime().isBefore(b.getCWorkingInterval().getStartTime())) {
                 return -1;
-            }
+            }*/
             return 1;
         }
     }
@@ -94,26 +94,20 @@ import java.util.Comparator;
         }
     }*/
 
-    class OExtendedComparator implements Comparator<Operation> {
+    class OExtendedComparator implements Comparator<IOperation> {
 
-        public int compare(Operation a, Operation b) {
+        public int compare(IOperation a, IOperation b) {
             OPriorityComparator comparator = new OPriorityComparator();
             int resultOfSorter = comparator.compare(a, b);
-
             if(resultOfSorter == 0) {
-                if(a.getOperatingMode() == OperatingMode.canNotBeInterrupted && b.getOperatingMode() == OperatingMode.canBeInterrupted){
-                    return -1;
-                }
-                if(a.getOperatingMode() == OperatingMode.canBeInterrupted && b.getOperatingMode() == OperatingMode.canNotBeInterrupted){
-                    return 1;
-                }
+                return a.getNumberOfOperationMode() - b.getNumberOfOperationMode();
             }
             return 0;
         }
     }
 
-    class OPriorityComparator implements Comparator<Operation> {
-        public int compare(Operation a, Operation b) {
+    class OPriorityComparator implements Comparator<IOperation> {
+        public int compare(IOperation a, IOperation b) {
             if(((OperationWithPriorityNew) a).getPriority() == ((OperationWithPriorityNew) b).getPriority()) return 0;
             if(((OperationWithPriorityNew) a).getPriority() > ((OperationWithPriorityNew) b).getPriority()) return -1;
             return 1;

@@ -698,6 +698,7 @@ public class ComplexTest {
         return maxTime;
     }
 
+
     @Test
     //Use early and late start dates
     public void testWhereSecondSortingReturnBestResult() throws IOException, InterruptedException {

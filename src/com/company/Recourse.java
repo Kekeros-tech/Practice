@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Recourse implements IResource{
+public class Recourse implements IResource, IStructuralUnitOfResource{
     private StringBuffer nameOfRecourse;
     private ArrayList<WorkingHours> schedule;
     private LocalDateTime arriveTime;
@@ -73,13 +73,7 @@ public class Recourse implements IResource{
 
     public void setSchedule(Collection<WorkingHours> schedule) { this.schedule = new ArrayList<>(schedule); }
 
-    public void setReleaseTime(LocalDateTime releaseTime){
-        this.releaseTime = releaseTime;
-    }
-
-    public void setReleaseTime(String releaseDate) {
-        this.releaseTime = LocalDateTime.parse(releaseDate, WorkingHours.formatter);
-    }
+    public void setReleaseTime(LocalDateTime releaseTime) { this.releaseTime = releaseTime; }
 
     public Duration takeResource(Duration currentDuration, LocalDateTime startTime, LocalDateTime endTime) {
         Duration resultDuration = Duration.between(startTime, endTime);
@@ -87,28 +81,31 @@ public class Recourse implements IResource{
         return resultDuration;
     }
 
-    public Duration putOperationOnResource(Operation operation) {
+    public ResultOfRecourseBooking putOperationOnResource(IOperation operation) {
         LocalDateTime tactDate = operation.getTactTime();
         Duration durationOfExecution = operation.getDurationOfExecution();
 
         for(WorkingHours currentWH: schedule) {
             if(currentWH.getStartTime().isAfter(tactDate)) break;
             if(currentWH.isWorkingTime(tactDate) && this.isFree(tactDate)) {
-                //может можно убрать
-                return this.takeResource(durationOfExecution, tactDate, currentWH.getEndTime());
+                Duration durationOfBooking = this.takeResource(durationOfExecution, tactDate, currentWH.getEndTime());
+                ResultOfRecourseBooking resultOfRecourseBooking = new ResultOfRecourseBooking(durationOfBooking, this);
+                return resultOfRecourseBooking;
             }
         }
         return null;
     }
 
-    public Duration putReverseOperationOnResource(Operation operation) {
+    public ResultOfRecourseBooking putReverseOperationOnResource(IOperation operation) {
         LocalDateTime tactDate = operation.getTactTime();
         Duration durationOfExecution = operation.getDurationOfExecution();
 
         for(int i = schedule.size() - 1; i >= 0; i--) {
             if(schedule.get(i).getEndTime().isBefore(tactDate)) break;
-            if(schedule.get(i).isWorkingTime(tactDate)){
-                return this.takeResource(durationOfExecution, schedule.get(i).getStartTime(), tactDate);
+            if(schedule.get(i).isWorkingTime(tactDate)) {
+                Duration durationOfBooking = this.takeResource(durationOfExecution, schedule.get(i).getStartTime(), tactDate);
+                ResultOfRecourseBooking resultOfRecourseBooking = new ResultOfRecourseBooking(durationOfBooking, this);
+                return resultOfRecourseBooking;
             }
             //return this.takeResource(durationOfExecution, schedule.get(i).getStartTime(), tactDate);
         }
@@ -116,7 +113,7 @@ public class Recourse implements IResource{
     }
 
     @Override
-    public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tackDate, Operation operation) {
+    public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tackDate, IOperation operation) {
         for (WorkingHours currentWorkingHours: schedule) {
             if(currentWorkingHours.getStartTime().isAfter(tackDate) && this.isFree(currentWorkingHours.getStartTime())) {
                 return currentWorkingHours.getStartTime();
@@ -129,7 +126,7 @@ public class Recourse implements IResource{
     }
 
     @Override
-    public LocalDateTime getReverseStartDateAfterTactTime(LocalDateTime tackTime, OperationWithPriorityNew operation) {
+    public LocalDateTime getReverseStartDateAfterTactTime(LocalDateTime tackTime, IOperation operation) {
         for(int i = schedule.size() - 1; i >= 0; i--) {
             if(schedule.get(i).getEndTime().isBefore(tackTime)) {
                 return schedule.get(i).getEndTime();

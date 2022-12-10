@@ -9,6 +9,12 @@ import java.util.Collection;
 public interface IOperation {
     boolean isСanBePlacedInFront();
     void setTactTime();
+    void setTactTime(LocalDateTime tactTime);
+    Series getSerialAffiliation();
+    IOperationMode getCurrentOperatingMode();
+    Duration getInitDurationOfExecution();
+    boolean allFollowingAssigned();
+    Group getResourceGroup();
     void setNameOfOperation(String nameOfOperation);
     LocalDateTime getCLateStartTime();
     LocalDateTime getCEarlierStartTime();
@@ -24,7 +30,7 @@ public interface IOperation {
     void setSerialAffiliation(Series serialAffiliation);
     void setDurationOfExecution(Duration durationOfExecution);
     void setOperatingMode(int currentOperatingMode);
-    void addCNumberOfAssignedRecourse(IResource cNumberOfAssignedRecourse);
+    void addCNumberOfAssignedRecourse(IStructuralUnitOfResource cNumberOfAssignedRecourse);
     void addCWorkingInterval(WorkingHours cWorkingInterval);
     void addFollowingOperation(IOperation followingOperation);
     void setNewTactTime();

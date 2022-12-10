@@ -4,6 +4,11 @@ public class O_OperationWithTemperatureAndVoltage extends Operation {
     private double temperatureOfOperation;
     private double voltageOfOperation;
 
+    O_OperationWithTemperatureAndVoltage(double temperatureOfOperation, double voltageOfOperation) {
+        this.temperatureOfOperation = temperatureOfOperation;
+        this.voltageOfOperation = voltageOfOperation;
+    }
+
     public double getTemperatureOfOperation() { return temperatureOfOperation; }
     public double getVoltageOfOperation() { return voltageOfOperation; }
 

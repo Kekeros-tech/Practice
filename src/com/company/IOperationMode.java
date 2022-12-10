@@ -7,9 +7,9 @@ public interface IOperationMode {
     void setDurationOfExecution(Duration durationOfExecution);
     Duration getDurationOfExecution();
     boolean operationNotScheduled();
-    boolean installOperation(Operation operation, IResource currentResource);
-    boolean reverseInstallOperation(Operation operation, IResource currentResource);
-    void setNewTactTime(Operation operation);
-    void setNewReverseTactTime(OperationWithPriorityNew operation);
+    ResultOfOperationSetting installOperation(IOperation operation, IResource currentResource);
+    ResultOfOperationSetting reverseInstallOperation(IOperation operation, IResource currentResource);
+    void setNewTactTime(IOperation operation);
+    void setNewReverseTactTime(IOperation operation);
     boolean isResourcesCanToBorrow(Operation operation, IResource resource);
 }

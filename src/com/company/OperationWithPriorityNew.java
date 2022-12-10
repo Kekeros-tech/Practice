@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class OperationWithPriorityNew implements IOperation {
-    private Operation underlyingOperation;
+    private IOperation underlyingOperation;
     protected IPriority priority;
     private LocalDateTime CEarliestStartTime;
     private LocalDateTime CLatestStartTime;
@@ -18,7 +18,6 @@ public class OperationWithPriorityNew implements IOperation {
     public LocalDateTime getCEarlierStartTime() { return  CEarliestStartTime; }
     public long getPriority() { return priority.getPriority(); }
     public Group getResourceGroup() { return underlyingOperation.getResourceGroup(); }
-    public void installTactTime(LocalDateTime tactTime) { underlyingOperation.tactTime = tactTime; }
     public ArrayList<WorkingHours> getCWorkingInterval() { return underlyingOperation.getCWorkingInterval(); }
 
     @Override
@@ -67,13 +66,38 @@ public class OperationWithPriorityNew implements IOperation {
     }
 
     @Override
+    public void setTactTime(LocalDateTime tactTime) {
+        underlyingOperation.setTactTime(tactTime);
+    }
+
+    @Override
+    public Series getSerialAffiliation() {
+        return underlyingOperation.getSerialAffiliation();
+    }
+
+    @Override
+    public IOperationMode getCurrentOperatingMode() {
+        return underlyingOperation.getCurrentOperatingMode();
+    }
+
+    @Override
+    public Duration getInitDurationOfExecution() {
+        return underlyingOperation.getInitDurationOfExecution();
+    }
+
+    @Override
+    public boolean allFollowingAssigned() {
+        return underlyingOperation.allFollowingAssigned();
+    }
+
+    @Override
     public ArrayList<IOperation> getFollowingOperations() {
-        return underlyingOperation.followingOperations;
+        return underlyingOperation.getFollowingOperations();
     }
 
     @Override
     public ArrayList<IOperation> getPreviousOperations() {
-        return underlyingOperation.previousOperations;
+        return underlyingOperation.getPreviousOperations();
     }
 
     @Override
@@ -117,7 +141,7 @@ public class OperationWithPriorityNew implements IOperation {
     }
 
     @Override
-    public void addCNumberOfAssignedRecourse(IResource cNumberOfAssignedRecourse) {
+    public void addCNumberOfAssignedRecourse(IStructuralUnitOfResource cNumberOfAssignedRecourse) {
         underlyingOperation.addCNumberOfAssignedRecourse(cNumberOfAssignedRecourse);
     }
 
@@ -142,13 +166,13 @@ public class OperationWithPriorityNew implements IOperation {
     @Override
     public void installOperation() {
         underlyingOperation.installOperation();
-        CEarliestStartTime = underlyingOperation.tactTime;
+        CEarliestStartTime = underlyingOperation.getTactTime();
     }
 
     @Override
     public void installOperationForSpecificResource(IResource currentRecourse) {
         underlyingOperation.installOperationForSpecificResource(currentRecourse);
-        CEarliestStartTime = underlyingOperation.tactTime;
+        CEarliestStartTime = underlyingOperation.getTactTime();
     }
 
     @Override
@@ -162,18 +186,18 @@ public class OperationWithPriorityNew implements IOperation {
     //Переписать, задание такта времени при работе назад
     @Override
     public void getLatestEndTimeOfFollowing() {
-        if(underlyingOperation.tactTime != null) {
+        if(underlyingOperation.getTactTime() != null) {
             return;
         }
 
-        else if (underlyingOperation.followingOperations.isEmpty()) {
-            underlyingOperation.tactTime = underlyingOperation.serialAffiliation.getDeadlineForCompletion();
+        else if (underlyingOperation.getFollowingOperations().isEmpty()) {
+            underlyingOperation.setTactTime(underlyingOperation.getSerialAffiliation().getDeadlineForCompletion());
         }
         else {
-            underlyingOperation.tactTime = LocalDateTime.MAX;
-            for (int i = 0; i < underlyingOperation.followingOperations.size(); i++) {
-                if (underlyingOperation.followingOperations.get(i).getCLateStartTime().isBefore(underlyingOperation.tactTime)) {
-                    underlyingOperation.tactTime = underlyingOperation.followingOperations.get(i).getCLateStartTime();
+            underlyingOperation.setTactTime(LocalDateTime.MAX);
+            for (int i = 0; i < underlyingOperation.getFollowingOperations().size(); i++) {
+                if (underlyingOperation.getFollowingOperations().get(i).getCLateStartTime().isBefore(underlyingOperation.getTactTime())) {
+                    underlyingOperation.setTactTime(underlyingOperation.getFollowingOperations().get(i).getCLateStartTime());
                 }
             }
         }
@@ -181,20 +205,20 @@ public class OperationWithPriorityNew implements IOperation {
 
     public void setReverseTactTime() {
         if(underlyingOperation.getTactTime() != null) return;
-        if(underlyingOperation.followingOperations.isEmpty()) underlyingOperation.tactTime = underlyingOperation.serialAffiliation.getDeadlineForCompletion();
+        if(underlyingOperation.getFollowingOperations().isEmpty()) underlyingOperation.setTactTime(underlyingOperation.getSerialAffiliation().getDeadlineForCompletion());
         else setTactTimeByEndTimeOfFollowing();
     }
 
     public void setTactTimeByEndTimeOfFollowing() {
-        underlyingOperation.tactTime = LocalDateTime.MAX;
-        for(int i = 0; i < underlyingOperation.followingOperations.size(); i ++) {
-            if (underlyingOperation.followingOperations.get(i).operationNotScheduled()) {
-                underlyingOperation.tactTime = null;
+        underlyingOperation.setTactTime(LocalDateTime.MAX);
+        for(int i = 0; i < underlyingOperation.getFollowingOperations().size(); i ++) {
+            if (underlyingOperation.getFollowingOperations().get(i).operationNotScheduled()) {
+                underlyingOperation.setTactTime(null);
                 return;
             } else {
-                for (WorkingHours currentWH : underlyingOperation.followingOperations.get(i).getCWorkingInterval()) {
-                    if(currentWH.getStartTime().isBefore(underlyingOperation.tactTime)){
-                        underlyingOperation.tactTime = currentWH.getStartTime();
+                for (WorkingHours currentWH : underlyingOperation.getFollowingOperations().get(i).getCWorkingInterval()) {
+                    if(currentWH.getStartTime().isBefore(underlyingOperation.getTactTime())){
+                        underlyingOperation.setTactTime(currentWH.getStartTime());
                     }
                 }
             }
@@ -208,10 +232,17 @@ public class OperationWithPriorityNew implements IOperation {
 
     @Override
     public LocalDateTime installReverseOperation() {
-        for (IResource tactRecourse: underlyingOperation.resourceGroup.getRecoursesInTheGroup()) {
-            Boolean operationSuccessfullyInstalled = underlyingOperation.currentOperatingMode.reverseInstallOperation(underlyingOperation, tactRecourse);
-            if(operationSuccessfullyInstalled) {
-                CLatestStartTime = underlyingOperation.tactTime.minusNanos(underlyingOperation.getInitDurationOfExecution().toNanos());
+        for (IResource tactRecourse: underlyingOperation.getResourceGroup().getRecoursesInTheGroup()) {
+            ResultOfOperationSetting resultOfOperationSetting = underlyingOperation.getCurrentOperatingMode().reverseInstallOperation(underlyingOperation, tactRecourse);
+            if(resultOfOperationSetting != null) {
+                CLatestStartTime = underlyingOperation.getTactTime().minusNanos(underlyingOperation.getInitDurationOfExecution().toNanos());
+                WorkingHours bufferOfWH = resultOfOperationSetting.getWorkingInterval();
+                addCWorkingInterval(bufferOfWH);
+                addCNumberOfAssignedRecourse(resultOfOperationSetting.getResourceOfBooking());
+                if(!operationNotScheduled()) {
+                    underlyingOperation.getSerialAffiliation().setСNumberOfAssignedOperations(underlyingOperation.getSerialAffiliation().getСNumberOfAssignedOperations() + 1);
+                }
+                //underlyingOperation.serialAffiliation.setСNumberOfAssignedOperations(underlyingOperation.serialAffiliation.getСNumberOfAssignedOperations() + 1);
                 break;
             }
         }
@@ -226,10 +257,10 @@ public class OperationWithPriorityNew implements IOperation {
     public LocalDateTime getEarliestStartTime() {
         LocalDateTime maxTime = LocalDateTime.MIN;
 
-        for(int i = 0; i < underlyingOperation.previousOperations.size(); i++ ) {
-            if(underlyingOperation.previousOperations.get(i).getCEarlierStartTime().isAfter(maxTime))
+        for(int i = 0; i < underlyingOperation.getPreviousOperations().size(); i++ ) {
+            if(underlyingOperation.getPreviousOperations().get(i).getCEarlierStartTime().isAfter(maxTime))
             {
-                maxTime = underlyingOperation.previousOperations.get(i).getCEarlierStartTime();
+                maxTime = underlyingOperation.getPreviousOperations().get(i).getCEarlierStartTime();
             }
         }
         if(maxTime == LocalDateTime.MIN) {
@@ -240,7 +271,7 @@ public class OperationWithPriorityNew implements IOperation {
 
     @Override
     public void setNewTactTime() {
-        underlyingOperation.currentOperatingMode.setNewTactTime(underlyingOperation);
+        underlyingOperation.getCurrentOperatingMode().setNewTactTime(underlyingOperation);
     }
 
     @Override
@@ -249,6 +280,6 @@ public class OperationWithPriorityNew implements IOperation {
     }
 
     public void setNewReverseTactTime() {
-        underlyingOperation.currentOperatingMode.setNewReverseTactTime(this);
+        underlyingOperation.getCurrentOperatingMode().setNewReverseTactTime(underlyingOperation);
     }
 }

@@ -14,7 +14,7 @@ public class Operation implements IOperation{
     protected ArrayList<IOperation> followingOperations;
     protected IOperationMode currentOperatingMode;
 
-    private ArrayList<IResource> cNumberOfAssignedRecourse;
+    private ArrayList<IStructuralUnitOfResource> cNumberOfAssignedRecourse;
     private ArrayList<WorkingHours> cWorkingInterval;
     protected LocalDateTime tactTime;
 
@@ -34,10 +34,11 @@ public class Operation implements IOperation{
     public Series getSerialAffiliation() { return serialAffiliation; }
     public ArrayList<IOperation> getPreviousOperations() { return previousOperations; }
     public ArrayList<IOperation> getFollowingOperations() { return followingOperations; }
+    public IOperationMode getCurrentOperatingMode() { return currentOperatingMode; }
     public Duration getInitDurationOfExecution() { return durationOfExecution; }
     public Duration getDurationOfExecution() { return currentOperatingMode.getDurationOfExecution(); }
     public IOperationMode getOperationMode() { return currentOperatingMode; }
-    public Collection<IResource> getCNumberOfAssignedRecourse() { return cNumberOfAssignedRecourse; }
+    public Collection<IStructuralUnitOfResource> getCNumberOfAssignedRecourse() { return cNumberOfAssignedRecourse; }
     public ArrayList<WorkingHours> getCWorkingInterval() { return cWorkingInterval; }
     public LocalDateTime getCLateStartTime() { return null; }
     public LocalDateTime getCEarlierStartTime() { return null; }
@@ -99,6 +100,8 @@ public class Operation implements IOperation{
         else setTactTimeByEndTimeOfPrevious();
     }
 
+    public void setTactTime(LocalDateTime tactTime) { this.tactTime = tactTime; }
+
     public boolean operationNotScheduled() {
         return currentOperatingMode.operationNotScheduled();
     }
@@ -127,7 +130,7 @@ public class Operation implements IOperation{
         }
     }
 
-    public void addCNumberOfAssignedRecourse(IResource cNumberOfAssignedRecourse) {
+    public void addCNumberOfAssignedRecourse(IStructuralUnitOfResource cNumberOfAssignedRecourse) {
         this.cNumberOfAssignedRecourse.add(cNumberOfAssignedRecourse);
     }
 
@@ -195,19 +198,23 @@ public class Operation implements IOperation{
                 recoursesToBorrow.add(recourse);
             }
         }
-
         return recoursesToBorrow;
     }
 
     //Перенесено
     public void installOperation() {
-        boolean operationSuccessfullyInstalled = false;
         for (IResource resource: resourceGroup.getRecoursesInTheGroup())
         {
-            operationSuccessfullyInstalled = currentOperatingMode.installOperation(this, resource);
-            if(operationSuccessfullyInstalled)
+            ResultOfOperationSetting resultOfOperationSetting = currentOperatingMode.installOperation(this, resource);
+            if(resultOfOperationSetting != null)
             {
-
+                WorkingHours bufferOfWH = resultOfOperationSetting.getWorkingInterval();
+                addCWorkingInterval(bufferOfWH);
+                addCNumberOfAssignedRecourse(resultOfOperationSetting.getResourceOfBooking());
+                resultOfOperationSetting.getResourceOfBooking().setReleaseTime(bufferOfWH.getEndTime());
+                if(!operationNotScheduled()) {
+                    serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+                }
                 break;
             }
         }
@@ -215,7 +222,17 @@ public class Operation implements IOperation{
 
     //Перенес в операцию с преоритетом
     public void installOperationForSpecificResource(IResource currentRecourse) {
-        currentOperatingMode.installOperation(this, currentRecourse);
+        ResultOfOperationSetting resultOfOperationSetting = currentOperatingMode.installOperation(this, currentRecourse);
+        if(resultOfOperationSetting != null)
+        {
+            WorkingHours bufferOfWH = resultOfOperationSetting.getWorkingInterval();
+            addCWorkingInterval(bufferOfWH);
+            addCNumberOfAssignedRecourse(resultOfOperationSetting.getResourceOfBooking());
+            resultOfOperationSetting.getResourceOfBooking().setReleaseTime(bufferOfWH.getEndTime());
+            if(!operationNotScheduled()) {
+                serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
+            }
+        }
     }
 
     public void setTactTimeByEndTimeOfPrevious() {
@@ -261,7 +278,7 @@ public class Operation implements IOperation{
     public void clean() {
         if(cNumberOfAssignedRecourse != null) {
             //cNumberOfAssignedRecourse.clean();
-            for(IResource resource: cNumberOfAssignedRecourse) {
+            for(IStructuralUnitOfResource resource: cNumberOfAssignedRecourse) {
                 resource.clean();
             }
         }

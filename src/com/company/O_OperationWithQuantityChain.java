@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class O_OperationWithQuantity extends Operation {
+public class O_OperationWithQuantityChain extends Operation {
     private double requiredTemperature;
     private double requiredVoltage;
     private int quantity;
@@ -42,7 +42,7 @@ public class O_OperationWithQuantity extends Operation {
         CWorkingIntervals = new ArrayList<>();
     }*/
 
-    O_OperationWithQuantity() {
+    O_OperationWithQuantityChain() {
         super();
         quantity = 0;
         CNumberOfProcessedParts = 0;

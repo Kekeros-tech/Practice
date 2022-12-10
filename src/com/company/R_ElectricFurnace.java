@@ -1,6 +1,5 @@
 package com.company;
 
-import java.text.CollationElementIterator;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +35,111 @@ public class R_ElectricFurnace implements IResource {
 
     public void addSchedule(WorkingHours currentWorkingHours){ schedule.add(currentWorkingHours); }
     public void addCellElectricFurnace(CellElectricFurnace cell) { cellsOfElectricFurnace.add(cell); }
+
+    public Duration takeResource(Duration currentDuration, LocalDateTime startTime, LocalDateTime endTime) {
+        Duration resultDuration = Duration.between(startTime, endTime);
+        resultDuration = currentDuration.minus(resultDuration);
+        return resultDuration;
+    }
+
+    @Override
+    public ResultOfRecourseBooking putOperationOnResource(IOperation operation) {
+        double requiredTemperature = ((O_OperationWithTemperatureAndVoltage) operation).getTemperatureOfOperation();
+        double requiredVoltage = ((O_OperationWithTemperatureAndVoltage) operation).getVoltageOfOperation();
+        Duration durationOfExecution = operation.getDurationOfExecution();
+        LocalDateTime tactTime = operation.getTactTime();
+
+        for(WorkingHours currentWH: schedule) {
+            if(currentWH.getStartTime().isAfter(operation.getTactTime())) break;
+            if(currentWH.isWorkingTime(operation.getTactTime())) {
+                for (CellElectricFurnace currentCellElectricFurnace : cellsOfElectricFurnace) {
+                    if (requiredTemperature == currentCellElectricFurnace.getTemperature()) {
+                        for (CellWithVoltage currentCellWithVoltage : currentCellElectricFurnace.getCellsWithVoltage()) {
+                            if (requiredVoltage == currentCellWithVoltage.getVoltage() && currentCellWithVoltage.canFitOneItem()) {
+                                Duration durationOfBooking = takeResource(durationOfExecution, tactTime, currentWH.getEndTime());
+                                ResultOfRecourseBooking resultOfRecourseBooking = new ResultOfRecourseBooking(durationOfBooking, currentCellWithVoltage);
+                                return resultOfRecourseBooking;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ResultOfRecourseBooking putReverseOperationOnResource(IOperation operation) {
+        double requiredTemperature = ((O_OperationWithTemperatureAndVoltage) operation).getTemperatureOfOperation();
+        double requiredVoltage = ((O_OperationWithTemperatureAndVoltage) operation).getVoltageOfOperation();
+        LocalDateTime tactDate = operation.getTactTime();
+        Duration durationOfExecution = operation.getDurationOfExecution();
+
+        for(int i = schedule.size() - 1; i >= 0; i--) {
+            if(schedule.get(i).getEndTime().isBefore(tactDate)) break;
+            if(schedule.get(i).isWorkingTime(tactDate)) {
+                for(CellElectricFurnace currentCellElectricFurnace: cellsOfElectricFurnace) {
+                    if(requiredTemperature == currentCellElectricFurnace.getTemperature()) {
+                        for(CellWithVoltage currentCellWithVoltage: currentCellElectricFurnace.getCellsWithVoltage()) {
+                            if(requiredVoltage == currentCellWithVoltage.getVoltage()) {
+                                Duration durationOfBooking = this.takeResource(durationOfExecution, schedule.get(i).getStartTime(), tactDate);
+                                ResultOfRecourseBooking resultOfRecourseBooking = new ResultOfRecourseBooking(durationOfBooking, currentCellWithVoltage);
+                                return resultOfRecourseBooking;
+                            }
+                        }
+                    }
+                }
+            }
+            //return this.takeResource(durationOfExecution, schedule.get(i).getStartTime(), tactDate);
+        }
+        return null;
+    }
+
+    @Override
+    public LocalDateTime getStartDateAfterReleaseDate(LocalDateTime tactTime, IOperation operation) {
+        double requiredTemperature = ((O_OperationWithTemperatureAndVoltage) operation).getTemperatureOfOperation();
+        double requiredVoltage = ((O_OperationWithTemperatureAndVoltage) operation).getVoltageOfOperation();
+        for (WorkingHours currentWorkingHours: schedule) {
+            if(currentWorkingHours.getStartTime().isAfter(tactTime)) {
+                for(CellElectricFurnace currentCellOfElectricFurnace: cellsOfElectricFurnace) {
+                    if(requiredTemperature == currentCellOfElectricFurnace.getTemperature()){
+                        for(CellWithVoltage currentCellWithVoltage: currentCellOfElectricFurnace.getCellsWithVoltage()) {
+                            if(requiredVoltage == currentCellWithVoltage.getVoltage()){
+                                if(currentWorkingHours.getStartTime().isAfter(tactTime) && currentCellWithVoltage.canFitOneItem())
+                                {
+                                    return currentWorkingHours.getStartTime();
+                                }
+                                else if(currentWorkingHours.isWorkingTime(currentCellWithVoltage.getReleaseTime())  && tactTime.isBefore(currentCellWithVoltage.getReleaseTime())){
+                                    return currentCellWithVoltage.getReleaseTime();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public LocalDateTime getReverseStartDateAfterTactTime(LocalDateTime tackTime, IOperation operation) {
+        double requiredTemperature = ((O_OperationWithTemperatureAndVoltage) operation).getTemperatureOfOperation();
+        double requiredVoltage = ((O_OperationWithTemperatureAndVoltage) operation).getVoltageOfOperation();
+        for(int i = schedule.size() - 1; i >= 0; i--) {
+            if(schedule.get(i).getEndTime().isBefore(tackTime)) {
+                for(CellElectricFurnace currentCellOfElectricFurnace: cellsOfElectricFurnace) {
+                    if(requiredTemperature == currentCellOfElectricFurnace.getTemperature()) {
+                        for(CellWithVoltage currentCellWithVoltage: currentCellOfElectricFurnace.getCellsWithVoltage()) {
+                            if(requiredVoltage == currentCellWithVoltage.getVoltage()){
+                                return schedule.get(i).getEndTime();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
     //переписать метод задания через правила
     @Override
@@ -77,26 +181,6 @@ public class R_ElectricFurnace implements IResource {
             }
         }
     }
-
-    //Подумать ещё над реализацией
-    public Duration takeResource(Duration currentDuration, LocalDateTime startTime, LocalDateTime endTime) {
-        Duration resultDuration = Duration.between(startTime, endTime);
-        resultDuration = currentDuration.minus(resultDuration);
-        return resultDuration;
-    }
-
-    public Duration putOperationOnResource(Operation operation) {
-        double requiredTemperature = ((O_OperationWithTemperatureAndVoltage) operation).getTemperatureOfOperation();
-        double requiredVoltage = ((O_OperationWithTemperatureAndVoltage) operation).getVoltageOfOperation();
-
-        for(WorkingHours currentWH: schedule) {
-            for (CellElectricFurnace currentCellOfElectricFurnace: c)
-        }
-
-
-        return null;
-    }
-
 
     @Override
     public void clean() {

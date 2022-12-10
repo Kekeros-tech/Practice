@@ -2,11 +2,12 @@ package com.company;
 
 import java.time.LocalDateTime;
 
-public class CellWithVoltage {
+public class CellWithVoltage implements IStructuralUnitOfResource{
     private double voltage;
     private int capacity;
 
     private int CCellСurrentOccupancy;
+    private LocalDateTime arrivalTime;
     private LocalDateTime releaseTime;
 
     public double getVoltage() { return voltage; }
@@ -19,11 +20,12 @@ public class CellWithVoltage {
 
     public void setCCellСurrentOccupancy(int CCellСurrentOccupancy) { this.CCellСurrentOccupancy = CCellСurrentOccupancy; }
 
-    public CellWithVoltage(double voltage, int capacity) {
+    public CellWithVoltage(double voltage, int capacity, String arrivalTime) {
         this.voltage = voltage;
         this.capacity = capacity;
         CCellСurrentOccupancy = 0;
-        releaseTime = null;
+        this.arrivalTime = LocalDateTime.parse(arrivalTime, WorkingHours.formatter);
+        this.releaseTime = LocalDateTime.parse(arrivalTime, WorkingHours.formatter);
     }
 
     public boolean canFitOneItem() {
@@ -50,4 +52,8 @@ public class CellWithVoltage {
         return result;
     }
 
+    @Override
+    public void clean() {
+        this.releaseTime = arrivalTime;
+    }
 }

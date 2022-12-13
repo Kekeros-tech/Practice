@@ -4,93 +4,261 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class O_OperationWithQuantityChain extends Operation {
-    private double requiredTemperature;
-    private double requiredVoltage;
-    private int quantity;
+public class O_OperationWithQuantityChain implements IOperation {
+    StringBuffer nameOfOperation;
+    ArrayList<Operation> operationsToCreate;
 
-    private int CNumberOfProcessedParts;
-    private Collection<IResource> CAssignedResources;
-    private Collection<WorkingHours> CWorkingIntervals;
-
-    public double getRequiredTemperature() { return requiredTemperature; }
-    public double getRequiredVoltage() { return requiredVoltage; }
-    public int getQuantity() { return quantity; }
-    public int getCNumberOfProcessedParts() {return CNumberOfProcessedParts; }
-    public Collection<IResource> getCAssignedResources() {return CAssignedResources; }
-    public Collection<WorkingHours> getCWorkingIntervals() { return CWorkingIntervals; }
-
-    public void setRequiredTemperature(double requiredTemperature) {this.requiredTemperature = requiredTemperature;}
-    public void setRequiredVoltage(double voltage) { this.requiredVoltage = voltage; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
-    public void setCNumberOfProcessedParts(int quantity) { this.CNumberOfProcessedParts = quantity; }
-    public void setCAssignedResources(Collection<IResource> resources) { this.CAssignedResources = resources; }
-    public void setCWorkingIntervals(Collection<WorkingHours> CWorkingIntervals) { this.CWorkingIntervals = CWorkingIntervals; }
-
-    /*O_OperationWithQuantity(Group                 resourceGroup,
-                            Series                serialAffiliation,
-                            Collection<Operation> previousOperations,
-                            Collection<Operation> followingOperations,
-                            Duration              durationOfExecution,
-                            int                   currentOperatingMode,
-                            int                   quantity) {
-        super(resourceGroup, serialAffiliation, previousOperations, followingOperations, durationOfExecution, currentOperatingMode);
-        this.quantity = quantity;
-        CNumberOfProcessedParts = 0;
-        CAssignedResources = new ArrayList<>();
-        CWorkingIntervals = new ArrayList<>();
-    }*/
-
-    O_OperationWithQuantityChain() {
-        super();
-        quantity = 0;
-        CNumberOfProcessedParts = 0;
-        CAssignedResources = new ArrayList<>();
-        CWorkingIntervals = new ArrayList<>();
+    O_OperationWithQuantityChain(Operation operationToFill, int numberOfOperations) {
+        nameOfOperation = Series.generateRandomHexString(8);
+        operationsToCreate = new ArrayList<>();
+        operationsToCreate.add(operationToFill);
+        for(int i = 0; i < numberOfOperations; i++) {
+            operationsToCreate.add(operationToFill.clone());
+        }
     }
 
-    public void addAssignedResource(IResource resource) {
-        CAssignedResources.add(resource);
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Множественная операция ----- \n");
+        for(Operation operation: operationsToCreate) {
+            sb.append("|| ");
+            sb.append(operation.toString());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
-    public void addWorkingInterval(WorkingHours workingHours) {
-        CWorkingIntervals.add(workingHours);
-    }
-
-    public void handleDetails(int countOfDetails){
-        CNumberOfProcessedParts += countOfDetails;
-    }
-
-    public int getCountOfPartsToProcess() {
-        return quantity - CNumberOfProcessedParts;
-    }
-
-    public boolean limitOnAssignedResource() {
-        if(CAssignedResources == null) {
-            return true;
+    @Override
+    public boolean isСanBePlacedInFront() {
+        for(Operation operation: operationsToCreate) {
+            if(operation.operationNotScheduled()) {
+                return true;
+            }
         }
         return false;
     }
 
     @Override
-    public boolean operationNotScheduled() {
-        if(CNumberOfProcessedParts != quantity) {
-            return true;
+    public void setTactTime() {
+        for(Operation operation: operationsToCreate) {
+            operation.setTactTime();
         }
-        else return false;
     }
 
-    public void installOperation() {
-        /*switch (currentOperatingMode) {
-            case canNotBeInterrupted: {
-                for(IResource recourse: resourceGroup.getRecoursesInTheGroup()) {
-                    recourse.takeResWhichCanNotBeInterrupted(this);
-                }
+    @Override
+    public void setTactTime(LocalDateTime tactTime) {
+        for(Operation operation: operationsToCreate) {
+            if(operationNotScheduled()) {
+                operation.setTactTime(tactTime);
             }
-            case canBeInterrupted: {
+        }
+    }
 
+    @Override
+    public Series getSerialAffiliation() {
+        return operationsToCreate.get(0).getSerialAffiliation();
+    }
+
+    @Override
+    public IOperationMode getCurrentOperatingMode() {
+        return operationsToCreate.get(0).getCurrentOperatingMode();
+    }
+
+    @Override
+    public Duration getInitDurationOfExecution() {
+        return operationsToCreate.get(0).getInitDurationOfExecution();
+    }
+
+    @Override
+    public LocalDateTime getEarliestTimeOfWorkingInterval() {
+        LocalDateTime minTime = LocalDateTime.MAX;
+        for(Operation operation: operationsToCreate) {
+            LocalDateTime currentWorkingInterval = operation.getEarliestTimeOfWorkingInterval();
+            if(currentWorkingInterval.isBefore(minTime)) {
+                minTime = currentWorkingInterval;
             }
-        }*/
+        }
+        return minTime;
+    }
+
+    @Override
+    public boolean allFollowingAssigned() {
+        return operationsToCreate.get(0).allFollowingAssigned();
+    }
+
+    @Override
+    public Group getResourceGroup() {
+        return operationsToCreate.get(0).getResourceGroup();
+    }
+
+    @Override
+    public void setNameOfOperation(String nameOfOperation) {
+        this.nameOfOperation = new StringBuffer(nameOfOperation);
+    }
+
+    @Override
+    public ArrayList<IOperation> getFollowingOperations() {
+        return operationsToCreate.get(0).getFollowingOperations();
+    }
+
+    @Override
+    public ArrayList<IOperation> getPreviousOperations() {
+        return operationsToCreate.get(0).getPreviousOperations();
+    }
+
+    @Override
+    public void setPreviousOperation(ArrayList<IOperation> previousOperation) {
+        for(Operation operation: operationsToCreate) {
+            operation.setPreviousOperation(previousOperation);
+        }
+    }
+
+    @Override
+    public int getNumberOfOperationMode() {
+        return operationsToCreate.get(0).getNumberOfOperationMode();
+    }
+
+
+    //todo - сделать более удобное представление результата расстановки операций
+    @Override
+    public ArrayList<WorkingHours> getCWorkingInterval() {
+        ArrayList<WorkingHours> result = new ArrayList<>();
+        for(Operation operation: operationsToCreate) {
+            result.addAll(operation.getCWorkingInterval());
+        }
+        return result;
+    }
+
+    @Override
+    public LocalDateTime getTactTime() {
+        LocalDateTime minTactTime = LocalDateTime.MAX;
+        for(Operation operation: operationsToCreate) {
+            if(operationNotScheduled() && operation.getTactTime().isBefore(minTactTime)) {
+                minTactTime = operation.getTactTime();
+            }
+        }
+        return minTactTime;
+    }
+
+    //-------
+    //Данная операция не использует durationOfExecution;
+    @Override
+    public Duration getDurationOfExecution() {
+        return null;
+    }
+
+    @Override
+    public boolean operationNotScheduled() {
+        for(Operation operation : operationsToCreate) {
+            if(operation.operationNotScheduled()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void setResourceGroup(Group resourceGroup) {
+        for(Operation operation: operationsToCreate) {
+            operation.setResourceGroup(resourceGroup);
+        }
+    }
+
+    @Override
+    public void setSerialAffiliation(Series serialAffiliation) {
+        for(Operation operation: operationsToCreate) {
+            operation.setSerialAffiliation(serialAffiliation);
+        }
+    }
+
+    @Override
+    public void setDurationOfExecution(Duration durationOfExecution) {
+        for(Operation operation: operationsToCreate) {
+            operation.setDurationOfExecution(durationOfExecution);
+        }
+    }
+
+    @Override
+    public void setOperatingMode(int currentOperatingMode) {
+        for(Operation operation: operationsToCreate) {
+            operation.setOperatingMode(currentOperatingMode);
+        }
+    }
+
+
+    @Override
+    public void addFollowingOperation(IOperation followingOperation) {
+        for(Operation operation: operationsToCreate) {
+            operation.addFollowingOperation(followingOperation);
+        }
+    }
+
+    @Override
+    public void setNewTactTime() {
+        for(Operation operation: operationsToCreate) {
+            if(operationNotScheduled()) {
+                operation.setNewTactTime();
+            }
+        }
+    }
+
+    //--------
+    //эта над этой частью надо подумать
+    @Override
+    public ArrayList<IResource> getResourcesToBorrow() {
+        return null;
+    }
+
+    @Override
+    public void installOperation() {
+        for(Operation operation: operationsToCreate) {
+            if(operation.operationNotScheduled()) {
+                operation.installOperation();
+            }
+        }
+    }
+
+    @Override
+    public void installOperationForSpecificResource(IResource currentRecourse) {
+
+    }
+
+    @Override
+    public void installReverseOperation() {
+
+    }
+
+    @Override
+    public void setTactTimeByEndTimeOfPrevious() {
+        for(Operation operation: operationsToCreate) {
+            operation.setTactTimeByEndTimeOfPrevious();
+        }
+    }
+
+    @Override
+    public boolean isCanBePlacedInReverseFront() {
+        for(Operation operation: operationsToCreate) {
+            if(operation.isCanBePlacedInReverseFront()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void clean() {
+        for(Operation operation: operationsToCreate) {
+            operation.clean();
+        }
+    }
+
+    @Override
+    public void fullClean() {
+        for(Operation operation: operationsToCreate) {
+            operation.fullClean();
+        }
     }
 }

@@ -22,7 +22,7 @@ public class PriorityByDurationBetweenEarliestStartTimeAndLatestStartTime implem
 
     @Override
     public long getPriority() {
-        return -priority.toMinutes();
+        return priority.toMinutes();
     }
 
     @Override

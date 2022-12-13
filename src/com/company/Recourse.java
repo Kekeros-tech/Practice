@@ -75,6 +75,11 @@ public class Recourse implements IResource, IStructuralUnitOfResource{
 
     public void setReleaseTime(LocalDateTime releaseTime) { this.releaseTime = releaseTime; }
 
+    @Override
+    public void setReleaseTime(int count, WorkingHours workingHours) {
+        this.releaseTime = workingHours.getEndTime();
+    }
+
     public Duration takeResource(Duration currentDuration, LocalDateTime startTime, LocalDateTime endTime) {
         Duration resultDuration = Duration.between(startTime, endTime);
         resultDuration = currentDuration.minus(resultDuration);

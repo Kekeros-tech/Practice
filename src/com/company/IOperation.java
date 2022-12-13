@@ -13,11 +13,10 @@ public interface IOperation {
     Series getSerialAffiliation();
     IOperationMode getCurrentOperatingMode();
     Duration getInitDurationOfExecution();
+    LocalDateTime getEarliestTimeOfWorkingInterval();
     boolean allFollowingAssigned();
     Group getResourceGroup();
     void setNameOfOperation(String nameOfOperation);
-    LocalDateTime getCLateStartTime();
-    LocalDateTime getCEarlierStartTime();
     ArrayList<IOperation> getFollowingOperations();
     ArrayList<IOperation> getPreviousOperations();
     void setPreviousOperation(ArrayList<IOperation> previousOperation);
@@ -30,17 +29,17 @@ public interface IOperation {
     void setSerialAffiliation(Series serialAffiliation);
     void setDurationOfExecution(Duration durationOfExecution);
     void setOperatingMode(int currentOperatingMode);
-    void addCNumberOfAssignedRecourse(IStructuralUnitOfResource cNumberOfAssignedRecourse);
-    void addCWorkingInterval(WorkingHours cWorkingInterval);
+    /*void addCNumberOfAssignedRecourse(IStructuralUnitOfResource cNumberOfAssignedRecourse);
+    void addCWorkingInterval(WorkingHours cWorkingInterval);*/
     void addFollowingOperation(IOperation followingOperation);
     void setNewTactTime();
     ArrayList<IResource> getResourcesToBorrow();
     void installOperation(); // должно быть
     void installOperationForSpecificResource(IResource currentRecourse); // должно быть
-    LocalDateTime installReverseOperation();
+    void installReverseOperation();
     void setTactTimeByEndTimeOfPrevious();
     boolean isCanBePlacedInReverseFront();
-    void getLatestEndTimeOfFollowing();
     void clean();
     void fullClean();
+    String toString();
 }

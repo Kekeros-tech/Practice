@@ -24,7 +24,7 @@ public class MaximumFlowSolution {
         HashSet<IResource> workResources = new HashSet<>();
 
         for(IOperation operationInFrontOfWork : frontOfWorkSortedByPriority) {
-            ArrayList<IResource> buffer = operationInFrontOfWork.getResourcesToBorrow();
+            //ArrayList<IResource> buffer = operationInFrontOfWork.getResourcesToBorrow();
             workResources.addAll(operationInFrontOfWork.getResourcesToBorrow());
         }
 

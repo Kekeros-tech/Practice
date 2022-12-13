@@ -389,7 +389,7 @@ public class ComplexTest {
         firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
         secondRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
-        Main.testFutureAlgo(seriesToWork, Duration.ofHours(10), new ControlParameters(2, 1, 0));
+        Main.testFutureAlgo(seriesToWork, Duration.ofHours(10), new ControlParameters(0, 1, 0));
         //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(10), new ControlParameters(2,1,0));
 
         for(Series series: seriesToWork){

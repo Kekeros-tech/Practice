@@ -18,6 +18,19 @@ public class Operation implements IOperation{
     private ArrayList<WorkingHours> cWorkingInterval;
     protected LocalDateTime tactTime;
 
+    Operation(Operation copyOperation) {
+        nameOfOperation = copyOperation.nameOfOperation;
+        resourceGroup = copyOperation.resourceGroup;
+        serialAffiliation = copyOperation.serialAffiliation;
+        durationOfExecution = copyOperation.durationOfExecution;
+        previousOperations = copyOperation.previousOperations;
+        followingOperations = copyOperation.followingOperations;
+        currentOperatingMode = copyOperation.currentOperatingMode.clone();
+        cNumberOfAssignedRecourse = (ArrayList<IStructuralUnitOfResource>) copyOperation.cNumberOfAssignedRecourse.clone();
+        cWorkingInterval = (ArrayList<WorkingHours>) copyOperation.cWorkingInterval.clone();
+        tactTime = copyOperation.getTactTime();
+    }
+
     Operation() {
         nameOfOperation = Series.generateRandomHexString(8);
         this.previousOperations = new ArrayList<>();
@@ -36,12 +49,22 @@ public class Operation implements IOperation{
     public ArrayList<IOperation> getFollowingOperations() { return followingOperations; }
     public IOperationMode getCurrentOperatingMode() { return currentOperatingMode; }
     public Duration getInitDurationOfExecution() { return durationOfExecution; }
+
+    @Override
+    public LocalDateTime getEarliestTimeOfWorkingInterval() {
+        LocalDateTime minTime = LocalDateTime.MAX;
+        for(WorkingHours currentWorkingInterval: cWorkingInterval) {
+            if(currentWorkingInterval.getStartTime().isBefore(minTime)){
+                minTime = currentWorkingInterval.getStartTime();
+            }
+        }
+        return minTime;
+    }
+
     public Duration getDurationOfExecution() { return currentOperatingMode.getDurationOfExecution(); }
     public IOperationMode getOperationMode() { return currentOperatingMode; }
     public Collection<IStructuralUnitOfResource> getCNumberOfAssignedRecourse() { return cNumberOfAssignedRecourse; }
     public ArrayList<WorkingHours> getCWorkingInterval() { return cWorkingInterval; }
-    public LocalDateTime getCLateStartTime() { return null; }
-    public LocalDateTime getCEarlierStartTime() { return null; }
     public LocalDateTime getTactTime() { return tactTime; }
 
     @Override
@@ -56,7 +79,12 @@ public class Operation implements IOperation{
     }
 
     //Можно будет удалить потом
-    public boolean isCanBePlacedInReverseFront() { return false; }
+    public boolean isCanBePlacedInReverseFront() {
+        if(operationNotScheduled() && allFollowingAssigned()){
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public String toString() {
@@ -64,7 +92,7 @@ public class Operation implements IOperation{
         sb.append(nameOfOperation);
         //sb.append(" Группа ресурсов=").append(resourceGroup.getNameOfGroup());
         //sb.append(", код серии=").append(serialAffiliation.getNameOfSeries());
-        //sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse.getNameOfRecourse());
+        sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse);
         //sb.append(cLateStartTime);
         sb.append(", рабочий интервал=").append(cWorkingInterval);
         return sb.toString();
@@ -211,7 +239,8 @@ public class Operation implements IOperation{
                 WorkingHours bufferOfWH = resultOfOperationSetting.getWorkingInterval();
                 addCWorkingInterval(bufferOfWH);
                 addCNumberOfAssignedRecourse(resultOfOperationSetting.getResourceOfBooking());
-                resultOfOperationSetting.getResourceOfBooking().setReleaseTime(bufferOfWH.getEndTime());
+                resultOfOperationSetting.getResourceOfBooking().setReleaseTime(1, bufferOfWH);
+                //resultOfOperationSetting.getResourceOfBooking().setReleaseTime(bufferOfWH.getEndTime());
                 if(!operationNotScheduled()) {
                     serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
                 }
@@ -252,27 +281,21 @@ public class Operation implements IOperation{
         }
     }
 
-   public void getLatestEndTimeOfFollowing() {
-        if(tactTime != null) {
-            return;
-        }
-
-        else if (followingOperations.isEmpty()) {
-            tactTime = serialAffiliation.getDeadlineForCompletion();
-        }
-        else {
-            tactTime = LocalDateTime.MAX;
-            for (int i = 0; i < followingOperations.size(); i++) {
-                if (followingOperations.get(i).getCLateStartTime().isBefore(tactTime)) {
-                    tactTime = followingOperations.get(i).getCLateStartTime();
+    //Reverse
+    public void installReverseOperation() {
+        for (IResource tactRecourse: resourceGroup.getRecoursesInTheGroup()) {
+            ResultOfOperationSetting resultOfOperationSetting = currentOperatingMode.reverseInstallOperation(this, tactRecourse);
+            if(resultOfOperationSetting != null) {
+                WorkingHours bufferOfWH = resultOfOperationSetting.getWorkingInterval();
+                addCWorkingInterval(bufferOfWH);
+                addCNumberOfAssignedRecourse(resultOfOperationSetting.getResourceOfBooking());
+                if(!operationNotScheduled()) {
+                    serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
                 }
+                //underlyingOperation.serialAffiliation.setСNumberOfAssignedOperations(underlyingOperation.serialAffiliation.getСNumberOfAssignedOperations() + 1);
+                break;
             }
         }
-    }
-
-    //Reverse
-    public LocalDateTime installReverseOperation() {
-        return null;
     }
 
     public void clean() {
@@ -290,5 +313,10 @@ public class Operation implements IOperation{
 
     public void fullClean() {
         this.clean();
+    }
+
+    @Override
+    public Operation clone() {
+        return new Operation(this);
     }
 }

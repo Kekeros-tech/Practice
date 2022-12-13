@@ -51,7 +51,9 @@ public class OperationWithPriorityNew implements IOperation {
 
     @Override
     public String toString() {
-        return underlyingOperation.toString();
+        final StringBuffer sb = new StringBuffer("Операция с приоритетом - ");
+        sb.append(underlyingOperation.toString());
+        return sb.toString();
     }
 
 
@@ -83,6 +85,11 @@ public class OperationWithPriorityNew implements IOperation {
     @Override
     public Duration getInitDurationOfExecution() {
         return underlyingOperation.getInitDurationOfExecution();
+    }
+
+    @Override
+    public LocalDateTime getEarliestTimeOfWorkingInterval() {
+        return underlyingOperation.getEarliestTimeOfWorkingInterval();
     }
 
     @Override
@@ -140,7 +147,7 @@ public class OperationWithPriorityNew implements IOperation {
         underlyingOperation.setOperatingMode(currentOperatingMode);
     }
 
-    @Override
+/*    @Override
     public void addCNumberOfAssignedRecourse(IStructuralUnitOfResource cNumberOfAssignedRecourse) {
         underlyingOperation.addCNumberOfAssignedRecourse(cNumberOfAssignedRecourse);
     }
@@ -148,7 +155,7 @@ public class OperationWithPriorityNew implements IOperation {
     @Override
     public void addCWorkingInterval(WorkingHours cWorkingInterval) {
         underlyingOperation.addCWorkingInterval(cWorkingInterval);
-    }
+    }*/
 
     @Override
     public void addFollowingOperation(IOperation followingOperation) {
@@ -166,41 +173,18 @@ public class OperationWithPriorityNew implements IOperation {
     @Override
     public void installOperation() {
         underlyingOperation.installOperation();
-        CEarliestStartTime = underlyingOperation.getTactTime();
+        CEarliestStartTime = underlyingOperation.getEarliestTimeOfWorkingInterval();
     }
 
     @Override
     public void installOperationForSpecificResource(IResource currentRecourse) {
         underlyingOperation.installOperationForSpecificResource(currentRecourse);
-        CEarliestStartTime = underlyingOperation.getTactTime();
+        CEarliestStartTime = underlyingOperation.getEarliestTimeOfWorkingInterval();
     }
 
     @Override
     public boolean isCanBePlacedInReverseFront() {
-        if(operationNotScheduled() && underlyingOperation.allFollowingAssigned()){
-            return true;
-        }
-        return false;
-    }
-
-    //Переписать, задание такта времени при работе назад
-    @Override
-    public void getLatestEndTimeOfFollowing() {
-        if(underlyingOperation.getTactTime() != null) {
-            return;
-        }
-
-        else if (underlyingOperation.getFollowingOperations().isEmpty()) {
-            underlyingOperation.setTactTime(underlyingOperation.getSerialAffiliation().getDeadlineForCompletion());
-        }
-        else {
-            underlyingOperation.setTactTime(LocalDateTime.MAX);
-            for (int i = 0; i < underlyingOperation.getFollowingOperations().size(); i++) {
-                if (underlyingOperation.getFollowingOperations().get(i).getCLateStartTime().isBefore(underlyingOperation.getTactTime())) {
-                    underlyingOperation.setTactTime(underlyingOperation.getFollowingOperations().get(i).getCLateStartTime());
-                }
-            }
-        }
+        return isСanBePlacedInFront();
     }
 
     public void setReverseTactTime() {
@@ -231,42 +215,14 @@ public class OperationWithPriorityNew implements IOperation {
     }
 
     @Override
-    public LocalDateTime installReverseOperation() {
-        for (IResource tactRecourse: underlyingOperation.getResourceGroup().getRecoursesInTheGroup()) {
-            ResultOfOperationSetting resultOfOperationSetting = underlyingOperation.getCurrentOperatingMode().reverseInstallOperation(underlyingOperation, tactRecourse);
-            if(resultOfOperationSetting != null) {
-                CLatestStartTime = underlyingOperation.getTactTime().minusNanos(underlyingOperation.getInitDurationOfExecution().toNanos());
-                WorkingHours bufferOfWH = resultOfOperationSetting.getWorkingInterval();
-                addCWorkingInterval(bufferOfWH);
-                addCNumberOfAssignedRecourse(resultOfOperationSetting.getResourceOfBooking());
-                if(!operationNotScheduled()) {
-                    underlyingOperation.getSerialAffiliation().setСNumberOfAssignedOperations(underlyingOperation.getSerialAffiliation().getСNumberOfAssignedOperations() + 1);
-                }
-                //underlyingOperation.serialAffiliation.setСNumberOfAssignedOperations(underlyingOperation.serialAffiliation.getСNumberOfAssignedOperations() + 1);
-                break;
-            }
-        }
-        return null;
+    public void installReverseOperation() {
+        underlyingOperation.installReverseOperation();
+        CLatestStartTime = underlyingOperation.getEarliestTimeOfWorkingInterval();
     }
 
     @Override
     public void setTactTimeByEndTimeOfPrevious() {
         underlyingOperation.setTactTimeByEndTimeOfPrevious();
-    }
-
-    public LocalDateTime getEarliestStartTime() {
-        LocalDateTime maxTime = LocalDateTime.MIN;
-
-        for(int i = 0; i < underlyingOperation.getPreviousOperations().size(); i++ ) {
-            if(underlyingOperation.getPreviousOperations().get(i).getCEarlierStartTime().isAfter(maxTime))
-            {
-                maxTime = underlyingOperation.getPreviousOperations().get(i).getCEarlierStartTime();
-            }
-        }
-        if(maxTime == LocalDateTime.MIN) {
-            return this.CEarliestStartTime;
-        }
-        return maxTime;
     }
 
     @Override

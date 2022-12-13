@@ -26,6 +26,11 @@ public class Series {
         this(operationsToCreate, LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter), LocalDateTime.parse(arrivalTime, WorkingHours.formatter));
     }
 
+    Series(String deadlineForCompletion, String arrivalTime) {
+        this.deadlineForCompletion = LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter);
+        this.arrivalTime = LocalDateTime.parse(arrivalTime, WorkingHours.formatter);
+    }
+
     Series(String nameOfOperation, Collection<IOperation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
     {
         this(operationsToCreate, LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter), LocalDateTime.parse(arrivalTime, WorkingHours.formatter));
@@ -44,7 +49,7 @@ public class Series {
 
 
 
-    public void setOperationsToCreate(Collection<Operation> operationsToCreate) { this.operationsToCreate = new ArrayList<>(operationsToCreate); }
+    public void setOperationsToCreate(Collection<IOperation> operationsToCreate) { this.operationsToCreate = new ArrayList<>(operationsToCreate); }
 
     public void setDeadlineForCompletion(LocalDateTime deadlineForCompletion) { this.deadlineForCompletion = deadlineForCompletion; }
 

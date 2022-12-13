@@ -103,5 +103,10 @@ public class MO_CanNotBeInterrupted implements IOperationMode {
         return false;
     }
 
+    @Override
+    public IOperationMode clone() {
+        return new MO_CanNotBeInterrupted(this.durationOfExecution);
+    }
+
 
 }

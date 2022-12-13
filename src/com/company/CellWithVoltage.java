@@ -6,41 +6,76 @@ public class CellWithVoltage implements IStructuralUnitOfResource{
     private double voltage;
     private int capacity;
 
-    private int CCellСurrentOccupancy;
+    //private int CCellCurrentOccupancy;
+    private CurrentCellLoad cellOccupancy;
     private LocalDateTime arrivalTime;
-    private LocalDateTime releaseTime;
+    //private LocalDateTime releaseTime;
 
     public double getVoltage() { return voltage; }
     public int getCapacity() { return capacity; }
-    public LocalDateTime getReleaseTime() {return releaseTime; }
+    public LocalDateTime getReleaseTime() { return cellOccupancy.getLastReleaseDate(); }
+    public LocalDateTime getReleaseTime(LocalDateTime tactTime) {
+        LocalDateTime currentReleaseTime = cellOccupancy.getCurrentReleaseTimeAtPointInTime(tactTime);
+        if(currentReleaseTime == LocalDateTime.MIN) {
+            return arrivalTime;
+        }
+        return cellOccupancy.getCurrentReleaseTimeAtPointInTime(tactTime);
+    }
 
-    public void setReleaseTime(LocalDateTime releaseTime) { this.releaseTime = releaseTime; }
-    public void setVoltage(double voltage) { this.voltage = voltage; }
-    public void setCapacity(int capacity) { this.capacity = capacity; }
+    public void setReleaseTime(LocalDateTime releaseTime) {
+        /*if(releaseTime.isAfter(releaseTime)) {
+            CCellCurrentOccupancy = 0;
+        }
+        CCellCurrentOccupancy++;
+        this.releaseTime = releaseTime;*/
+    }
 
-    public void setCCellСurrentOccupancy(int CCellСurrentOccupancy) { this.CCellСurrentOccupancy = CCellСurrentOccupancy; }
+    @Override
+    public void setReleaseTime(int count, WorkingHours workingHours) {
+        cellOccupancy.addCurrentCellLoads(new ResultOfCurrentCellLoad(count, workingHours));
+    }
 
     public CellWithVoltage(double voltage, int capacity, String arrivalTime) {
         this.voltage = voltage;
         this.capacity = capacity;
-        CCellСurrentOccupancy = 0;
+        //CCellCurrentOccupancy = 0;
         this.arrivalTime = LocalDateTime.parse(arrivalTime, WorkingHours.formatter);
-        this.releaseTime = LocalDateTime.parse(arrivalTime, WorkingHours.formatter);
+        this.cellOccupancy = new CurrentCellLoad(
+                new ResultOfCurrentCellLoad(0, new WorkingHours(arrivalTime, arrivalTime)));
+
+        //this.releaseTime = LocalDateTime.parse(arrivalTime, WorkingHours.formatter);
     }
 
-    public boolean canFitOneItem() {
-        if(CCellСurrentOccupancy != capacity) {
+    public boolean canFitOneItem(LocalDateTime tactTime) {
+        int currentEmployment = cellOccupancy.getCurrentCellLoadsAtPointInTime(tactTime);
+        if(currentEmployment < capacity) {
             return true;
         }
         return false;
+        /*int currentEmployment = CCellCurrentOccupancy;
+        if(tactTime.isAfter(releaseTime)) {
+            currentEmployment = 0;
+        }
+        if(tactTime.isAfter(releaseTime)) {
+
+        }
+        if(CCellCurrentOccupancy != capacity) {
+            return true;
+        }
+        return false;*/
     }
 
     public boolean isFree(LocalDateTime tactTime) {
-        if(releaseTime == null) return true;
-        if(tactTime != null && tactTime.isBefore(releaseTime)) {
+        LocalDateTime releaseTime = cellOccupancy.getCurrentReleaseTimeAtPointInTime(tactTime);
+        if(tactTime.isBefore(releaseTime)) {
             return false;
         }
         return true;
+        /*if(releaseTime == null) return true;
+        if(tactTime != null && tactTime.isBefore(releaseTime)) {
+            return false;
+        }
+        return true;*/
     }
 
     public int takeСell(int capacity) {
@@ -54,6 +89,7 @@ public class CellWithVoltage implements IStructuralUnitOfResource{
 
     @Override
     public void clean() {
-        this.releaseTime = arrivalTime;
+        this.cellOccupancy = new CurrentCellLoad(
+                new ResultOfCurrentCellLoad(0, new WorkingHours(arrivalTime, arrivalTime)));
     }
 }

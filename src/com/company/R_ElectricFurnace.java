@@ -52,10 +52,11 @@ public class R_ElectricFurnace implements IResource {
         for(WorkingHours currentWH: schedule) {
             if(currentWH.getStartTime().isAfter(operation.getTactTime())) break;
             if(currentWH.isWorkingTime(operation.getTactTime())) {
-                for (CellElectricFurnace currentCellElectricFurnace : cellsOfElectricFurnace) {
+                for (CellElectricFurnace currentCellElectricFurnace: cellsOfElectricFurnace) {
                     if (requiredTemperature == currentCellElectricFurnace.getTemperature()) {
-                        for (CellWithVoltage currentCellWithVoltage : currentCellElectricFurnace.getCellsWithVoltage()) {
-                            if (requiredVoltage == currentCellWithVoltage.getVoltage() && currentCellWithVoltage.canFitOneItem()) {
+                        for (CellWithVoltage currentCellWithVoltage: currentCellElectricFurnace.getCellsWithVoltage()) {
+                            if (requiredVoltage == currentCellWithVoltage.getVoltage()
+                                    && currentCellWithVoltage.canFitOneItem(tactTime)) {
                                 Duration durationOfBooking = takeResource(durationOfExecution, tactTime, currentWH.getEndTime());
                                 ResultOfRecourseBooking resultOfRecourseBooking = new ResultOfRecourseBooking(durationOfBooking, currentCellWithVoltage);
                                 return resultOfRecourseBooking;
@@ -100,18 +101,17 @@ public class R_ElectricFurnace implements IResource {
         double requiredTemperature = ((O_OperationWithTemperatureAndVoltage) operation).getTemperatureOfOperation();
         double requiredVoltage = ((O_OperationWithTemperatureAndVoltage) operation).getVoltageOfOperation();
         for (WorkingHours currentWorkingHours: schedule) {
-            if(currentWorkingHours.getStartTime().isAfter(tactTime)) {
-                for(CellElectricFurnace currentCellOfElectricFurnace: cellsOfElectricFurnace) {
-                    if(requiredTemperature == currentCellOfElectricFurnace.getTemperature()){
-                        for(CellWithVoltage currentCellWithVoltage: currentCellOfElectricFurnace.getCellsWithVoltage()) {
-                            if(requiredVoltage == currentCellWithVoltage.getVoltage()){
-                                if(currentWorkingHours.getStartTime().isAfter(tactTime) && currentCellWithVoltage.canFitOneItem())
-                                {
-                                    return currentWorkingHours.getStartTime();
-                                }
-                                else if(currentWorkingHours.isWorkingTime(currentCellWithVoltage.getReleaseTime())  && tactTime.isBefore(currentCellWithVoltage.getReleaseTime())){
-                                    return currentCellWithVoltage.getReleaseTime();
-                                }
+            for(CellElectricFurnace currentCellOfElectricFurnace: cellsOfElectricFurnace) {
+                if(requiredTemperature == currentCellOfElectricFurnace.getTemperature()) {
+                    for(CellWithVoltage currentCellWithVoltage: currentCellOfElectricFurnace.getCellsWithVoltage()) {
+                        if(requiredVoltage == currentCellWithVoltage.getVoltage()){
+                            LocalDateTime releaseTime = currentCellWithVoltage.getReleaseTime(tactTime);
+                            if(currentWorkingHours.getStartTime().isAfter(tactTime) && currentCellWithVoltage.canFitOneItem(currentWorkingHours.getStartTime())) {
+                                return currentWorkingHours.getStartTime();
+                            }
+                            else if(currentWorkingHours.isWorkingTime(releaseTime) &&
+                                currentCellWithVoltage.canFitOneItem(releaseTime) && !tactTime.isAfter(releaseTime)) {
+                                return releaseTime;
                             }
                         }
                     }

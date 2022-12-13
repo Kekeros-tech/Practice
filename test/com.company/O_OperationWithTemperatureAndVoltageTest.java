@@ -33,20 +33,38 @@ public class O_OperationWithTemperatureAndVoltageTest {
         operation.setDurationOfExecution(Duration.ofHours(10));
         operation.setOperatingMode(1);
 
-        ArrayList<IOperation> operations = new ArrayList<>();
-        operations.add(operation);
+        Operation operationForSecondSeries = new O_OperationWithTemperatureAndVoltage(10, 10);
+        operationForSecondSeries.setResourceGroup(groupOfRes);
+        operationForSecondSeries.setDurationOfExecution(Duration.ofHours(4));
+        operationForSecondSeries.setOperatingMode(0);
 
-        Series firstSeries = new Series(operations, "01-09-2021 00:00", "15-08-2021 09:00");
+        ArrayList<IOperation> operationsForFirstSeries = new ArrayList<>();
+        operationsForFirstSeries.add(operation);
+
+        ArrayList<IOperation> operationsForSecondSeries = new ArrayList<>();
+        operationsForSecondSeries.add(operationForSecondSeries);
+
+        Series firstSeries = new Series(operationsForFirstSeries, "01-09-2021 00:00", "15-08-2021 09:00");
         operation.setSerialAffiliation(firstSeries);
+
+        Series secondSeries = new Series(operationsForSecondSeries, "01-09-2021 00:00", "15-08-2021 10:00");
+        operationForSecondSeries.setSerialAffiliation(secondSeries);
 
         ArrayList<Series> series = new ArrayList<>();
         series.add(firstSeries);
+        series.add(secondSeries);
 
         firstRecourse.fillScheduleUsingPreviousData(firstSeries.getDeadlineForCompletion());
 
         Main.takeSeriesToWork(series);
 
-        System.out.println(operation.getCNumberOfAssignedRecourse());
-        System.out.println(operation.getCWorkingInterval());
+        operationsForFirstSeries.add(operationForSecondSeries);
+
+        for(IOperation current: operationsForFirstSeries) {
+            //System.out.println(current.getCNumberOfAssignedRecourse());
+            System.out.println(current);
+        }
+
+
     }
 }

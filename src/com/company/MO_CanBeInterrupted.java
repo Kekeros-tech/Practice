@@ -77,7 +77,7 @@ public class MO_CanBeInterrupted implements IOperationMode{
     @Override
     public void setNewTactTime(IOperation operation) {
         // Это чтобы не мог устрановиться раньше отработанных частей
-        LocalDateTime endOfPreviousParts = LocalDateTime.MIN;
+        LocalDateTime endOfPreviousParts = operation.getTactTime();
         for(WorkingHours currentWH: operation.getCWorkingInterval()) {
             LocalDateTime currentEndTime = currentWH.getEndTime();
             if(currentEndTime.isAfter(endOfPreviousParts)) {
@@ -98,7 +98,7 @@ public class MO_CanBeInterrupted implements IOperationMode{
 
     @Override
     public void setNewReverseTactTime(IOperation operation) {
-        LocalDateTime endOfPreviousParts = LocalDateTime.MAX;
+        LocalDateTime endOfPreviousParts = operation.getTactTime();
         for(WorkingHours currentWH: operation.getCWorkingInterval()) {
             LocalDateTime currentStartTime = currentWH.getStartTime();
             if(currentStartTime.isBefore(endOfPreviousParts)) {
@@ -126,5 +126,10 @@ public class MO_CanBeInterrupted implements IOperationMode{
             }
         }
         return false;
+    }
+
+    @Override
+    public IOperationMode clone() {
+        return new MO_CanBeInterrupted(this.durationOfExecution);
     }
 }

@@ -12,4 +12,5 @@ public interface IOperationMode {
     void setNewTactTime(IOperation operation);
     void setNewReverseTactTime(IOperation operation);
     boolean isResourcesCanToBorrow(Operation operation, IResource resource);
+    IOperationMode clone();
 }

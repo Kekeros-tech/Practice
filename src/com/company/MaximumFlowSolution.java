@@ -1,12 +1,13 @@
 package com.company;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class MaximumFlowSolution {
 
-    public static HashMap<IOperation, IResource> solveMaximumFlowProblem(Collection<IOperation> frontOfWorkSortedByPriority) {
+    public static ArrayList<ResultOfMaximumFlowSolution> solveMaximumFlowProblem(Collection<IOperation> frontOfWorkSortedByPriority) {
 
-        ArrayList<IResource> workResources = new ArrayList<>(formResourcesThatCanBeBorrowed(frontOfWorkSortedByPriority));
+        ArrayList<IStructuralUnitOfResource> workResources = new ArrayList<>(formResourcesThatCanBeBorrowed(frontOfWorkSortedByPriority));
         if(workResources.isEmpty()) {
             return null;
         }
@@ -15,13 +16,14 @@ public class MaximumFlowSolution {
 
         findMaxFlow(adjacencyMatrix);
 
-        HashMap<IOperation, IResource> resultOfWork = formResultOfAlgorithm(adjacencyMatrix, frontOfWorkSortedByPriority, workResources);
+        ArrayList<ResultOfMaximumFlowSolution> resultOfWork =
+                formResultOfAlgorithm(adjacencyMatrix, frontOfWorkSortedByPriority, workResources);
 
         return resultOfWork;
     }
 
-    public static HashSet<IResource> formResourcesThatCanBeBorrowed(Collection<IOperation> frontOfWorkSortedByPriority) {
-        HashSet<IResource> workResources = new HashSet<>();
+    public static HashSet<IStructuralUnitOfResource> formResourcesThatCanBeBorrowed(Collection<IOperation> frontOfWorkSortedByPriority) {
+        HashSet<IStructuralUnitOfResource> workResources = new HashSet<>();
 
         for(IOperation operationInFrontOfWork : frontOfWorkSortedByPriority) {
             //ArrayList<IResource> buffer = operationInFrontOfWork.getResourcesToBorrow();
@@ -41,42 +43,85 @@ public class MaximumFlowSolution {
         }
     }
 
-    public static HashMap<IOperation, IResource> formResultOfAlgorithm(int[][] adjacencyMatrix, Collection<IOperation> frontOfWorkSortedByPriority,ArrayList<IResource> workResources ) {
-        HashMap<IOperation, IResource> resultOfWork = new HashMap<>();
+    public static ArrayList<ResultOfMaximumFlowSolution> formResultOfAlgorithm(int[][] adjacencyMatrix, Collection<IOperation> frontOfWorkSortedByPriority,ArrayList<IStructuralUnitOfResource> workResources ) {
+        HashMap<IOperation, IStructuralUnitOfResource> resultOfWork = new HashMap<>();
+        ArrayList<ResultOfMaximumFlowSolution> resultOfMaximumFlowSolutions = new ArrayList<>();
         ArrayList<IOperation> frontOfWork = new ArrayList<>(frontOfWorkSortedByPriority);
 
         for(int i = 1 + frontOfWork.size(); i < adjacencyMatrix.length - 1; i++) {
             for(int j = 1; j < 1 + frontOfWork.size(); j++) {
 
-                if(adjacencyMatrix[i][j] == 1) {
-                    resultOfWork.put(frontOfWork.get(j - 1), workResources.get(i - 1 - frontOfWorkSortedByPriority.size()));
+                if(adjacencyMatrix[i][j] > 0) {
+                    ResultOfMaximumFlowSolution result = new ResultOfMaximumFlowSolution(frontOfWork.get(j - 1),
+                            workResources.get(i - 1 - frontOfWork.size()).getCoreResource(), adjacencyMatrix[i][j]);
+                    resultOfMaximumFlowSolutions.add(result);
+                    //resultOfWork.put(frontOfWork.get(j - 1), workResources.get(i - 1 - frontOfWorkSortedByPriority.size()));
                 }
             }
         }
-        return resultOfWork;
+        return resultOfMaximumFlowSolutions;
     }
 
-    public static int[][] formAdjacencyMatrix(Collection<IOperation> frontOfWorkSortedByPriority, ArrayList<IResource> workResources) {
+    public static int[][] formAdjacencyMatrix(Collection<IOperation> frontOfWorkSortedByPriority, ArrayList<IStructuralUnitOfResource> workResources) {
         int matrixSize = frontOfWorkSortedByPriority.size() + workResources.size() + 2;
         int[][] adjacencyMatrix = new int[matrixSize][matrixSize];
         ArrayList<IOperation> frontOfWork = new ArrayList<>(frontOfWorkSortedByPriority);
 
         for(int i = 0; i < matrixSize; i++) {
+            for(int j = 0; j < matrixSize; j ++) {
+                adjacencyMatrix[i][j] = 0;
+            }
+        }
+
+        for(int i = 0; i < matrixSize; i++) {
             if(1 <= i && i <= frontOfWorkSortedByPriority.size()) {
-                adjacencyMatrix[0][i] = 1;
+                adjacencyMatrix[0][i] = frontOfWork.get(i-1).getCountOfOperations();
             }
         }
-
+        LocalDateTime currentTactTime = LocalDateTime.MAX;
+        int difference = frontOfWork.size() + 1;
         for(int i = 0; i < frontOfWork.size(); i++) {
-            ArrayList<IResource> resourcesOfCurrentOperation = frontOfWork.get(i).getResourcesToBorrow();
-            for(int j = 0, difference = frontOfWork.size() + 1; j < resourcesOfCurrentOperation.size(); j++){
-                adjacencyMatrix[i + 1][workResources.indexOf(resourcesOfCurrentOperation.get(j)) + difference] = 1;
+            ArrayList<IStructuralUnitOfResource> resourcesOfCurrentOperation = frontOfWork.get(i).getResourcesToBorrow();
+            int countOfOperation = frontOfWork.get(i).getCountOfOperations();
+            if(frontOfWork.get(i).getTactTime().isBefore(currentTactTime)) {
+                currentTactTime = frontOfWork.get(i).getTactTime();
+            }
+            for(int j = 0; j < resourcesOfCurrentOperation.size(); j++) {
+                int indexOfCurrentResource = workResources.indexOf(resourcesOfCurrentOperation.get(j)) + difference;
+                int currentCount = resourcesOfCurrentOperation.get(j).getResourceAmount(frontOfWork.get(i).getTactTime());
+                adjacencyMatrix[i + 1][indexOfCurrentResource] = countOfOperation;
+                if(adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] != 0 &&
+                        adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] < currentCount) {
+                    continue;
+                }
+                else {
+                    adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] = currentCount;
+                }
             }
         }
 
-        for(int i = frontOfWorkSortedByPriority.size() + 1; i <= matrixSize - 2; i++){
-            adjacencyMatrix[i][matrixSize - 1] = 1;
-        }
+        /*for(int j = 0; j < frontOfWork.size(); j++) {
+            ArrayList<IStructuralUnitOfResource> resourcesOfCurrentOperation = frontOfWork.get(j).getResourcesToBorrow();
+            for(int k = 0; k < resourcesOfCurrentOperation.size(); k ++) {
+                int indexOfCurrentResource = workResources.indexOf(resourcesOfCurrentOperation.get(k)) + difference;
+                int currentCount = resourcesOfCurrentOperation.get(k).getResourceAmount(frontOfWork.get(j).getTactTime());
+                *//*if(adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] == 0) {
+                    adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] = currentCount;
+                }
+                else {
+                    if(currentCount < adjacencyMatrix[indexOfCurrentResource][matrixSize - 1]) {
+                        adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] = currentCount;
+                    }
+                }*//*
+                if(adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] != 0 &&
+                        adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] < currentCount) {
+                    continue;
+                }
+                else {
+                    adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] = currentCount;
+                }
+            }
+        }*/
 
         return adjacencyMatrix;
     }

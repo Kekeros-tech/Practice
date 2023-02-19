@@ -13,6 +13,10 @@ public class OperationsArrangementAlgorithmWithCPAndFutureFrontNew extends Opera
         this.selectedDuration = selectedDuration;
     }
 
+    public OperationsArrangementAlgorithmWithCPAndFutureFrontNew(Collection<Series> seriesForWork) {
+
+    }
+
     public OperationsArrangementAlgorithmWithCPAndFutureFrontNew(Duration currentDuration) {
         super();
         this.selectedDuration = currentDuration;

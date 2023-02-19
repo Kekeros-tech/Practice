@@ -5,3 +5,14 @@ public interface IPriority {
     long getPriority();
     void clean();
 }
+
+enum PriorityType {
+    priorityByDurationBetweenEarliestStartTimeAndLatestStartTime,
+    priorityByLastStartTime,
+    priorityByHeirs,
+    priorityByDuration;
+}
+
+
+
+

@@ -18,7 +18,7 @@ public class R_ElectricFurnace implements IResource {
     public LocalDateTime getArriveTime() { return arriveTime; }
     public StringBuffer getNameOfRecourse() { return nameOfRecourse; }
 
-    R_ElectricFurnace(Collection<WorkingHours>        schedule,
+/*    R_ElectricFurnace(Collection<WorkingHours>        schedule,
                       Collection<CellElectricFurnace> cellsOfElectricFurnace,
                       String                          arriveTime)
     {
@@ -26,6 +26,23 @@ public class R_ElectricFurnace implements IResource {
         this.schedule = new ArrayList<>(schedule);
         this.cellsOfElectricFurnace = new ArrayList<>(cellsOfElectricFurnace);
         this.arriveTime = LocalDateTime.parse(arriveTime, WorkingHours.formatter);
+    }*/
+
+     R_ElectricFurnace(Collection<WorkingHours> schedule,
+                      Collection<S_CellElectricFurnace> cellElectricFurnaces,
+                      String arriveTime) {
+        nameOfRecourse = Series.generateRandomHexString(8);
+        this.arriveTime = LocalDateTime.parse(arriveTime, WorkingHours.formatter);
+        this.schedule = new ArrayList<>(schedule);
+        this.cellsOfElectricFurnace = new ArrayList<>();
+        for(S_CellElectricFurnace currentSettings: cellElectricFurnaces) {
+            ArrayList<CellWithVoltage> cellsWithVoltage = new ArrayList<>();
+            for(S_CellWithVoltage currentSettingsForCellWithVoltage: currentSettings.getSettingsForCellWithVoltage()) {
+                CellWithVoltage cellWithVoltage = new CellWithVoltage(currentSettingsForCellWithVoltage, this.arriveTime, this);
+                cellsWithVoltage.add(cellWithVoltage);
+            }
+            cellsOfElectricFurnace.add(new CellElectricFurnace(currentSettings.getTemperature(), cellsWithVoltage));
+        }
     }
 
     R_ElectricFurnace(String arriveTime)
@@ -101,16 +118,18 @@ public class R_ElectricFurnace implements IResource {
         double requiredTemperature = ((O_OperationWithTemperatureAndVoltage) operation).getTemperatureOfOperation();
         double requiredVoltage = ((O_OperationWithTemperatureAndVoltage) operation).getVoltageOfOperation();
         for (WorkingHours currentWorkingHours: schedule) {
+            //System.out.println(currentWorkingHours);
             for(CellElectricFurnace currentCellOfElectricFurnace: cellsOfElectricFurnace) {
                 if(requiredTemperature == currentCellOfElectricFurnace.getTemperature()) {
                     for(CellWithVoltage currentCellWithVoltage: currentCellOfElectricFurnace.getCellsWithVoltage()) {
-                        if(requiredVoltage == currentCellWithVoltage.getVoltage()){
+                        if(requiredVoltage == currentCellWithVoltage.getVoltage()) {
                             LocalDateTime releaseTime = currentCellWithVoltage.getReleaseTime(tactTime);
+                            //System.out.println(releaseTime.format(WorkingHours.formatter));
                             if(currentWorkingHours.getStartTime().isAfter(tactTime) && currentCellWithVoltage.canFitOneItem(currentWorkingHours.getStartTime())) {
                                 return currentWorkingHours.getStartTime();
                             }
                             else if(currentWorkingHours.isWorkingTime(releaseTime) &&
-                                currentCellWithVoltage.canFitOneItem(releaseTime) && !tactTime.isAfter(releaseTime)) {
+                                currentCellWithVoltage.canFitOneItem(releaseTime) && tactTime.isBefore(releaseTime)) {
                                 return releaseTime;
                             }
                         }

@@ -6,13 +6,20 @@ public class CellWithVoltage implements IStructuralUnitOfResource{
     private double voltage;
     private int capacity;
 
+    //не нравится такое решение
+    private IResource coreResource;
+
     //private int CCellCurrentOccupancy;
     private CurrentCellLoad cellOccupancy;
     private LocalDateTime arrivalTime;
     //private LocalDateTime releaseTime;
 
+
+    public void setCoreResource(IResource coreResource) { this.coreResource = coreResource; }
+
     public double getVoltage() { return voltage; }
     public int getCapacity() { return capacity; }
+    public IResource getCoreResource() { return coreResource; }
     public LocalDateTime getReleaseTime() { return cellOccupancy.getLastReleaseDate(); }
     public LocalDateTime getReleaseTime(LocalDateTime tactTime) {
         LocalDateTime currentReleaseTime = cellOccupancy.getCurrentReleaseTimeAtPointInTime(tactTime);
@@ -35,6 +42,15 @@ public class CellWithVoltage implements IStructuralUnitOfResource{
         cellOccupancy.addCurrentCellLoads(new ResultOfCurrentCellLoad(count, workingHours));
     }
 
+    @Override
+    public int getResourceAmount(LocalDateTime tactTime) {
+        int result = capacity - cellOccupancy.getCurrentCellLoadsAtPointInTime(tactTime);
+        if(result < 0) {
+            result = 0;
+        }
+        return result;
+    }
+
     public CellWithVoltage(double voltage, int capacity, String arrivalTime) {
         this.voltage = voltage;
         this.capacity = capacity;
@@ -44,6 +60,16 @@ public class CellWithVoltage implements IStructuralUnitOfResource{
                 new ResultOfCurrentCellLoad(0, new WorkingHours(arrivalTime, arrivalTime)));
 
         //this.releaseTime = LocalDateTime.parse(arrivalTime, WorkingHours.formatter);
+    }
+
+    public CellWithVoltage(S_CellWithVoltage settings, LocalDateTime arrivalTime, IResource coreResource) {
+        this.voltage = settings.getVoltage();
+        this.capacity = settings.getCellSize();
+        this.arrivalTime = arrivalTime;
+        this.coreResource = coreResource;
+        this.cellOccupancy = new CurrentCellLoad(
+                new ResultOfCurrentCellLoad(0, new WorkingHours(arrivalTime, arrivalTime))
+        );
     }
 
     public boolean canFitOneItem(LocalDateTime tactTime) {

@@ -24,6 +24,7 @@ public class CurrentCellLoad {
         for(ResultOfCurrentCellLoad currentResult: currentCellLoads) {
             if(currentResult.getReleaseTime().isWorkingTime(tactTime)) {
                 count += currentResult.getNumberOfDetails();
+                //System.out.println("Текущая загруженность = " + count);
             }
         }
         return count;

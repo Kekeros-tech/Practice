@@ -611,93 +611,19 @@ public class ComplexTest {
         secondRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
 
-        PrintWriter writer = new PrintWriter("D:\\My_EGO_realization\\text.txt");
-        writer.print("0 86400\n0 3\n36000 1\n284400\n10800 0\n288000");
-        writer.close();
+        OperationsArrangementAlgorithmWithCPAndFutureFrontNew algo =
+                new OperationsArrangementAlgorithmWithCPAndFutureFrontNew(seriesToWork,
+                        new ControlParameters(1, 1, 1),
+                        Duration.ofHours(1));
 
-        for(int i = 0; i < 10; i++) {
-            String[] arguments = new String[] {"python","D:\\My_EGO_realization\\hello.py"};
-            try {
-                // выполняем код Python
-                Process process = Runtime.getRuntime().exec(arguments);
-                // Возвращает, успешно ли выполнено, 0 означает успех, 1 означает сбой
-                int re = process.waitFor();
-                // вывод результата выполнения
-                System.out.println(re);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            FileReader file = new FileReader("D:\\My_EGO_realization\\text.txt");
-            Scanner scanner = new Scanner(file);
-            String lastString = "";
-            ArrayList<Integer> controlParameterValues = new ArrayList<>();
-            while (scanner.hasNextLine()) {
-                lastString = scanner.nextLine();
-            }
-            for (String current : lastString.split(" ")) {
-                controlParameterValues.add(Integer.parseInt(current));
-            }
-            
-            Main.testFutureAlgo(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
-                    new ControlParameters(controlParameterValues.get(1), 1, 0));
-            //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
-                    //new ControlParameters(controlParameterValues.get(1), 1, 0));
+        OA_byEGO ego = new OA_byEGO("D:\\My_EGO_realization\\hello.py", 10,
+                "D:\\My_EGO_realization\\text.txt");
 
-            LocalDateTime latestTime = findTimeOfLatestOperation(seriesToWork);
-            long resultDuration = Duration.between(firstSeries.getArrivalTime(), latestTime).getSeconds();
-            //Печать значения целевой функции
-            System.out.println(Duration.between(firstSeries.getArrivalTime(), findTimeOfLatestOperation(seriesToWork)));
-
-            try(FileWriter writer2 = new FileWriter("D:\\My_EGO_realization\\text.txt", true))
-            {
-                writer2.append('\n');
-                writer2.write(Long.toString(resultDuration));
-
-                writer2.flush();
-            }
-            catch(IOException ex){
-
-                System.out.println(ex.getMessage());
-            }
-
-            System.out.println("Отсечка");
-            for(Series series: seriesToWork) {
-                for(IOperation operation: series.getOperationsToCreate()) {
-                    System.out.println(operation);
-                }
-                series.fullClean();
-            }
-        }
-
-        writer = new PrintWriter("D:\\My_EGO_realization\\text.txt");
-        writer.print("0 86400\n0 3\n36000 1\n284400\n10800 0\n288000");
-        writer.close();
+        ego.calculateBestSolution(algo);
+        System.out.println("----");
+        System.out.println(ego.getBestSolution());
+        //ego.resetResult();
     }
-
-    private LocalDateTime findTimeOfLatestOperation(ArrayList<Series> seriesForWork) {
-        LocalDateTime maxTime = LocalDateTime.MIN;
-        for(Series currentSeries: seriesForWork) {
-            for (IOperation currentOperationOfCurrentSeries: currentSeries.getOperationsToCreate()){
-                if(findTimeOfLatestOfWorkingInterval(currentOperationOfCurrentSeries).isAfter(maxTime)){
-                    maxTime = findTimeOfLatestOfWorkingInterval(currentOperationOfCurrentSeries);
-                }
-            }
-        }
-        return maxTime;
-    }
-
-
-    //перенести куда-нибудь
-    private LocalDateTime findTimeOfLatestOfWorkingInterval( IOperation operation) {
-        LocalDateTime maxTime = LocalDateTime.MIN;
-        for(WorkingHours wh: operation.getCWorkingInterval()){
-            if(wh.getEndTime().isAfter(maxTime)){
-                maxTime = wh.getEndTime();
-            }
-        }
-        return maxTime;
-    }
-
 
     @Test
     //Use early and late start dates
@@ -810,105 +736,15 @@ public class ComplexTest {
 
         firstRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
 
-        PrintWriter writer = new PrintWriter("D:\\My_EGO_realization\\text.txt");
-        writer.print("0 86400\n" +
-                "0 3\n" +
-                "3600 1\n" +
-                "540000\n" +
-                "36000 2\n" +
-                "626400");
-        writer.close();
+        OperationsArrangementAlgorithmWithCPAndFutureFrontNew algo =
+                new OperationsArrangementAlgorithmWithCPAndFutureFrontNew(seriesToWork,
+                        new ControlParameters(1,1,1),
+                        Duration.ofHours(2));
 
-        for(int i = 0; i < 5; i++) {
-            String[] arguments = new String[] {"python","D:\\My_EGO_realization\\hello.py"};
-            try {
-                // выполняем код Python
-                Process process = Runtime.getRuntime().exec(arguments);
-                // Возвращает, успешно ли выполнено, 0 означает успех, 1 означает сбой
-                int re = process.waitFor();
-                // вывод результата выполнения
-                System.out.println(re);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            FileReader file = new FileReader("D:\\My_EGO_realization\\text.txt");
-            Scanner scanner = new Scanner(file);
-            String lastString = "";
-            ArrayList<Integer> controlParameterValues = new ArrayList<>();
-            while (scanner.hasNextLine()) {
-                lastString = scanner.nextLine();
-            }
-            for (String current : lastString.split(" ")) {
-                controlParameterValues.add(Integer.parseInt(current));
-            }
-            Main.testFutureAlgo(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
-                    new ControlParameters(controlParameterValues.get(1), 1, 0));
-            //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofSeconds(controlParameterValues.get(0)),
-                    //new ControlParameters(controlParameterValues.get(1), 1, 0));
-
-            LocalDateTime latestTime = findTimeOfLatestOperation(seriesToWork);
-            long resultDuration = Duration.between(firstSeries.getArrivalTime(), latestTime).getSeconds();
-            //Печать значения целевой функции
-            System.out.println(Duration.between(firstSeries.getArrivalTime(), findTimeOfLatestOperation(seriesToWork)));
-
-            try(FileWriter writer2 = new FileWriter("D:\\My_EGO_realization\\text.txt", true))
-            {
-                writer2.append('\n');
-                writer2.write(Long.toString(resultDuration));
-
-                writer2.flush();
-            }
-            catch(IOException ex){
-
-                System.out.println(ex.getMessage());
-            }
-
-            System.out.println("Отсечка");
-            for(Series series: seriesToWork){
-                for(IOperation operation: series.getOperationsToCreate()) {
-                    System.out.println(operation);
-                }
-                series.fullClean();
-            }
-        }
-
-        writer = new PrintWriter("D:\\My_EGO_realization\\text.txt");
-        writer.print("0 86400\n" +
-                "0 3\n" +
-                "3600 1\n" +
-                "540000\n" +
-                "36000 2\n" +
-                "626400");
-        writer.close();
-
-/*Первые 5 строчек для задания.
-0 86400
-0 2
-3600 1
-540000
-36000 2
-626400
-18000 0
-540000
-80345 0
-626400
-9799 1
-453600
-56396 1
-453600
-53488 0
-626400
-59666 1
-453600
-16461 1
-453600
-72091 1
-453600
-78596 1
-453600
-14202 1
-453600
-25692 1
-453600*/
+        OA_byEGO ego = new OA_byEGO("D:\\My_EGO_realization\\hello.py", 10,
+                "D:\\My_EGO_realization\\testWhereSecondSortingReturnBestResult.txt");
+        ego.calculateBestSolution(algo);
+        System.out.println(ego.getBestSolution());
+        ego.resetResult();
     }
 }

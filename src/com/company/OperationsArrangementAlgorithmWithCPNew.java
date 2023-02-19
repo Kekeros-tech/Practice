@@ -155,11 +155,11 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
     @Override
     protected void installOperationsAndReturnFutureDate(Collection<IOperation> frontOfWork) {
 
-        HashMap<IOperation, IResource> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(frontOfWork);
+        ArrayList<ResultOfMaximumFlowSolution> installationSequence = MaximumFlowSolution.solveMaximumFlowProblem(frontOfWork);
 
         if(installationSequence != null) {
-            for(Map.Entry<IOperation, IResource> entry : installationSequence.entrySet()){
-                entry.getKey().installOperationForSpecificResource(entry.getValue());
+            for(ResultOfMaximumFlowSolution currentResult: installationSequence) {
+                currentResult.getOperationForInstalling().installOperationForSpecificResource(currentResult.getResourceForInstalling(), currentResult.getAmountForInstalling());
             }
         }
 

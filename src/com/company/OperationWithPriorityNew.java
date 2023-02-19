@@ -27,6 +27,18 @@ public class OperationWithPriorityNew implements IOperation {
         underlyingOperation = new Operation();
     }
 
+    public OperationWithPriorityNew(IOperation operation) {
+        underlyingOperation = operation;
+    }
+
+    public OperationWithPriorityNew(Series serialAffiliation,
+                                    Group resourceGroup,
+                                    Duration durationOfExecution,
+                                    int currentOperationMode){
+        underlyingOperation = new Operation(serialAffiliation, resourceGroup, durationOfExecution, currentOperationMode);
+    }
+
+
     public void installPriority(PriorityType priorityType) { choosePriority(priorityType); }
     public void setPriority() { priority.setPriority(this); }
     @Override
@@ -56,6 +68,12 @@ public class OperationWithPriorityNew implements IOperation {
         return sb.toString();
     }
 
+    public boolean underlyingOperationIsChain() {
+        if(underlyingOperation.getClass().getSimpleName() == "O_OperationWithQuantityChain") {
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public boolean isСanBePlacedInFront() {
@@ -80,6 +98,11 @@ public class OperationWithPriorityNew implements IOperation {
     @Override
     public IOperationMode getCurrentOperatingMode() {
         return underlyingOperation.getCurrentOperatingMode();
+    }
+
+    @Override
+    public Collection<Operation> getOperationsAtCore() {
+        return underlyingOperation.getOperationsAtCore();
     }
 
     @Override
@@ -183,8 +206,14 @@ public class OperationWithPriorityNew implements IOperation {
     }
 
     @Override
+    public void installOperationForSpecificResource(IResource currentRecourse, int numberOfOperations) {
+        underlyingOperation.installOperationForSpecificResource(currentRecourse, numberOfOperations);
+        CEarliestStartTime = underlyingOperation.getEarliestTimeOfWorkingInterval();
+    }
+
+    @Override
     public boolean isCanBePlacedInReverseFront() {
-        return isСanBePlacedInFront();
+        return underlyingOperation.isCanBePlacedInReverseFront();
     }
 
     public void setReverseTactTime() {
@@ -227,15 +256,20 @@ public class OperationWithPriorityNew implements IOperation {
 
     @Override
     public void setNewTactTime() {
-        underlyingOperation.getCurrentOperatingMode().setNewTactTime(underlyingOperation);
+        underlyingOperation.setNewTactTime();
     }
 
     @Override
-    public ArrayList<IResource> getResourcesToBorrow() {
+    public ArrayList<IStructuralUnitOfResource> getResourcesToBorrow() {
         return underlyingOperation.getResourcesToBorrow();
     }
 
+    @Override
+    public int getCountOfOperations() {
+        return underlyingOperation.getCountOfOperations();
+    }
+
     public void setNewReverseTactTime() {
-        underlyingOperation.getCurrentOperatingMode().setNewReverseTactTime(underlyingOperation);
+        underlyingOperation.setNewReverseTactTime();
     }
 }

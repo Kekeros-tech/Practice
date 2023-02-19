@@ -12,6 +12,7 @@ public interface IOperation {
     void setTactTime(LocalDateTime tactTime);
     Series getSerialAffiliation();
     IOperationMode getCurrentOperatingMode();
+    Collection<Operation> getOperationsAtCore();
     Duration getInitDurationOfExecution();
     LocalDateTime getEarliestTimeOfWorkingInterval();
     boolean allFollowingAssigned();
@@ -33,9 +34,12 @@ public interface IOperation {
     void addCWorkingInterval(WorkingHours cWorkingInterval);*/
     void addFollowingOperation(IOperation followingOperation);
     void setNewTactTime();
-    ArrayList<IResource> getResourcesToBorrow();
+    void setNewReverseTactTime();
+    ArrayList<IStructuralUnitOfResource> getResourcesToBorrow();
+    int getCountOfOperations();
     void installOperation(); // должно быть
-    void installOperationForSpecificResource(IResource currentRecourse); // должно быть
+    void installOperationForSpecificResource(IResource currentRecourse);
+    void installOperationForSpecificResource(IResource currentRecourse, int numberOfOperations) ;// должно быть
     void installReverseOperation();
     void setTactTimeByEndTimeOfPrevious();
     boolean isCanBePlacedInReverseFront();

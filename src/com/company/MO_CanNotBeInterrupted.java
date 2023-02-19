@@ -2,8 +2,6 @@ package com.company;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class MO_CanNotBeInterrupted implements IOperationMode {
     Duration durationOfExecution;
@@ -92,21 +90,19 @@ public class MO_CanNotBeInterrupted implements IOperationMode {
     }
 
     @Override
-    public boolean isResourcesCanToBorrow(Operation operation, IResource currentResource) {
+    public IStructuralUnitOfResource isResourcesCanToBorrow(Operation operation, IResource currentResource) {
         ResultOfRecourseBooking resultOfRecourseBooking = currentResource.putOperationOnResource(operation);
         if(resultOfRecourseBooking != null) {
             Duration resultDuration = resultOfRecourseBooking.getDurationOfBooking();
             if(resultDuration != null && (resultDuration.isZero() || resultDuration.isNegative())){
-                return true;
+                return resultOfRecourseBooking.getUnitOfResource();
             }
         }
-        return false;
+        return null;
     }
 
     @Override
     public IOperationMode clone() {
         return new MO_CanNotBeInterrupted(this.durationOfExecution);
     }
-
-
 }

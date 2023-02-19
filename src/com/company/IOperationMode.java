@@ -1,7 +1,6 @@
 package com.company;
 
 import java.time.Duration;
-import java.util.Collection;
 
 public interface IOperationMode {
     void setDurationOfExecution(Duration durationOfExecution);
@@ -11,6 +10,6 @@ public interface IOperationMode {
     ResultOfOperationSetting reverseInstallOperation(IOperation operation, IResource currentResource);
     void setNewTactTime(IOperation operation);
     void setNewReverseTactTime(IOperation operation);
-    boolean isResourcesCanToBorrow(Operation operation, IResource resource);
+    IStructuralUnitOfResource isResourcesCanToBorrow(Operation operation, IResource resource);
     IOperationMode clone();
 }

@@ -64,10 +64,16 @@ public class Series {
     public void addOperationCollectionToCreate(Collection<Operation> operationsToCreate) { this.operationsToCreate.addAll(operationsToCreate); }
 
     public boolean allOperationsAssigned() {
-        if(cNumberOfAssignedOperations == operationsToCreate.size()) {
+        for(IOperation operation: operationsToCreate) {
+            if(operation.operationNotScheduled()) {
+                return false;
+            }
+        }
+        return true;
+        /*if(cNumberOfAssignedOperations == operationsToCreate.size()) {
             return true;
         }
-        return false;
+        return false;*/
     }
 
     public void clean() {

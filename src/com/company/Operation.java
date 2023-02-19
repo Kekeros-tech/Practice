@@ -19,7 +19,7 @@ public class Operation implements IOperation{
     protected LocalDateTime tactTime;
 
     Operation(Operation copyOperation) {
-        nameOfOperation = copyOperation.nameOfOperation;
+        nameOfOperation = Series.generateRandomHexString(8);
         resourceGroup = copyOperation.resourceGroup;
         serialAffiliation = copyOperation.serialAffiliation;
         durationOfExecution = copyOperation.durationOfExecution;
@@ -39,6 +39,21 @@ public class Operation implements IOperation{
         this.cWorkingInterval = new ArrayList<>();
     }
 
+    Operation(Series serialAffiliation,
+              Group resourceGroup,
+              Duration durationOfExecution,
+              int currentOperationMode)  {
+        nameOfOperation = Series.generateRandomHexString(8);
+        this.serialAffiliation = serialAffiliation;
+        this.resourceGroup = resourceGroup;
+        this.durationOfExecution = durationOfExecution;
+        previousOperations = new ArrayList<>();
+        followingOperations = new ArrayList<>();
+        setOperatingMode(currentOperationMode);
+        cNumberOfAssignedRecourse = new ArrayList<>();
+        cWorkingInterval = new ArrayList<>();
+    }
+
     protected void setPriority() {
         return;
     }
@@ -48,6 +63,14 @@ public class Operation implements IOperation{
     public ArrayList<IOperation> getPreviousOperations() { return previousOperations; }
     public ArrayList<IOperation> getFollowingOperations() { return followingOperations; }
     public IOperationMode getCurrentOperatingMode() { return currentOperatingMode; }
+
+    @Override
+    public Collection<Operation> getOperationsAtCore() {
+        ArrayList<Operation> operationsAtCore = new ArrayList<>();
+        operationsAtCore.add(this);
+        return operationsAtCore;
+    }
+
     public Duration getInitDurationOfExecution() { return durationOfExecution; }
 
     @Override
@@ -218,15 +241,26 @@ public class Operation implements IOperation{
         currentOperatingMode.setNewTactTime(this);
     }
 
+    @Override
+    public void setNewReverseTactTime() {
+        currentOperatingMode.setNewReverseTactTime(this);
+    }
+
     //В операции с преоритетом не переопределяется
-    public ArrayList<IResource> getResourcesToBorrow () {
-        ArrayList<IResource> recoursesToBorrow = new ArrayList<>();
+    public ArrayList<IStructuralUnitOfResource> getResourcesToBorrow () {
+        ArrayList<IStructuralUnitOfResource> recoursesToBorrow = new ArrayList<>();
         for(IResource recourse: resourceGroup.getRecoursesInTheGroup()) {
-            if(currentOperatingMode.isResourcesCanToBorrow(this, recourse)) {
-                recoursesToBorrow.add(recourse);
+            IStructuralUnitOfResource result = currentOperatingMode.isResourcesCanToBorrow(this, recourse);
+            if(result != null) {
+                recoursesToBorrow.add(result);
             }
         }
         return recoursesToBorrow;
+    }
+
+    @Override
+    public int getCountOfOperations() {
+        return 1;
     }
 
     //Перенесено
@@ -257,11 +291,18 @@ public class Operation implements IOperation{
             WorkingHours bufferOfWH = resultOfOperationSetting.getWorkingInterval();
             addCWorkingInterval(bufferOfWH);
             addCNumberOfAssignedRecourse(resultOfOperationSetting.getResourceOfBooking());
-            resultOfOperationSetting.getResourceOfBooking().setReleaseTime(bufferOfWH.getEndTime());
+            resultOfOperationSetting.getResourceOfBooking().setReleaseTime(1, bufferOfWH);
+            //resultOfOperationSetting.getResourceOfBooking().setReleaseTime(bufferOfWH.getEndTime());
             if(!operationNotScheduled()) {
                 serialAffiliation.setСNumberOfAssignedOperations(serialAffiliation.getСNumberOfAssignedOperations() + 1);
             }
+            //System.out.println(this);
         }
+    }
+
+    @Override
+    public void installOperationForSpecificResource(IResource currentRecourse, int numberOfOperations) {
+        installOperationForSpecificResource(currentRecourse);
     }
 
     public void setTactTimeByEndTimeOfPrevious() {

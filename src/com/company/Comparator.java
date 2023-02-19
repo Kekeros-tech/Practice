@@ -98,8 +98,7 @@ import java.util.Comparator;
 
         public int compare(IOperation a, IOperation b) {
             OPriorityComparator comparator = new OPriorityComparator();
-            int resultOfSorter = comparator.compare(a, b);
-            if(resultOfSorter == 0) {
+            if(comparator.compare(a, b) == 0) {
                 return a.getNumberOfOperationMode() - b.getNumberOfOperationMode();
             }
             return 0;

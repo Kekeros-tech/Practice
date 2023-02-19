@@ -2,10 +2,7 @@ package com.company;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class O_OperationWithQuantityChain implements IOperation {
     StringBuffer nameOfOperation;
@@ -14,7 +11,7 @@ public class O_OperationWithQuantityChain implements IOperation {
     O_OperationWithQuantityChain(Operation operationToFill, int numberOfOperations) {
         nameOfOperation = Series.generateRandomHexString(8);
         operationsToCreate = new ArrayList<>();
-        operationsToCreate.add(operationToFill);
+        //operationsToCreate.add(operationToFill);
         for(int i = 0; i < numberOfOperations; i++) {
             operationsToCreate.add(operationToFill.clone());
         }
@@ -65,6 +62,11 @@ public class O_OperationWithQuantityChain implements IOperation {
     @Override
     public IOperationMode getCurrentOperatingMode() {
         return operationsToCreate.get(0).getCurrentOperatingMode();
+    }
+
+    @Override
+    public Collection<Operation> getOperationsAtCore() {
+        return null;
     }
 
     @Override
@@ -136,6 +138,7 @@ public class O_OperationWithQuantityChain implements IOperation {
     public LocalDateTime getTactTime() {
         LocalDateTime minTactTime = LocalDateTime.MAX;
         for(Operation operation: operationsToCreate) {
+            if(operation.getTactTime() == null) return null;
             if(operationNotScheduled() && operation.getTactTime().isBefore(minTactTime)) {
                 minTactTime = operation.getTactTime();
             }
@@ -205,11 +208,38 @@ public class O_OperationWithQuantityChain implements IOperation {
         }
     }
 
+    @Override
+    public void setNewReverseTactTime() {
+        for(Operation operation: operationsToCreate) {
+            if(operationNotScheduled()) {
+                operation.setNewReverseTactTime();
+            }
+        }
+    }
+
     //--------
     //эта над этой частью надо подумать
     @Override
-    public ArrayList<IResource> getResourcesToBorrow() {
-        return null;
+    public ArrayList<IStructuralUnitOfResource> getResourcesToBorrow() {
+        HashSet<IStructuralUnitOfResource> resultOfWork = new HashSet<>();
+        for(Operation operation: operationsToCreate) {
+            if(operation.operationNotScheduled()) {
+                resultOfWork.addAll(operation.getResourcesToBorrow());
+            }
+        }
+        return new ArrayList<>(resultOfWork);
+    }
+
+    @Override
+    public int getCountOfOperations() {
+        LocalDateTime tactTime = getTactTime();
+        int count = 0;
+        for(Operation operation: operationsToCreate) {
+            if(operation.operationNotScheduled() && operation.getTactTime().isEqual(tactTime)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @Override
@@ -227,8 +257,27 @@ public class O_OperationWithQuantityChain implements IOperation {
     }
 
     @Override
-    public void installReverseOperation() {
+    public void installOperationForSpecificResource(IResource currentRecourse, int numberOfOperations) {
+        LocalDateTime currentTactTime = getTactTime();
+        int countInstalling = 0;
+        for(Operation operation: operationsToCreate) {
+            if(operation.getTactTime().isEqual(currentTactTime) && operation.operationNotScheduled()) {
+                operation.installOperationForSpecificResource(currentRecourse);
+                countInstalling++;
+            }
+            if(countInstalling == numberOfOperations) {
+                break;
+            }
+        }
+    }
 
+    @Override
+    public void installReverseOperation() {
+        for(Operation operation: operationsToCreate) {
+            if(operation.operationNotScheduled()) {
+                operation.installReverseOperation();
+            }
+        }
     }
 
     @Override

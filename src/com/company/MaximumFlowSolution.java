@@ -7,14 +7,24 @@ public class MaximumFlowSolution {
 
     public static ArrayList<ResultOfMaximumFlowSolution> solveMaximumFlowProblem(Collection<IOperation> frontOfWorkSortedByPriority) {
 
+        /*ArrayList<IOperation> operationsInCore = new ArrayList<>();
+        for(IOperation operation : frontOfWorkSortedByPriority) {
+            operationsInCore.addAll(operation.getOperationsAtCore());
+        }*/
+
+        //ArrayList<IStructuralUnitOfResource> workResources = new ArrayList<>(formResourcesThatCanBeBorrowed(operationsInCore));
         ArrayList<IStructuralUnitOfResource> workResources = new ArrayList<>(formResourcesThatCanBeBorrowed(frontOfWorkSortedByPriority));
         if(workResources.isEmpty()) {
             return null;
         }
 
+        //int[][] adjacencyMatrix = formAdjacencyMatrix(operationsInCore, workResources);
         int[][] adjacencyMatrix = formAdjacencyMatrix(frontOfWorkSortedByPriority, workResources);
 
         findMaxFlow(adjacencyMatrix);
+
+        //ArrayList<ResultOfMaximumFlowSolution> resultOfWork =
+        //        formResultOfAlgorithm(adjacencyMatrix, operationsInCore, workResources);
 
         ArrayList<ResultOfMaximumFlowSolution> resultOfWork =
                 formResultOfAlgorithm(adjacencyMatrix, frontOfWorkSortedByPriority, workResources);
@@ -33,17 +43,19 @@ public class MaximumFlowSolution {
         return workResources;
     }
 
-    //delete
     public static void printMatrix(int[][] matrix){
         for(int i = 0; i < matrix.length; i++){
             for(int j = 0; j < matrix.length; j++){
-                System.out.print(matrix[i][j]);
+                System.out.print(matrix[i][j] + " ");
             }
             System.out.println();
         }
+        System.out.println("--------");
     }
 
-    public static ArrayList<ResultOfMaximumFlowSolution> formResultOfAlgorithm(int[][] adjacencyMatrix, Collection<IOperation> frontOfWorkSortedByPriority,ArrayList<IStructuralUnitOfResource> workResources ) {
+    public static ArrayList<ResultOfMaximumFlowSolution> formResultOfAlgorithm(int[][] adjacencyMatrix,
+                                                                               Collection<IOperation> frontOfWorkSortedByPriority,
+                                                                               ArrayList<IStructuralUnitOfResource> workResources) {
         HashMap<IOperation, IStructuralUnitOfResource> resultOfWork = new HashMap<>();
         ArrayList<ResultOfMaximumFlowSolution> resultOfMaximumFlowSolutions = new ArrayList<>();
         ArrayList<IOperation> frontOfWork = new ArrayList<>(frontOfWorkSortedByPriority);
@@ -59,7 +71,71 @@ public class MaximumFlowSolution {
                 }
             }
         }
+        System.out.println(resultOfMaximumFlowSolutions.size());
         return resultOfMaximumFlowSolutions;
+    }
+
+    public static int[][] formAdjacencyMatrix2(Collection<IOperation> frontOfWorkSortedByPriority,
+                                               ArrayList<IStructuralUnitOfResource> workResources) {
+
+        int count = 0;
+        LocalDateTime maxTactTime = LocalDateTime.MIN;
+        for(IOperation operation: frontOfWorkSortedByPriority) {
+            if(operation.getCountOfOperations() > 1) {
+                if(operation.getTactTime().isAfter(maxTactTime)) {
+                    maxTactTime = operation.getTactTime();
+                }
+            }
+        }
+
+        ArrayList<IOperation> workFrontForOperationsWithCount = new ArrayList<>();
+
+        for(IOperation operation: frontOfWorkSortedByPriority) {
+            if(operation.getCountOfOperations() > 1) {
+                if(operation.getTactTime().isBefore(maxTactTime)
+                        && operation.getTactTime().plusNanos(operation.getDurationOfExecution().toNanos()).isBefore(maxTactTime)) {
+                    workFrontForOperationsWithCount.add(operation);
+                }
+            } else {
+
+            }
+        }
+
+        int matrixSize = frontOfWorkSortedByPriority.size() + workResources.size() + 2;
+        int[][] adjacencyMatrix = new int[matrixSize][matrixSize];
+        ArrayList<IOperation> frontOfWork = new ArrayList<>(frontOfWorkSortedByPriority);
+
+        for(int i = 0; i < matrixSize; i++) {
+            for(int j = 0; j < matrixSize; j ++) {
+                adjacencyMatrix[i][j] = 0;
+            }
+        }
+
+        for(int i = 0; i < matrixSize; i++) {
+            if(1 <= i && i <= frontOfWorkSortedByPriority.size()) {
+                adjacencyMatrix[0][i] = frontOfWork.get(i-1).getCountOfOperations();
+            }
+        }
+        int difference = frontOfWork.size() + 1;
+        for(int i = 0; i < frontOfWork.size(); i++) {
+            ArrayList<IStructuralUnitOfResource> resourcesOfCurrentOperation = frontOfWork.get(i).getResourcesToBorrow();
+            int countOfOperation = frontOfWork.get(i).getCountOfOperations();
+
+            for(int j = 0; j < resourcesOfCurrentOperation.size(); j++) {
+                int indexOfCurrentResource = workResources.indexOf(resourcesOfCurrentOperation.get(j)) + difference;
+                int currentCount = resourcesOfCurrentOperation.get(j).getResourceAmount(frontOfWork.get(i).getTactTime());
+                adjacencyMatrix[i + 1][indexOfCurrentResource] = countOfOperation;
+                if(adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] != 0 &&
+                        adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] < currentCount) {
+                    continue;
+                }
+                else {
+                    adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] = currentCount;
+                }
+            }
+        }
+
+        return adjacencyMatrix;
     }
 
     public static int[][] formAdjacencyMatrix(Collection<IOperation> frontOfWorkSortedByPriority, ArrayList<IStructuralUnitOfResource> workResources) {
@@ -78,14 +154,11 @@ public class MaximumFlowSolution {
                 adjacencyMatrix[0][i] = frontOfWork.get(i-1).getCountOfOperations();
             }
         }
-        LocalDateTime currentTactTime = LocalDateTime.MAX;
         int difference = frontOfWork.size() + 1;
         for(int i = 0; i < frontOfWork.size(); i++) {
             ArrayList<IStructuralUnitOfResource> resourcesOfCurrentOperation = frontOfWork.get(i).getResourcesToBorrow();
             int countOfOperation = frontOfWork.get(i).getCountOfOperations();
-            if(frontOfWork.get(i).getTactTime().isBefore(currentTactTime)) {
-                currentTactTime = frontOfWork.get(i).getTactTime();
-            }
+
             for(int j = 0; j < resourcesOfCurrentOperation.size(); j++) {
                 int indexOfCurrentResource = workResources.indexOf(resourcesOfCurrentOperation.get(j)) + difference;
                 int currentCount = resourcesOfCurrentOperation.get(j).getResourceAmount(frontOfWork.get(i).getTactTime());
@@ -99,29 +172,6 @@ public class MaximumFlowSolution {
                 }
             }
         }
-
-        /*for(int j = 0; j < frontOfWork.size(); j++) {
-            ArrayList<IStructuralUnitOfResource> resourcesOfCurrentOperation = frontOfWork.get(j).getResourcesToBorrow();
-            for(int k = 0; k < resourcesOfCurrentOperation.size(); k ++) {
-                int indexOfCurrentResource = workResources.indexOf(resourcesOfCurrentOperation.get(k)) + difference;
-                int currentCount = resourcesOfCurrentOperation.get(k).getResourceAmount(frontOfWork.get(j).getTactTime());
-                *//*if(adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] == 0) {
-                    adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] = currentCount;
-                }
-                else {
-                    if(currentCount < adjacencyMatrix[indexOfCurrentResource][matrixSize - 1]) {
-                        adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] = currentCount;
-                    }
-                }*//*
-                if(adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] != 0 &&
-                        adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] < currentCount) {
-                    continue;
-                }
-                else {
-                    adjacencyMatrix[indexOfCurrentResource][matrixSize - 1] = currentCount;
-                }
-            }
-        }*/
 
         return adjacencyMatrix;
     }

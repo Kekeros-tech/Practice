@@ -1,7 +1,6 @@
 package com.company;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class Main {
@@ -27,6 +26,5 @@ public class Main {
 	}
 
     public static void main(String[] args) {
-
-    }
+	}
 }

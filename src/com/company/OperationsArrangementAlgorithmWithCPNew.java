@@ -159,7 +159,8 @@ public class OperationsArrangementAlgorithmWithCPNew extends  OperationsArrangem
 
         if(installationSequence != null) {
             for(ResultOfMaximumFlowSolution currentResult: installationSequence) {
-                currentResult.getOperationForInstalling().installOperationForSpecificResource(currentResult.getResourceForInstalling(), currentResult.getAmountForInstalling());
+                currentResult.getOperationForInstalling().installOperationForSpecificResource(currentResult.getResourceForInstalling(),
+                        currentResult.getAmountForInstalling());
             }
         }
 

@@ -428,13 +428,17 @@ public class O_OperationWithQuantityChainTest {
                 seriesToWork, new ControlParameters(2, 1, 0), Duration.ofHours(8)
         );
 
-        OA_byEGO ego = new OA_byEGO("D:\\My_EGO_realization\\hello.py",
+        OA_byEGOServer ego = new OA_byEGOServer("D:\\MY_EGO_SERVER\\main.py", 40,
+                "D:\\MY_EGO_SERVER\\secondFullTestWithDifferentSeries.txt");
+        ego.calculateBestSolution(algo);
+        System.out.println(ego.getBestSolution().getSeconds());
+        /*OA_byEGO ego = new OA_byEGO("D:\\My_EGO_realization\\hello.py",
                 40, "D:\\My_EGO_realization\\secondFullTestWithDifferentSeries.txt");
 
         ego.calculateBestSolution(algo);
         ego.resetResult();
         Duration resultDuration = ego.getBestSolution();
 
-        System.out.println(resultDuration.getSeconds());
+        System.out.println(resultDuration.getSeconds());*/
     }
 }

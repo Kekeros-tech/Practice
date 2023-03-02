@@ -66,7 +66,7 @@ public class O_OperationWithQuantityChain implements IOperation {
 
     @Override
     public Collection<Operation> getOperationsAtCore() {
-        return null;
+        return operationsToCreate;
     }
 
     @Override

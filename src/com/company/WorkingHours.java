@@ -9,12 +9,12 @@ public class WorkingHours {
     private LocalDateTime endTime;
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    WorkingHours(LocalDateTime startTime, LocalDateTime endTime){
+    public WorkingHours(LocalDateTime startTime, LocalDateTime endTime){
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    WorkingHours(String startTime, String endTime){
+    public WorkingHours(String startTime, String endTime){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.startTime = LocalDateTime.parse(startTime,formatter);
         this.endTime = LocalDateTime.parse(endTime,formatter);

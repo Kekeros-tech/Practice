@@ -1,5 +1,8 @@
 package com.company;
 
+import com.company.operation.IOperation;
+import com.company.operation.O_Basic;
+import com.company.recourse.pmc_machine.Recourse;
 import org.junit.Test;
 
 import java.time.Duration;
@@ -40,22 +43,22 @@ public class MaximumFlowSolutionTest {
 
 
 
-        Operation first = new Operation();
+        O_Basic first = new O_Basic();
         first.setResourceGroup(firstAndSecondRecourse);
         first.setDurationOfExecution(Duration.ofHours(5));
         first.setOperatingMode(0);
 
-        Operation second0 = new Operation();
+        O_Basic second0 = new O_Basic();
         second0.setResourceGroup(justFirstRecourse);
         second0.setDurationOfExecution(Duration.ofHours(5));
         second0.setOperatingMode(0);
 
-        Operation third0 = new Operation();
+        O_Basic third0 = new O_Basic();
         third0.setResourceGroup(secondAndThird);
         third0.setDurationOfExecution(Duration.ofHours(5));
         third0.setOperatingMode(0);
 
-        Operation fourth0 = new Operation();
+        O_Basic fourth0 = new O_Basic();
         fourth0.setResourceGroup(secondAndThird);
         fourth0.setDurationOfExecution(Duration.ofHours(5));
         fourth0.setOperatingMode(0);

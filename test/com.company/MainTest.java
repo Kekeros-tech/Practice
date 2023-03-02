@@ -1,11 +1,14 @@
 package com.company;
 
+import com.company.arrangement_algo.Algo_Basic;
+import com.company.comparator.OComparatorBasedOnWorkingInterval;
+import com.company.operation.IOperation;
+import com.company.operation.O_Basic;
+import com.company.recourse.pmc_machine.Recourse;
 import org.junit.Test;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,44 +52,44 @@ public class MainTest {
         allRecourses.addRecourseInTheGroup(thirdRecourse);
 
 
-        Operation firstOperation = new Operation();
-        firstOperation.setResourceGroup(firstAndSecond);
-        firstOperation.setDurationOfExecution(Duration.ofHours(3));
-        firstOperation.setOperatingMode(0);
+        O_Basic firstOBasic = new O_Basic();
+        firstOBasic.setResourceGroup(firstAndSecond);
+        firstOBasic.setDurationOfExecution(Duration.ofHours(3));
+        firstOBasic.setOperatingMode(0);
 
-        Operation secondOperation = new Operation();
-        secondOperation.setResourceGroup(firstAndThird);
-        secondOperation.setDurationOfExecution(Duration.ofHours(10));
-        secondOperation.setOperatingMode(1);
+        O_Basic secondOBasic = new O_Basic();
+        secondOBasic.setResourceGroup(firstAndThird);
+        secondOBasic.setDurationOfExecution(Duration.ofHours(10));
+        secondOBasic.setOperatingMode(1);
 
-        Operation thirdOperation = new Operation();
-        thirdOperation.setResourceGroup(allRecourses);
-        thirdOperation.setDurationOfExecution(Duration.ofHours(4));
-        thirdOperation.setOperatingMode(0);
+        O_Basic thirdOBasic = new O_Basic();
+        thirdOBasic.setResourceGroup(allRecourses);
+        thirdOBasic.setDurationOfExecution(Duration.ofHours(4));
+        thirdOBasic.setOperatingMode(0);
         //thirdOperation.setOperatingMode(1);
 
-        Operation fourthOperation = new Operation();
-        fourthOperation.setResourceGroup(allRecourses);
-        fourthOperation.setDurationOfExecution(Duration.ofHours(2));
-        fourthOperation.setOperatingMode(0);
+        O_Basic fourthOBasic = new O_Basic();
+        fourthOBasic.setResourceGroup(allRecourses);
+        fourthOBasic.setDurationOfExecution(Duration.ofHours(2));
+        fourthOBasic.setOperatingMode(0);
         //fourthOperation.setOperatingMode(0);
 
-        firstOperation.addFollowingOperation(fourthOperation);
-        secondOperation.addFollowingOperation(fourthOperation);
-        thirdOperation.addFollowingOperation(fourthOperation);
+        firstOBasic.addFollowingOperation(fourthOBasic);
+        secondOBasic.addFollowingOperation(fourthOBasic);
+        thirdOBasic.addFollowingOperation(fourthOBasic);
 
         ArrayList<IOperation> operations = new ArrayList<>();
-        operations.add(firstOperation);
-        operations.add(secondOperation);
-        operations.add(thirdOperation);
-        operations.add(fourthOperation);
+        operations.add(firstOBasic);
+        operations.add(secondOBasic);
+        operations.add(thirdOBasic);
+        operations.add(fourthOBasic);
 
         Series mySeries = new Series(operations, "30-08-2021 00:00", "15-08-2021 10:00");
 
-        firstOperation.setSerialAffiliation(mySeries);
-        secondOperation.setSerialAffiliation(mySeries);
-        thirdOperation.setSerialAffiliation(mySeries);
-        fourthOperation.setSerialAffiliation(mySeries);
+        firstOBasic.setSerialAffiliation(mySeries);
+        secondOBasic.setSerialAffiliation(mySeries);
+        thirdOBasic.setSerialAffiliation(mySeries);
+        fourthOBasic.setSerialAffiliation(mySeries);
 
         firstRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
@@ -95,7 +98,7 @@ public class MainTest {
         ArrayList<Series> seriesForWork = new ArrayList<>();
         seriesForWork.add(mySeries);
 
-        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm(seriesForWork);
+        Algo_Basic algo = new Algo_Basic(seriesForWork);
         algo.takeSeriesToWork();
 
         OComparatorBasedOnWorkingInterval sorter = new OComparatorBasedOnWorkingInterval();
@@ -156,42 +159,42 @@ public class MainTest {
         allRecourses.addRecourseInTheGroup(thirdRecourse);
 
 
-        Operation firstOperation = new Operation();
-        firstOperation.setResourceGroup(firstAndSecond);
-        firstOperation.setDurationOfExecution(Duration.ofHours(10));
-        firstOperation.setOperatingMode(1);
+        O_Basic firstOBasic = new O_Basic();
+        firstOBasic.setResourceGroup(firstAndSecond);
+        firstOBasic.setDurationOfExecution(Duration.ofHours(10));
+        firstOBasic.setOperatingMode(1);
 
-        Operation secondOperation = new Operation();
-        secondOperation.setResourceGroup(firstAndThird);
-        secondOperation.setDurationOfExecution(Duration.ofHours(4));
-        secondOperation.setOperatingMode(0);
+        O_Basic secondOBasic = new O_Basic();
+        secondOBasic.setResourceGroup(firstAndThird);
+        secondOBasic.setDurationOfExecution(Duration.ofHours(4));
+        secondOBasic.setOperatingMode(0);
 
-        Operation thirdOperation = new Operation();
-        thirdOperation.setResourceGroup(allRecourses);
-        thirdOperation.setDurationOfExecution(Duration.ofHours(8));
-        thirdOperation.setOperatingMode(1);
+        O_Basic thirdOBasic = new O_Basic();
+        thirdOBasic.setResourceGroup(allRecourses);
+        thirdOBasic.setDurationOfExecution(Duration.ofHours(8));
+        thirdOBasic.setOperatingMode(1);
 
-        Operation fourthOperation = new Operation();
-        fourthOperation.setResourceGroup(allRecourses);
-        fourthOperation.setDurationOfExecution(Duration.ofHours(3));
-        fourthOperation.setOperatingMode(0);
+        O_Basic fourthOBasic = new O_Basic();
+        fourthOBasic.setResourceGroup(allRecourses);
+        fourthOBasic.setDurationOfExecution(Duration.ofHours(3));
+        fourthOBasic.setOperatingMode(0);
 
-        firstOperation.addFollowingOperation(secondOperation);
-        secondOperation.addFollowingOperation(thirdOperation);
-        secondOperation.addFollowingOperation(fourthOperation);
+        firstOBasic.addFollowingOperation(secondOBasic);
+        secondOBasic.addFollowingOperation(thirdOBasic);
+        secondOBasic.addFollowingOperation(fourthOBasic);
 
         ArrayList<IOperation> operations = new ArrayList<>();
-        operations.add(firstOperation);
-        operations.add(secondOperation);
-        operations.add(thirdOperation);
-        operations.add(fourthOperation);
+        operations.add(firstOBasic);
+        operations.add(secondOBasic);
+        operations.add(thirdOBasic);
+        operations.add(fourthOBasic);
 
         Series mySeries = new Series(operations, "30-08-2021 00:00", "15-08-2021 10:00");
 
-        firstOperation.setSerialAffiliation(mySeries);
-        secondOperation.setSerialAffiliation(mySeries);
-        thirdOperation.setSerialAffiliation(mySeries);
-        fourthOperation.setSerialAffiliation(mySeries);
+        firstOBasic.setSerialAffiliation(mySeries);
+        secondOBasic.setSerialAffiliation(mySeries);
+        thirdOBasic.setSerialAffiliation(mySeries);
+        fourthOBasic.setSerialAffiliation(mySeries);
 
         firstRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
         secondRecourse.fillScheduleUsingPreviousData(mySeries.getDeadlineForCompletion());
@@ -200,20 +203,20 @@ public class MainTest {
         ArrayList<Series> seriesToWork = new ArrayList<>();
         seriesToWork.add(mySeries);
 
-        OperationsArrangementAlgorithm algo = new OperationsArrangementAlgorithm(seriesToWork);
+        Algo_Basic algo = new Algo_Basic(seriesToWork);
         algo.takeSeriesToWork();
 
         WorkingHours expectation = new WorkingHours("15-08-2021 10:00", "17-08-2021 10:00");
-        assertEquals(expectation.toString(), firstOperation.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), firstOBasic.getCWorkingInterval().toString());
 
         expectation = new WorkingHours("17-08-2021 10:00", "17-08-2021 14:00");
-        assertEquals(expectation.toString(), secondOperation.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), secondOBasic.getCWorkingInterval().toString());
 
         expectation = new WorkingHours("17-08-2021 14:00", "18-08-2021 15:00");
-        assertEquals(expectation.toString(), thirdOperation.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), thirdOBasic.getCWorkingInterval().toString());
 
         expectation = new WorkingHours("18-08-2021 09:00", "18-08-2021 12:00");
-        assertEquals(expectation.toString(), fourthOperation.getCWorkingInterval().toString());
+        assertEquals(expectation.toString(), fourthOBasic.getCWorkingInterval().toString());
     }
 
 /*

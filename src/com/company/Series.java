@@ -1,7 +1,8 @@
 package com.company;
-import java.nio.charset.StandardCharsets;
+import com.company.operation.IOperation;
+import com.company.operation.O_Basic;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Series {
@@ -13,7 +14,7 @@ public class Series {
     private int cNumberOfAssignedOperations;
 
 
-    Series(Collection<IOperation> operationsToCreate, LocalDateTime deadlineForCompletion, LocalDateTime arrivalTime)
+    public Series(Collection<IOperation> operationsToCreate, LocalDateTime deadlineForCompletion, LocalDateTime arrivalTime)
     {
         nameOfSeries = generateRandomHexString(8);
         this.operationsToCreate = new ArrayList<>(operationsToCreate);
@@ -59,9 +60,9 @@ public class Series {
 
 
 
-    public void addOperationToCreate(Operation operation) { operationsToCreate.add(operation); }
+    public void addOperationToCreate(O_Basic OBasic) { operationsToCreate.add(OBasic); }
 
-    public void addOperationCollectionToCreate(Collection<Operation> operationsToCreate) { this.operationsToCreate.addAll(operationsToCreate); }
+    public void addOperationCollectionToCreate(Collection<O_Basic> operationsToCreate) { this.operationsToCreate.addAll(operationsToCreate); }
 
     public boolean allOperationsAssigned() {
         for(IOperation operation: operationsToCreate) {

@@ -1,14 +1,18 @@
 package com.company;
 
+import com.company.arrangement_algo.Algo_WithCPAndFuture;
+import com.company.comparator.OComparatorBasedOnWorkingInterval;
+import com.company.control_param.ControlParameters;
+import com.company.operation.IOperation;
+import com.company.operation.O_Basic;
+import com.company.operation.O_Priority;
+import com.company.param_selection_algo.PSA_byEGO;
+import com.company.recourse.pmc_machine.Recourse;
 import org.junit.Test;
 
-import javax.jnlp.FileContents;
 import java.io.*;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
@@ -37,19 +41,19 @@ public class ComplexTest {
         justSecondRecourse.addRecourseInTheGroup(secondRecourse);
 
         //Operation first0 = new OperationWithPrioritiesByHeirs();
-        IOperation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new O_Priority();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
 
         //Operation second0 = new OperationWithPrioritiesByHeirs();
-        IOperation second0 = new OperationWithPriorityNew();
+        IOperation second0 = new O_Priority();
         second0.setResourceGroup(justFirstRecourse);
         second0.setDurationOfExecution(Duration.ofHours(3));
         second0.setOperatingMode(1);
 
         //Operation third0 = new OperationWithPrioritiesByHeirs();
-        IOperation third0 = new OperationWithPriorityNew();
+        IOperation third0 = new O_Priority();
         third0.setResourceGroup(justSecondRecourse);
         third0.setDurationOfExecution(Duration.ofHours(3));
         third0.setOperatingMode(1);
@@ -69,19 +73,19 @@ public class ComplexTest {
         third0.setSerialAffiliation(firstSeries);
 
         //Operation first1 = new OperationWithPrioritiesByHeirs();
-        IOperation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new O_Priority();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
         //Operation second1 = new OperationWithPrioritiesByHeirs();
-        IOperation second1 = new OperationWithPriorityNew();
+        IOperation second1 = new O_Priority();
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
         //Operation third1 = new OperationWithPrioritiesByHeirs();
-        IOperation third1 = new OperationWithPriorityNew();
+        IOperation third1 = new O_Priority();
         third1.setResourceGroup(justSecondRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
@@ -154,12 +158,12 @@ public class ComplexTest {
         Group justFirstRecourse = new Group();
         justFirstRecourse.addRecourseInTheGroup(firstRecourse);
 
-        Operation first0 = new Operation();
+        O_Basic first0 = new O_Basic();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(5));
         first0.setOperatingMode(0);
 
-        Operation second0 = new Operation();
+        O_Basic second0 = new O_Basic();
         second0.setResourceGroup(justFirstRecourse);
         second0.setDurationOfExecution(Duration.ofHours(5));
         second0.setOperatingMode(0);
@@ -176,7 +180,7 @@ public class ComplexTest {
         first0.setSerialAffiliation(firstSeries);
         second0.setSerialAffiliation(firstSeries);
 
-        Operation first1 = new Operation();
+        O_Basic first1 = new O_Basic();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(9));
         first1.setOperatingMode(0);
@@ -224,7 +228,7 @@ public class ComplexTest {
 
 
 
-        IOperation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new O_Priority();
         first0.setResourceGroup(justFirstRecourse);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
@@ -237,7 +241,7 @@ public class ComplexTest {
 
 
 
-        IOperation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new O_Priority();
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(7));
         first1.setOperatingMode(0);
@@ -292,25 +296,25 @@ public class ComplexTest {
         allRecourses.addRecourseInTheGroup(secondRecourse);
 
 
-        IOperation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new O_Priority();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(allRecourses);
         first0.setDurationOfExecution(Duration.ofHours(7));
         first0.setOperatingMode(0);
 
-        IOperation second0 = new OperationWithPriorityNew();
+        IOperation second0 = new O_Priority();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(allRecourses);
         second0.setDurationOfExecution(Duration.ofHours(7));
         second0.setOperatingMode(0);
 
-        IOperation third0 = new OperationWithPriorityNew();
+        IOperation third0 = new O_Priority();
         third0.setNameOfOperation("Третья операция, первой серии");
         third0.setResourceGroup(justFirstRecourse);
         third0.setDurationOfExecution(Duration.ofHours(7));
         third0.setOperatingMode(0);
 
-        IOperation fourth0 = new OperationWithPriorityNew();
+        IOperation fourth0 = new O_Priority();
         fourth0.setNameOfOperation("Четвертая операция, первой серии");
         fourth0.setResourceGroup(justSecondRecourse);
         fourth0.setDurationOfExecution(Duration.ofHours(7));
@@ -334,25 +338,25 @@ public class ComplexTest {
 
 
 
-        IOperation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new O_Priority();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(allRecourses);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        IOperation second1 = new OperationWithPriorityNew();
+        IOperation second1 = new O_Priority();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justSecondRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        IOperation third1 = new OperationWithPriorityNew();
+        IOperation third1 = new O_Priority();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justFirstRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
 
-        IOperation fourth1 = new OperationWithPriorityNew();
+        IOperation fourth1 = new O_Priority();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justSecondRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(3));
@@ -449,37 +453,37 @@ public class ComplexTest {
         firstAndThird.addRecourseInTheGroup(thirdRecourse);
 
 
-        IOperation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new O_Priority();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(secondAndThird);
         first0.setDurationOfExecution(Duration.ofHours(5));
         first0.setOperatingMode(0);
 
-        IOperation second0 = new OperationWithPriorityNew();
+        IOperation second0 = new O_Priority();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(firstAndThird);
         second0.setDurationOfExecution(Duration.ofHours(6));
         second0.setOperatingMode(0);
 
-        IOperation third0 = new OperationWithPriorityNew();
+        IOperation third0 = new O_Priority();
         third0.setNameOfOperation("Третья операция, первой серии");
         third0.setResourceGroup(firstAndSecond);
         third0.setDurationOfExecution(Duration.ofHours(7));
         third0.setOperatingMode(0);
 
-        IOperation fourth0 = new OperationWithPriorityNew();
+        IOperation fourth0 = new O_Priority();
         fourth0.setNameOfOperation("Четвертая операция, первой серии");
         fourth0.setResourceGroup(allRecourses);
         fourth0.setDurationOfExecution(Duration.ofHours(5));
         fourth0.setOperatingMode(0);
 
-        IOperation fifth0 = new OperationWithPriorityNew();
+        IOperation fifth0 = new O_Priority();
         fifth0.setNameOfOperation("Пятая операция, первой серии");
         fifth0.setResourceGroup(allRecourses);
         fifth0.setDurationOfExecution(Duration.ofHours(4));
         fifth0.setOperatingMode(0);
 
-        IOperation sixth0 = new OperationWithPriorityNew();
+        IOperation sixth0 = new O_Priority();
         sixth0.setNameOfOperation("Шестая операция, первой серии");
         sixth0.setResourceGroup(firstAndSecond);
         sixth0.setDurationOfExecution(Duration.ofHours(3));
@@ -509,37 +513,37 @@ public class ComplexTest {
 
 
 
-        IOperation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new O_Priority();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(allRecourses);
         first1.setDurationOfExecution(Duration.ofHours(3));
         first1.setOperatingMode(0);
 
-        IOperation second1 = new OperationWithPriorityNew();
+        IOperation second1 = new O_Priority();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(3));
         second1.setOperatingMode(0);
 
-        IOperation third1 = new OperationWithPriorityNew();
+        IOperation third1 = new O_Priority();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justSecondRecourse);
         third1.setDurationOfExecution(Duration.ofHours(3));
         third1.setOperatingMode(0);
 
-        IOperation fourth1 = new OperationWithPriorityNew();
+        IOperation fourth1 = new O_Priority();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justThirdRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(3));
         fourth1.setOperatingMode(0);
 
-        IOperation fifth1 = new OperationWithPriorityNew();
+        IOperation fifth1 = new O_Priority();
         fifth1.setNameOfOperation("Пятая операция, второй сериии");
         fifth1.setResourceGroup(justFirstRecourse);
         fifth1.setDurationOfExecution(Duration.ofHours(3));
         fifth1.setOperatingMode(0);
 
-        IOperation sixth1 = new OperationWithPriorityNew();
+        IOperation sixth1 = new O_Priority();
         sixth1.setNameOfOperation("Шестая операция, второй серии");
         sixth1.setResourceGroup(justSecondRecourse);
         sixth1.setDurationOfExecution(Duration.ofHours(3));
@@ -570,19 +574,19 @@ public class ComplexTest {
 
 
 
-        IOperation first2 = new OperationWithPriorityNew();
+        IOperation first2 = new O_Priority();
         first2.setNameOfOperation("Первая операция, третья серия");
         first2.setResourceGroup(allRecourses);
         first2.setDurationOfExecution(Duration.ofHours(2));
         first2.setOperatingMode(0);
 
-        IOperation second2 = new OperationWithPriorityNew();
+        IOperation second2 = new O_Priority();
         second2.setNameOfOperation("Вторая операция, третья серия");
         second2.setResourceGroup(justFirstRecourse);
         second2.setDurationOfExecution(Duration.ofHours(9));
         second2.setOperatingMode(0);
 
-        IOperation third2 = new OperationWithPriorityNew();
+        IOperation third2 = new O_Priority();
         third2.setNameOfOperation("Третья операция, третья серия");
         third2.setResourceGroup(justSecondRecourse);
         third2.setDurationOfExecution(Duration.ofHours(9));
@@ -611,12 +615,12 @@ public class ComplexTest {
         secondRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
         thirdRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
 
-        OperationsArrangementAlgorithmWithCPAndFutureFrontNew algo =
-                new OperationsArrangementAlgorithmWithCPAndFutureFrontNew(seriesToWork,
+        Algo_WithCPAndFuture algo =
+                new Algo_WithCPAndFuture(seriesToWork,
                         new ControlParameters(1, 1, 1),
                         Duration.ofHours(1));
 
-        OA_byEGO ego = new OA_byEGO("D:\\My_EGO_realization\\hello.py", 10,
+        PSA_byEGO ego = new PSA_byEGO("D:\\My_EGO_realization\\hello.py", 10,
                 "D:\\My_EGO_realization\\text.txt");
 
         ego.calculateBestSolution(algo);
@@ -649,13 +653,13 @@ public class ComplexTest {
         allRecourses.addRecourseInTheGroup(firstRecourse);
         allRecourses.addRecourseInTheGroup(secondRecourse);
 
-        IOperation first0 = new OperationWithPriorityNew();
+        IOperation first0 = new O_Priority();
         first0.setNameOfOperation("Первая операция, первой серии");
         first0.setResourceGroup(allRecourses);
         first0.setDurationOfExecution(Duration.ofHours(3));
         first0.setOperatingMode(0);
 
-        IOperation second0 = new OperationWithPriorityNew();
+        IOperation second0 = new O_Priority();
         second0.setNameOfOperation("Вторая операция, первой серии");
         second0.setResourceGroup(allRecourses);
         second0.setDurationOfExecution(Duration.ofHours(4));
@@ -671,37 +675,37 @@ public class ComplexTest {
         second0.setSerialAffiliation(firstSeries);
 
 
-        IOperation first1 = new OperationWithPriorityNew();
+        IOperation first1 = new O_Priority();
         first1.setNameOfOperation("Первая операция, второй серии");
         first1.setResourceGroup(justFirstRecourse);
         first1.setDurationOfExecution(Duration.ofHours(4));
         first1.setOperatingMode(0);
 
-        IOperation second1 = new OperationWithPriorityNew();
+        IOperation second1 = new O_Priority();
         second1.setNameOfOperation("Вторая операция, второй серии");
         second1.setResourceGroup(justFirstRecourse);
         second1.setDurationOfExecution(Duration.ofHours(6));
         second1.setOperatingMode(0);
 
-        IOperation third1 = new OperationWithPriorityNew();
+        IOperation third1 = new O_Priority();
         third1.setNameOfOperation("Третья операция, второй серии");
         third1.setResourceGroup(justFirstRecourse);
         third1.setDurationOfExecution(Duration.ofHours(6));
         third1.setOperatingMode(0);
 
-        IOperation fourth1 = new OperationWithPriorityNew();
+        IOperation fourth1 = new O_Priority();
         fourth1.setNameOfOperation("Четвертая операция, второй серии");
         fourth1.setResourceGroup(justFirstRecourse);
         fourth1.setDurationOfExecution(Duration.ofHours(6));
         fourth1.setOperatingMode(0);
 
-        IOperation fifth1 = new OperationWithPriorityNew();
+        IOperation fifth1 = new O_Priority();
         fifth1.setNameOfOperation("Пятая операция, второй серии");
         fifth1.setResourceGroup(justFirstRecourse);
         fifth1.setDurationOfExecution(Duration.ofHours(6));
         fifth1.setOperatingMode(0);
 
-        IOperation sixth1 = new OperationWithPriorityNew();
+        IOperation sixth1 = new O_Priority();
         sixth1.setNameOfOperation("Шестая операция, второй серии");
         sixth1.setResourceGroup(justFirstRecourse);
         sixth1.setDurationOfExecution(Duration.ofHours(6));
@@ -736,12 +740,12 @@ public class ComplexTest {
 
         firstRecourse.fillScheduleUsingPreviousData(secondSeries.getDeadlineForCompletion());
 
-        OperationsArrangementAlgorithmWithCPAndFutureFrontNew algo =
-                new OperationsArrangementAlgorithmWithCPAndFutureFrontNew(seriesToWork,
+        Algo_WithCPAndFuture algo =
+                new Algo_WithCPAndFuture(seriesToWork,
                         new ControlParameters(1,1,1),
                         Duration.ofHours(2));
 
-        OA_byEGO ego = new OA_byEGO("D:\\My_EGO_realization\\hello.py", 10,
+        PSA_byEGO ego = new PSA_byEGO("D:\\My_EGO_realization\\hello.py", 10,
                 "D:\\My_EGO_realization\\testWhereSecondSortingReturnBestResult.txt");
         ego.calculateBestSolution(algo);
         System.out.println(ego.getBestSolution());

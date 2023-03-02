@@ -7,13 +7,14 @@ import java.time.format.DateTimeFormatter;
 public class WorkingHours {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    WorkingHours(LocalDateTime startTime, LocalDateTime endTime){
+    public WorkingHours(LocalDateTime startTime, LocalDateTime endTime){
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    WorkingHours(String startTime, String endTime){
+    public WorkingHours(String startTime, String endTime){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.startTime = LocalDateTime.parse(startTime,formatter);
         this.endTime = LocalDateTime.parse(endTime,formatter);
@@ -44,7 +45,7 @@ public class WorkingHours {
         return startTime.format(formatter)+"--->"+ endTime.format(formatter);
     }
 
-    public Duration toDuration(){
+    public Duration toDuration() {
         Duration result = Duration.between(startTime, endTime);
         return result;
     }
@@ -54,12 +55,14 @@ public class WorkingHours {
     }
 
     public boolean isWorkingTime(LocalDateTime currentDate) {
-        if(startTime.isBefore(currentDate) && endTime.isAfter(currentDate)) {
-            return true;
-        }
-        else if(startTime.isEqual(currentDate)) {
+        if(!startTime.isAfter(currentDate) && !endTime.isBefore(currentDate)) {
             return true;
         }
         return false;
     }
+
+    public boolean isReverseTime(LocalDateTime currentTime) {
+        return false;
+    }
+
 }

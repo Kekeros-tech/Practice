@@ -1,36 +1,46 @@
 package com.company;
+import com.company.operation.IOperation;
+import com.company.operation.O_Basic;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class Series {
-    private ArrayList<Operation> operationsToCreate;
+    private StringBuffer nameOfSeries;
+    private ArrayList<IOperation> operationsToCreate;
     private LocalDateTime deadlineForCompletion;
     private LocalDateTime arrivalTime;
 
     private int cNumberOfAssignedOperations;
 
 
-    Series(Collection<Operation> operationsToCreate, LocalDateTime deadlineForCompletion, LocalDateTime arrivalTime)
+    public Series(Collection<IOperation> operationsToCreate, LocalDateTime deadlineForCompletion, LocalDateTime arrivalTime)
     {
+        nameOfSeries = generateRandomHexString(8);
         this.operationsToCreate = new ArrayList<>(operationsToCreate);
         this.deadlineForCompletion = deadlineForCompletion;
         this.arrivalTime = arrivalTime;
     }
 
-    Series(Collection<Operation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
+    Series(Collection<IOperation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        this.operationsToCreate = new ArrayList<>(operationsToCreate);
-        this.deadlineForCompletion = LocalDateTime.parse(deadlineForCompletion,formatter);
-        this.arrivalTime = LocalDateTime.parse(arrivalTime,formatter);
+        this(operationsToCreate, LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter), LocalDateTime.parse(arrivalTime, WorkingHours.formatter));
     }
 
+    Series(String deadlineForCompletion, String arrivalTime) {
+        this.deadlineForCompletion = LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter);
+        this.arrivalTime = LocalDateTime.parse(arrivalTime, WorkingHours.formatter);
+    }
 
-    public ArrayList<Operation> getOperationsToCreate() { return operationsToCreate; }
+    Series(String nameOfOperation, Collection<IOperation> operationsToCreate, String deadlineForCompletion, String arrivalTime)
+    {
+        this(operationsToCreate, LocalDateTime.parse(deadlineForCompletion, WorkingHours.formatter), LocalDateTime.parse(arrivalTime, WorkingHours.formatter));
+        this.nameOfSeries = new StringBuffer(nameOfOperation);
+    }
+
+    public StringBuffer getNameOfSeries() { return nameOfSeries; }
+
+    public ArrayList<IOperation> getOperationsToCreate() { return operationsToCreate; }
 
     public LocalDateTime getDeadlineForCompletion() { return deadlineForCompletion; }
 
@@ -40,7 +50,7 @@ public class Series {
 
 
 
-    public void setOperationsToCreate(Collection<Operation> operationsToCreate) { this.operationsToCreate = new ArrayList<>(operationsToCreate); }
+    public void setOperationsToCreate(Collection<IOperation> operationsToCreate) { this.operationsToCreate = new ArrayList<>(operationsToCreate); }
 
     public void setDeadlineForCompletion(LocalDateTime deadlineForCompletion) { this.deadlineForCompletion = deadlineForCompletion; }
 
@@ -50,45 +60,44 @@ public class Series {
 
 
 
-    public void addOperationToCreate(Operation operation) { operationsToCreate.add(operation); }
+    public void addOperationToCreate(O_Basic OBasic) { operationsToCreate.add(OBasic); }
 
-    public void addOperationCollectionToCreate(Collection<Operation> operationsToCreate) { this.operationsToCreate.addAll(operationsToCreate); }
-
-    public void removePreviousOperations(Operation requiredOperation){
-        for (Operation operation: operationsToCreate) {
-            if(operation.getPreviousOperations().contains(requiredOperation)){
-                operation.getPreviousOperations().remove(requiredOperation);
-            }
-        }
-    }
+    public void addOperationCollectionToCreate(Collection<O_Basic> operationsToCreate) { this.operationsToCreate.addAll(operationsToCreate); }
 
     public boolean allOperationsAssigned() {
-        if(cNumberOfAssignedOperations == operationsToCreate.size()) {
+        for(IOperation operation: operationsToCreate) {
+            if(operation.operationNotScheduled()) {
+                return false;
+            }
+        }
+        return true;
+        /*if(cNumberOfAssignedOperations == operationsToCreate.size()) {
             return true;
         }
-        return false;
+        return false;*/
     }
 
-/*    public void nullifyPriorities() {
-        for (Operation currentOperation: operationsToCreate) {
-            for (Recourse recourse: currentOperation.getResourceGroup().getRecoursesInTheGroup()) {
-                recourse.setCPriority(0);
-            }
+    public void clean() {
+        for(IOperation currentOperation: operationsToCreate){
+            currentOperation.clean();
         }
-    }*/
+        cNumberOfAssignedOperations = 0;
+    }
 
-/*    public Recourse PrioritizeRecourse() {
-        Recourse maxRecourse = new Recourse();
-        for (Operation currentOperation: operationsToCreate) {
-            if(currentOperation.getCNumberOfAssignedRecourse() == null && currentOperation.allPreviousAssigned()) {
-                for (Recourse recourse: currentOperation.getResourceGroup().getRecoursesInTheGroup()) {
-                    recourse.increasePriority();
-                    if(recourse.getCPriority() > maxRecourse.getCPriority()){
-                        maxRecourse = recourse;
-                    }
-                }
-            }
+    public void fullClean() {
+        for(IOperation currentOperation: operationsToCreate) {
+            currentOperation.fullClean();
         }
-        return maxRecourse;
-    }*/
+        cNumberOfAssignedOperations = 0;
+    }
+
+    public static StringBuffer generateRandomHexString(int length){
+        Random r = new Random();
+        StringBuffer sb = new StringBuffer();
+        while(sb.length() < length){
+            sb.append(Integer.toHexString(r.nextInt()));
+        }
+        return sb.delete(length, sb.length());
+    }
+
 }

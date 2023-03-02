@@ -1,11 +1,16 @@
 package com.company;
+import com.company.recourse.IResource;
+import com.company.recourse.pmc_machine.Recourse;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class Group {
-    private Collection<Recourse> recoursesInTheGroup;
+    private StringBuffer nameOfGroup;
+    private Collection<IResource> recoursesInTheGroup;
 
     public Group() { //он ведь так по умолчанию формирует
+        nameOfGroup = Series.generateRandomHexString(8);
         recoursesInTheGroup = new ArrayList<>();
     }
 
@@ -20,22 +25,20 @@ public class Group {
         recoursesInTheGroup.add(recourse);
     }
 
-    public void addRecourseInTheGroup(Recourse recourse) { recoursesInTheGroup.add(recourse); }
+    public void addRecourseInTheGroup(IResource recourse) { recoursesInTheGroup.add(recourse); }
 
     public void addRecourseCollectionInTheGroup(Collection<Recourse> recoursesInTheGroup) {
         this.recoursesInTheGroup.addAll(recoursesInTheGroup);
     }
 
-    public Collection<Recourse>  getRecoursesInTheGroup() { return recoursesInTheGroup; }
+    public Collection<IResource> getRecoursesInTheGroup() { return recoursesInTheGroup; }
 
     public Recourse get(int number){
         Recourse[] recoursesArray = recoursesInTheGroup.toArray(new Recourse[recoursesInTheGroup.size()]);
         return recoursesArray[number];
     }
 
-    public Recourse getRecourseWithMaxOperation() {
-
-        return  null;
+    public StringBuffer getNameOfGroup() {
+        return nameOfGroup;
     }
-
 }

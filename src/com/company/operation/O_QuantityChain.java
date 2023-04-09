@@ -33,6 +33,29 @@ public class O_QuantityChain implements IOperation {
     }
 
     @Override
+    public String formResultOfOperation() {
+        final StringBuffer sb = new StringBuffer("");
+        sb.append(nameOfOperation).append(";");
+        for(O_Basic oper : operationsToCreate) {
+            ArrayList<IStructuralUnitOfResource> resources = new ArrayList<>(oper.getCNumberOfAssignedRecourse());
+            for(int i = 0; i < resources.size(); i ++) {
+                sb.append(resources.get(i)).append(",");
+            }
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(";");
+        for(O_Basic oper : operationsToCreate) {
+            ArrayList<WorkingHours> workingHours = new ArrayList<>(oper.getCWorkingInterval());
+            for(int i = 0; i < workingHours.size(); i ++) {
+                sb.append(workingHours.get(i)).append(",");
+            }
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(";");
+        return sb.toString();
+    }
+
+    @Override
     public boolean isСanBePlacedInFront() {
         for(O_Basic OBasic : operationsToCreate) {
             if(OBasic.operationNotScheduled()) {

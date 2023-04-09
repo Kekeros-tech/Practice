@@ -396,11 +396,13 @@ public class ComplexTest {
         Main.testFutureAlgo(seriesToWork, Duration.ofHours(10), new ControlParameters(0, 1, 0));
         //Main.takeSeriesToWorkExtendedWithFutureFrontOfWork(seriesToWork, Duration.ofHours(10), new ControlParameters(2,1,0));
 
-        for(Series series: seriesToWork){
-            for(IOperation operation: series.getOperationsToCreate()) {
-                System.out.println(operation);
-            }
-        }
+        Visualization vis = new Visualization("");
+        vis.visualizeSolution(seriesToWork);
+//        for(Series series: seriesToWork){
+//            for(IOperation operation: series.getOperationsToCreate()) {
+//                System.out.println(operation.formResultOfOperation());
+//            }
+//        }
     }
 
     @Test
@@ -626,7 +628,6 @@ public class ComplexTest {
         ego.calculateBestSolution(algo);
         System.out.println("----");
         System.out.println(ego.getBestSolution());
-        //ego.resetResult();
     }
 
     @Test

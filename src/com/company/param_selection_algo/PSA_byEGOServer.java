@@ -11,7 +11,11 @@ import java.time.LocalDateTime;
 public class PSA_byEGOServer implements IOptimizationAlgo {
     private String scriptLocation;
     private int numberIterations;
+
     private Duration bestSolution;
+    private ControlParameters bestControlParameters;
+    private Duration bestDurationParameter;
+
     private String pathStartFile;
     private Socket clientSocket;
     private BufferedReader in;
@@ -53,8 +57,11 @@ public class PSA_byEGOServer implements IOptimizationAlgo {
                     int durationParam = Integer.parseInt(in.readLine());
                     int strategyParam = Integer.parseInt(in.readLine());
 
-                    algoOfOperationPlacement.controlParameters = new ControlParameters(strategyParam, 1, 0);
-                    algoOfOperationPlacement.selectedDuration = Duration.ofSeconds(durationParam);
+                    ControlParameters currentControlParameters = new ControlParameters(strategyParam, 1, 0);
+                    Duration currentDurationParameter = Duration.ofSeconds(durationParam);
+
+                    algoOfOperationPlacement.controlParameters = currentControlParameters;
+                    algoOfOperationPlacement.selectedDuration = currentDurationParameter;
                     algoOfOperationPlacement.takeSeriesToWork();
 
                     Duration resDuration = Duration.between(timeEarliestOperation,
@@ -65,6 +72,8 @@ public class PSA_byEGOServer implements IOptimizationAlgo {
 
                     if(bestSolution.isZero() || bestSolution.compareTo(resDuration) == 1) {
                         bestSolution = resDuration;
+                        bestControlParameters = currentControlParameters;
+                        bestDurationParameter = currentDurationParameter;
                     }
                 }
             } finally {
@@ -84,6 +93,10 @@ public class PSA_byEGOServer implements IOptimizationAlgo {
     public Duration getBestSolution() {
         return bestSolution;
     }
+
+    public Duration getBestDurationParameter() { return bestDurationParameter; }
+
+    public ControlParameters getBestControlParameters() { return bestControlParameters; }
 
     public void resetResult() {
         return;

@@ -428,8 +428,21 @@ public class O_QuantityChainTest {
                 seriesToWork, new ControlParameters(2, 1, 0), Duration.ofHours(8)
         );
 
+        algo.takeSeriesToWork();
+
+        Visualization visualization = new Visualization("secondFullTestWithDifferentSeries-simple");
+        visualization.visualizeSolution(seriesToWork);
+
         PSA_byEGOServer ego = new PSA_byEGOServer(40, "secondFullTestWithDifferentSeries.txt");
         ego.calculateBestSolution(algo);
         System.out.println(ego.getBestSolution().getSeconds());
+
+        algo = new Algo_WithCPAndFuture(seriesToWork, ego.getBestControlParameters(), ego.getBestDurationParameter());
+
+        algo.takeSeriesToWork();
+
+        visualization = new Visualization("secondFullTestWithDifferentSeries-best");
+        visualization.visualizeSolution(seriesToWork);
+
     }
 }

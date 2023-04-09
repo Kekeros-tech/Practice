@@ -71,6 +71,13 @@ public class O_Priority implements IOperation {
         return sb.toString();
     }
 
+    @Override
+    public String formResultOfOperation() {
+        final StringBuffer sb = new StringBuffer("");
+        sb.append(underlyingOperation.formResultOfOperation());
+        return sb.toString();
+    }
+
     public boolean underlyingOperationIsChain() {
         if(underlyingOperation.getClass().getSimpleName() == "O_OperationWithQuantityChain") {
             return true;

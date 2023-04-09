@@ -58,10 +58,6 @@ public class O_Basic implements IOperation {
         cWorkingInterval = new ArrayList<>();
     }
 
-    protected void setPriority() {
-        return;
-    }
-
     public Group getResourceGroup() { return resourceGroup; }
     public Series getSerialAffiliation() { return serialAffiliation; }
     public ArrayList<IOperation> getPreviousOperations() { return previousOperations; }
@@ -89,7 +85,6 @@ public class O_Basic implements IOperation {
     }
 
     public Duration getDurationOfExecution() { return currentOperatingMode.getDurationOfExecution(); }
-    public IOperationMode getOperationMode() { return currentOperatingMode; }
     public Collection<IStructuralUnitOfResource> getCNumberOfAssignedRecourse() { return cNumberOfAssignedRecourse; }
     public ArrayList<WorkingHours> getCWorkingInterval() { return cWorkingInterval; }
     public LocalDateTime getTactTime() { return tactTime; }
@@ -125,17 +120,23 @@ public class O_Basic implements IOperation {
         return sb.toString();
     }
 
-    public String print() {
-        final StringBuffer sb = new StringBuffer("Операция - ");
-        sb.append(nameOfOperation);
+    @Override
+    public String formResultOfOperation() {
+        final StringBuffer sb = new StringBuffer("");
+        sb.append(nameOfOperation).append(";");
         //sb.append(" Группа ресурсов=").append(resourceGroup.getNameOfGroup());
         //sb.append(", код серии=").append(serialAffiliation.getNameOfSeries());
-        //sb.append(", назначенный ресурс=").append(cNumberOfAssignedRecourse.getNameOfRecourse());
+        for(int i = 0; i < cNumberOfAssignedRecourse.size() - 1; i ++) {
+            sb.append(cNumberOfAssignedRecourse.get(i)).append(",");
+        }
+        sb.append(cNumberOfAssignedRecourse.get(cNumberOfAssignedRecourse.size() - 1)).append(";");
+        for(int i = 0; i < cWorkingInterval.size() - 1; i ++) {
+            sb.append(cWorkingInterval.get(i)).append(",");
+        }
+        sb.append(cWorkingInterval.get(cWorkingInterval.size() - 1)).append(";");
         //sb.append(cLateStartTime);
-        sb.append(", рабочий интервал=").append(cWorkingInterval);
         return sb.toString();
     }
-
 
     //То что является условием не завершения операции и что предыдущие отработали
     public boolean isСanBePlacedInFront() {
@@ -164,10 +165,6 @@ public class O_Basic implements IOperation {
     public void setResourceGroup(Group resourceGroup) { this.resourceGroup = resourceGroup; }
 
     public void setSerialAffiliation(Series serialAffiliation) { this.serialAffiliation = serialAffiliation; }
-
-    public void setPreviousOperations(Collection<O_Basic> previousOBasics) { this.previousOperations = new ArrayList<>(previousOBasics); }
-
-    public void setFollowingOperations(Collection<O_Basic> followingOBasics) { this.followingOperations = new ArrayList<>(followingOBasics); }
 
     public void setDurationOfExecution(Duration durationOfExecution) { this.durationOfExecution = durationOfExecution; }
     //public void setDurationOfExecution(Duration durationOfExecution) { currentOperatingMode.setDurationOfExecution(durationOfExecution); }

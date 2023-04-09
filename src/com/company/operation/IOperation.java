@@ -49,4 +49,5 @@ public interface IOperation {
     void clean();
     void fullClean();
     String toString();
+    String formResultOfOperation();
 }

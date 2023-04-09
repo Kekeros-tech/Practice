@@ -16,7 +16,11 @@ public class MaximumFlowSolution {
 
         int[][] adjacencyMatrix = formAdjacencyMatrix(frontOfWorkSortedByPriority, workResources);
 
+        //print(adjacencyMatrix);
+
         findMaxFlow(adjacencyMatrix);
+
+        //print(adjacencyMatrix);
 
         ArrayList<ResultOfMaximumFlowSolution> resultOfWork =
                 formResultOfAlgorithm(adjacencyMatrix, frontOfWorkSortedByPriority, workResources);
@@ -55,6 +59,17 @@ public class MaximumFlowSolution {
         }
         //System.out.println(resultOfMaximumFlowSolutions.size());
         return resultOfMaximumFlowSolutions;
+    }
+
+    public static void print(int[][] adjacencyMatrix) {
+        for(int i = 0; i < adjacencyMatrix.length; i ++) {
+            for(int j = 0; j < adjacencyMatrix.length; j ++) {
+                System.out.print(adjacencyMatrix[i][j]);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+        System.out.println("===");
     }
 
     public static int[][] formAdjacencyMatrix(Collection<IOperation> frontOfWorkSortedByPriority, ArrayList<IStructuralUnitOfResource> workResources) {
